@@ -1,0 +1,5 @@
+; Test string atom
+
+"hello tatu lang"
+
+; Expect: hello tatu lang

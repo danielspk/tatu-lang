@@ -1,0 +1,5 @@
+; Test subtraction with two integers
+
+(- 50 20)
+
+; Expect: 30

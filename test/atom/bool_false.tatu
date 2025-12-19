@@ -1,0 +1,5 @@
+; Test bool (false) atom
+
+false
+
+; Expect: false

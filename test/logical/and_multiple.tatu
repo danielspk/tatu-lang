@@ -1,0 +1,5 @@
+; Test logical AND with multiple booleans
+
+(and true true true)
+
+; Expect: true

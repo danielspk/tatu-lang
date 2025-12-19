@@ -1,0 +1,5 @@
+; Test logical OR with multiple false booleans
+
+(or false false false)
+
+; Expect: false

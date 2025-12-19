@@ -1,0 +1,5 @@
+; Test greater than operator returning false
+
+(> 5 10)
+
+; Expect: false

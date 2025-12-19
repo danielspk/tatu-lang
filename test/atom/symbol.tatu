@@ -1,0 +1,6 @@
+; Test symbol atom
+
+(var x (+ 5 5))
+x
+
+; Expect: 10

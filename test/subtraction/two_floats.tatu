@@ -1,0 +1,5 @@
+; Test subtraction with two floats
+
+(- 300.75 100.25)
+
+; Expect: 200.5

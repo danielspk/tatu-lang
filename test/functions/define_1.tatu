@@ -1,0 +1,8 @@
+; Test define function 1
+
+(def square (x)
+  (* x x))
+
+(square 2)
+
+; Expect: 4

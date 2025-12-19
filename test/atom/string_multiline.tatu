@@ -1,0 +1,5 @@
+; Test string multiline atom
+
+"hello tatu\nlang"
+
+; Expect: hello tatu\nlang

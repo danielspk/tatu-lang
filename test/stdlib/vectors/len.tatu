@@ -1,0 +1,5 @@
+; Test len vector core function
+
+(vec:len (vector 2 3 4))
+
+; Expect: 3

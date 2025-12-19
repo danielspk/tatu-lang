@@ -1,0 +1,5 @@
+; Test multiplication with multiple floats
+
+(* 2.5 3.2 1.5 2.0)
+
+; Expect: 24

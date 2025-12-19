@@ -1,0 +1,5 @@
+; Test subtraction with multiple numbers
+
+(- 100 25.5 10 5.3 -4.2)
+
+; Expect: 63.4

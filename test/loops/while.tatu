@@ -1,0 +1,11 @@
+; Test loop while
+
+(var i 10)
+(var number 10)
+
+(while (> i 0)
+  (begin
+    (set i (- i 1))
+    (set number (+ number 1))))
+
+; Expect: 20

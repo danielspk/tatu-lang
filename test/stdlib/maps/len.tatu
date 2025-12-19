@@ -1,0 +1,5 @@
+; Test len map core function
+
+(map:len (map age 30 name "john"))
+
+; Expect: 2

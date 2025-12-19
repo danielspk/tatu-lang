@@ -1,0 +1,5 @@
+; Test expression assignation
+
+(var x (+ 20 20))
+
+; Expect: 40

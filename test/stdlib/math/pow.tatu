@@ -1,0 +1,5 @@
+; Test pow math core function
+
+(math:pow 2 3)
+
+; Expect: 8

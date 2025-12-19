@@ -1,0 +1,5 @@
+; Test global function print
+
+(print 44 "hello")
+
+; Expect: <nil>

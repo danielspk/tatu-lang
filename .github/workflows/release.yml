@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Releases
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+
+      - name: Run tests
+        run: go test ./test -v
+
+      - name: Build for all platforms
+        run: VERSION=${{ github.ref_name }} make
+
+      - name: Compress files
+        run: |
+          cd dist/linux && tar -czf ../../tatu-${GITHUB_REF_NAME}-linux-amd64.tar.gz tatu-amd && tar -czf ../../tatu-${GITHUB_REF_NAME}-linux-arm64.tar.gz tatu-arm
+          cd ../mac && tar -czf ../../tatu-${GITHUB_REF_NAME}-darwin-amd64.tar.gz tatu-intel && tar -czf ../../tatu-${GITHUB_REF_NAME}-darwin-arm64.tar.gz tatu-apple
+          cd ../windows && zip ../../tatu-${GITHUB_REF_NAME}-windows-amd64.zip tatu-amd && zip ../../tatu-${GITHUB_REF_NAME}-windows-arm64.zip tatu-arm
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            tatu-*.tar.gz
+            tatu-*.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true

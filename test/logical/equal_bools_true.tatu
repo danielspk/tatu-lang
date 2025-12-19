@@ -1,0 +1,5 @@
+; Test equality operator with equal booleans
+
+(= true true)
+
+; Expect: true

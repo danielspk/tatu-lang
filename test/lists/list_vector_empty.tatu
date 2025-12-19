@@ -1,0 +1,5 @@
+; Test list vector empty
+
+(vector)
+
+; Expect: ()

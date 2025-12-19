@@ -1,0 +1,5 @@
+; Test list vector
+
+(vector 10 (+ 10 10) 30)
+
+; Expect: (10 20 30)

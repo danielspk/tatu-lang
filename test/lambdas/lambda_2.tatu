@@ -1,0 +1,11 @@
+; Test lambda function 2
+
+(def onclick (callback)
+  (begin
+    (var x 10)
+    (var y 20)
+    (callback (+ x y))))
+
+(onclick (lambda (data) (* data 10)))
+
+; Expect: 300

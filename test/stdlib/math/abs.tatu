@@ -1,0 +1,5 @@
+; Test abs math core function
+
+(math:abs -5)
+
+; Expect: 5

@@ -1,0 +1,5 @@
+; Test subtraction with multiple numbers and expressions
+
+(- 1000 (- 200 50 25) -100 (- 300 150 50))
+
+; Expect: 875

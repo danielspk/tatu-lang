@@ -1,0 +1,15 @@
+; Test iterative factorial
+
+(begin
+  (def factorial (x)
+    (begin
+      (var result x)
+      (while (> x 1)
+        (begin
+          (set x (- x 1))
+          (set result (* result x))))))
+
+  (factorial 5)
+)
+
+; Expect: 120

@@ -1,0 +1,7 @@
+; Test assignation and operations 2
+
+(var x 10.5)
+(var y 0.6)
+(+ x y)
+
+; Expect: 11.1

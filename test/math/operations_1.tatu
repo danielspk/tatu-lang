@@ -1,0 +1,5 @@
+; Test math operations 1
+
+(+ 10 (* 10 10))
+
+; Expect: 110

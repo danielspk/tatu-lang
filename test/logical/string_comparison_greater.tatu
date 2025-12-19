@@ -1,0 +1,5 @@
+; Test greater than operator with strings
+
+(> "xyz" "abc")
+
+; Expect: true

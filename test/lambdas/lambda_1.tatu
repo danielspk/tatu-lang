@@ -1,0 +1,6 @@
+; Test lambda function 1
+
+(var square (lambda (x) (* x x)))
+(square 3)
+
+; Expect: 9

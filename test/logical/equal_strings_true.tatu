@@ -1,0 +1,5 @@
+; Test equality operator with equal strings
+
+(= "hello" "hello")
+
+; Expect: true

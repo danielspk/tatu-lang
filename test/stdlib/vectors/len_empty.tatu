@@ -1,0 +1,5 @@
+; Test len vector core function - empty vector
+
+(vec:len (vector))
+
+; Expect: 0

@@ -1,0 +1,5 @@
+; Test division with multiple integers
+
+(/ 1000 10 5 2)
+
+; Expect: 10

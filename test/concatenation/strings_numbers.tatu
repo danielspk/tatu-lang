@@ -1,0 +1,5 @@
+; Test strings and numbers concatenation
+
+(+ "hello " "tatu " 2025)
+
+; Expect: hello tatu 2025

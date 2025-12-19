@@ -1,0 +1,5 @@
+; Test addition with multiple floats
+
+(+ 100.54 200.65 300.76 400.89)
+
+; Expect: 1002.84

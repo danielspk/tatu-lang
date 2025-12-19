@@ -1,0 +1,5 @@
+; Test negative number (integer) atom
+
+-6345
+
+; Expect: -6345

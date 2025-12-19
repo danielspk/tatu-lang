@@ -1,0 +1,5 @@
+; Test less than operator returning true
+
+(< 5 10)
+
+; Expect: true

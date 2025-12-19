@@ -1,0 +1,5 @@
+; Test equality operator with nil values
+
+(= nil nil)
+
+; Expect: true

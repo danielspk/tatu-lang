@@ -1,0 +1,5 @@
+; Test len map core function - empty map
+
+(map:len (map))
+
+; Expect: 0

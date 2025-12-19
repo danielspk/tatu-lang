@@ -1,0 +1,13 @@
+; Test assignation and scope 2
+
+(begin
+  (var value1 10)
+  (var value2 10)
+  (var result (begin
+    (var x (+ value1 (begin
+      (+ 10 value2))))
+    x)
+  )
+  result)
+
+; Expect: 30

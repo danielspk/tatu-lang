@@ -1,0 +1,5 @@
+; Test negative number (zero) atom
+
+-0
+
+; Expect: 0

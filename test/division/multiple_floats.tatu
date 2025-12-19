@@ -1,0 +1,5 @@
+; Test division with multiple floats
+
+(/ 1000.0 5.0 2.5 4.0)
+
+; Expect: 20

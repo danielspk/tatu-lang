@@ -1,0 +1,5 @@
+; Test math operations 2
+
+(+ 10 (* 20 (+ 32 (+ 10 (+ 10 20)))))
+
+; Expect: 1450

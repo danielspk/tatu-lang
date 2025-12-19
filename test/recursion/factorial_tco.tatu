@@ -1,0 +1,10 @@
+; Test tail-call optimization factorial
+
+(def factorial (n acc)
+  (if (= n 0)
+    acc
+    (recur (- n 1) (* n acc))))
+
+(factorial 5 1)
+
+; Expect: 120

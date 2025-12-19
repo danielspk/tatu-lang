@@ -1,0 +1,5 @@
+; Test string (empty) atom
+
+""
+
+; Expect: 

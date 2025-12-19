@@ -1,0 +1,11 @@
+; Test define function 2
+
+(def calc (x y)
+  (begin
+    (var z 30)
+    (+ (* x y) z)
+  ))
+
+(calc 10 20)
+
+; Expect: 230

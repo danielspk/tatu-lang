@@ -1,0 +1,5 @@
+; Test negative number (float) atom
+
+-1234.56
+
+; Expect: -1234.56

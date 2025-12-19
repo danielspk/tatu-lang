@@ -1,0 +1,5 @@
+; Test complex combined logical operators
+
+(or (and true false) (and true true))
+
+; Expect: true

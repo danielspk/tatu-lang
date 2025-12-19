@@ -1,0 +1,5 @@
+; Test list nil
+
+()
+
+; Expect: <nil>

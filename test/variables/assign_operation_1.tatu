@@ -1,0 +1,6 @@
+; Test assignation and operations 1
+
+(var y 3.5)
+(* 10 y)
+
+; Expect: 35

@@ -1,0 +1,5 @@
+; Test addition with multiple numbers
+
+(+ -10 5.5 1.4 -2.1 2)
+
+; Expect: -3.2

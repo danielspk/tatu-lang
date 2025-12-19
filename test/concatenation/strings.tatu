@@ -1,0 +1,5 @@
+; Test strings concatenation
+
+(+ "hello" " tatu " "lang")
+
+; Expect: hello tatu lang

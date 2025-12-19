@@ -1,0 +1,5 @@
+; Test subtraction with multiple floats
+
+(- 500.5 100.25 50.5 25.75)
+
+; Expect: 324

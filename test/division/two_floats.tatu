@@ -1,0 +1,5 @@
+; Test division with two floats
+
+(/ 100.80 50.40)
+
+; Expect: 2

@@ -1,0 +1,18 @@
+; Test define function 3
+
+(var value 100)
+
+(def calc (x y)
+  (begin
+    (var z (+ x y))
+    (def inner (foo)
+      (+ (+ foo z) value))
+
+    inner
+  ))
+
+(var fn (calc 10 20))
+
+(fn 30)
+
+; Expect: 160

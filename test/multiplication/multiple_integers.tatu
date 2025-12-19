@@ -1,0 +1,5 @@
+; Test multiplication with multiple integers
+
+(* 2 3 4 5 6)
+
+; Expect: 720

@@ -1,0 +1,7 @@
+; Test include 5
+
+; this include already made is omitted when test 04.tatu is executed
+(include "../04.tatu")
+(include "../../01.tatu")
+
+; Expect: 110

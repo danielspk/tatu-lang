@@ -1,0 +1,5 @@
+; Test logical OR with two true booleans
+
+(or true true)
+
+; Expect: true

@@ -1,0 +1,5 @@
+; Test addition with multiple numbers and expressions
+
+(+ 10 (+ -10 25.5 400) -67.34 (+ 987.34 310 -55.76))
+
+; Expect: 1599.74

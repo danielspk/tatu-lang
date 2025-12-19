@@ -1,0 +1,5 @@
+; Test division with two integers
+
+(/ 100 20)
+
+; Expect: 5

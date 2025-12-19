@@ -1,0 +1,5 @@
+; Test include 4
+
+(include "subfolder2/05.tatu")
+
+; Expect: 110

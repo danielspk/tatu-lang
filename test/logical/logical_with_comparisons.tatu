@@ -1,0 +1,5 @@
+; Test logical operators with comparison expressions
+
+(and (> 10 5) (< 3 7))
+
+; Expect: true

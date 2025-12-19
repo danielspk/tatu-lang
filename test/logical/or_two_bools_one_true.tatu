@@ -1,0 +1,5 @@
+; Test logical OR with one true boolean
+
+(or true false)
+
+; Expect: true

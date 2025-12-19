@@ -1,0 +1,5 @@
+; Test sqrt math core function
+
+(math:sqrt 16)
+
+; Expect: 4

@@ -1,0 +1,5 @@
+; Test multiplication with multiple numbers
+
+(* -2 5.5 3 -1.5)
+
+; Expect: 49.5

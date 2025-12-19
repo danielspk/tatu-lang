@@ -1,0 +1,5 @@
+; Test comparison operator with expressions
+
+(> (+ 5 5) (* 2 4))
+
+; Expect: true

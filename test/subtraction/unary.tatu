@@ -1,0 +1,5 @@
+; Test unary expression
+
+(- 100.25)
+
+; Expect: -100.25

@@ -1,0 +1,5 @@
+; Test math operations 5
+
+(+ (* 3.5 4) (/ 25 2))
+
+; Expect: 26.5

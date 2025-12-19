@@ -1,0 +1,12 @@
+; Test assignation, update and scope 4
+
+(begin
+  (var data 20)
+  (begin
+    (var data 10)
+    (set data 100)
+  )
+  data
+)
+
+; Expect: 20

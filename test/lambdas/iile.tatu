@@ -1,0 +1,5 @@
+; Test immediately invoke lambda expression - IILE
+
+((lambda (x) (* x x)) 2)
+
+; Expect: 4

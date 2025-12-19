@@ -1,0 +1,5 @@
+; Test number (integer) atom
+
+1234
+
+; Expect: 1234

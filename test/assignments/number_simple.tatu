@@ -1,0 +1,5 @@
+; Test simple assignation
+
+(var y 10)
+
+; Expect: 10

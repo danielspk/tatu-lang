@@ -1,0 +1,7 @@
+; Test if condition
+
+(if (> 60 50)
+  (var si "es mayor")
+  (var no "no es mayor"))
+
+; Expect: es mayor

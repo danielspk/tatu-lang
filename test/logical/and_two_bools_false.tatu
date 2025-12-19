@@ -1,0 +1,5 @@
+; Test logical AND with one false boolean
+
+(and true false)
+
+; Expect: false

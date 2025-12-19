@@ -1,0 +1,5 @@
+; Test greater or equal operator with greater number
+
+(>= 10 5)
+
+; Expect: true

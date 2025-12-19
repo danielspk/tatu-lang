@@ -1,0 +1,5 @@
+; Test strings and numbers concatenation
+
+(+ 10 " hello " "tatu " "99.66")
+
+; Expect: 10 hello tatu 99.66

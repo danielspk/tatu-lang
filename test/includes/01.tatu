@@ -1,0 +1,7 @@
+; Test include 1
+
+(include "02.tatu")
+
+(+ 10 100)
+
+; Expect: 110
