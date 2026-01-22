@@ -1,0 +1,5 @@
+; Test between with value below range
+
+(math:between 0 1 10)
+
+; Expect: false

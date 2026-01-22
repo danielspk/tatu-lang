@@ -1,0 +1,5 @@
+; Test regex find without match
+
+(regex:find "hello world" "[0-9]+")
+
+; Expect: 

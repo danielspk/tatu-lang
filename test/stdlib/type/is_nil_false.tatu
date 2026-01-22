@@ -1,0 +1,5 @@
+; Test is-nil with non-nil value
+
+(is-nil 0)
+
+; Expect: false

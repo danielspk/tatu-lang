@@ -1,0 +1,5 @@
+; Test is-function with lambda value
+
+(is-function (lambda (x) x))
+
+; Expect: true

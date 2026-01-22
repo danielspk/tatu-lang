@@ -1,0 +1,5 @@
+; Test is-number with number value
+
+(is-number 3.14)
+
+; Expect: true

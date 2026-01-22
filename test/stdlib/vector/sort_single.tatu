@@ -1,0 +1,5 @@
+; Test vec:sort with single element
+
+(vec:sort (vector 42))
+
+; Expect: (42)

@@ -1,0 +1,5 @@
+; Test vec:sort with strings
+
+(vec:sort (vector "zebra" "apple" "mango" "banana"))
+
+; Expect: (apple banana mango zebra)

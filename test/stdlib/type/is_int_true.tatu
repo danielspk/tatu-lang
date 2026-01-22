@@ -1,0 +1,5 @@
+; Test is-int with integer value
+
+(is-int 42)
+
+; Expect: true

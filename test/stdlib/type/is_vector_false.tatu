@@ -1,0 +1,5 @@
+; Test is-vector with non-vector value
+
+(is-vector 42)
+
+; Expect: false

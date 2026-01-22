@@ -1,0 +1,5 @@
+; Test is-function with non-function value
+
+(is-function 42)
+
+; Expect: false

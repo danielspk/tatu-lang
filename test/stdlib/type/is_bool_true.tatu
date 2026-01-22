@@ -1,0 +1,5 @@
+; Test is-bool with bool value
+
+(is-bool true)
+
+; Expect: true

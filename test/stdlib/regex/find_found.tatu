@@ -1,0 +1,5 @@
+; Test regex find with match
+
+(regex:find "hello 123 world" "[0-9]+")
+
+; Expect: 123

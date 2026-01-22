@@ -29,7 +29,7 @@ func RegisterString(env *runtime.Environment) error {
 
 	for name, fn := range functions {
 		if _, err := env.Define(name, fn); err != nil {
-			return fmt.Errorf("failed to register string function `%s`: %v", name, err)
+			return fmt.Errorf("failed to register string function `%s`: %w", name, err)
 		}
 	}
 
@@ -100,12 +100,14 @@ func stringIndex(args ...runtime.Value) (runtime.Value, error) {
 
 	for i := 0; i <= len(runes)-len(subRunes); i++ {
 		match := true
+
 		for j := 0; j < len(subRunes); j++ {
 			if runes[i+j] != subRunes[j] {
 				match = false
 				break
 			}
 		}
+
 		if match {
 			index = i
 			break
@@ -230,6 +232,7 @@ func stringSplit(args ...runtime.Value) (runtime.Value, error) {
 
 	parts := strings.Split(str.Value, sep.Value)
 	elements := make([]runtime.Value, len(parts))
+
 	for i, part := range parts {
 		elements[i] = runtime.NewString(part)
 	}
@@ -257,6 +260,7 @@ func stringJoin(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	parts := make([]string, len(vec.Elements))
+
 	for i, elem := range vec.Elements {
 		if elem.Type() != runtime.StringType {
 			return nil, fmt.Errorf("`%s` expects vector of strings, got %s at index %d", name, elem.Type(), i)
@@ -281,17 +285,17 @@ func stringReplace(args ...runtime.Value) (runtime.Value, error) {
 		return nil, err
 	}
 
-	old, err := expectString(name, 1, args[1])
+	oldStr, err := expectString(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
 
-	new, err := expectString(name, 2, args[2])
+	newStr, err := expectString(name, 2, args[2])
 	if err != nil {
 		return nil, err
 	}
 
-	return runtime.NewString(strings.ReplaceAll(str.Value, old.Value, new.Value)), nil
+	return runtime.NewString(strings.ReplaceAll(str.Value, oldStr.Value, newStr.Value)), nil
 }
 
 // stringStarts implements the string prefix check core function.
@@ -353,6 +357,7 @@ func stringReverse(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	runes := []rune(str.Value)
+
 	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
 		runes[i], runes[j] = runes[j], runes[i]
 	}
@@ -398,11 +403,13 @@ func stringConcat(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	var result strings.Builder
+
 	for i, arg := range args {
 		str, err := expectString(name, i, arg)
 		if err != nil {
 			return nil, err
 		}
+
 		result.WriteString(str.Value)
 	}
 

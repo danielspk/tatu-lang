@@ -1,0 +1,5 @@
+; Test is-bool with non-bool value
+
+(is-bool 42)
+
+; Expect: false

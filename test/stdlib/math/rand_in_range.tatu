@@ -1,0 +1,6 @@
+; Test math:rand result is within range
+
+(var result (math:rand 10 20))
+(and (>= result 10) (<= result 20))
+
+; Expect: true

@@ -1,0 +1,5 @@
+; Test is-int with decimal value
+
+(is-int 3.14)
+
+; Expect: false

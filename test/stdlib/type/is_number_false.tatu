@@ -1,0 +1,5 @@
+; Test is-number with non-number value
+
+(is-number "hello")
+
+; Expect: false

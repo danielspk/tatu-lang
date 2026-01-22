@@ -1,0 +1,5 @@
+; Test regex matches with valid pattern
+
+(regex:matches "hello123" "^[a-z]+[0-9]+$")
+
+; Expect: true

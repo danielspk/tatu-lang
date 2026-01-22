@@ -1,0 +1,5 @@
+; Test vec:sort with negative numbers
+
+(vec:sort (vector -5 3 -1 0 2 -3))
+
+; Expect: (-5 -3 -1 0 2 3)

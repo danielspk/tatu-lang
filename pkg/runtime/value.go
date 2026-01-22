@@ -48,6 +48,7 @@ func (n Number) Type() ValueType {
 
 // String returns the string representation of the number value.
 func (n Number) String() string {
+	// normalize -0 to 0 because is an IEEE 754 valid number
 	if n.Value == 0 {
 		return "0"
 	}

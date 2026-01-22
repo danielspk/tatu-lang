@@ -1,0 +1,5 @@
+; Test vec:sort with empty vector
+
+(vec:sort (vector))
+
+; Expect: ()

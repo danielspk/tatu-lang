@@ -1,0 +1,5 @@
+; Test is-vector with vector value
+
+(is-vector (vector 1 2 3))
+
+; Expect: true

@@ -2,4 +2,4 @@
 
 (to-string nil)
 
-; Expect: nil
+; Expect: <nil>

@@ -4,6 +4,7 @@ package stdlib
 import (
 	"fmt"
 	"math"
+	"math/rand"
 
 	"github.com/danielspk/tatu-lang/pkg/runtime"
 )
@@ -11,26 +12,28 @@ import (
 // RegisterMath registers mathematical core functions in the environment.
 func RegisterMath(env *runtime.Environment) error {
 	functions := map[string]runtime.CoreFunction{
-		"math:pi":    runtime.NewCoreFunction(mathPi),
-		"math:e":     runtime.NewCoreFunction(mathE),
-		"math:abs":   runtime.NewCoreFunction(mathAbs),
-		"math:floor": runtime.NewCoreFunction(mathFloor),
-		"math:ceil":  runtime.NewCoreFunction(mathCeil),
-		"math:round": runtime.NewCoreFunction(mathRound),
-		"math:sin":   runtime.NewCoreFunction(mathSin),
-		"math:cos":   runtime.NewCoreFunction(mathCos),
-		"math:tan":   runtime.NewCoreFunction(mathTan),
-		"math:min":   runtime.NewCoreFunction(mathMin),
-		"math:max":   runtime.NewCoreFunction(mathMax),
-		"math:sqrt":  runtime.NewCoreFunction(mathSqrt),
-		"math:pow":   runtime.NewCoreFunction(mathPow),
-		"math:log":   runtime.NewCoreFunction(mathLog),
-		"math:exp":   runtime.NewCoreFunction(mathExp),
+		"math:pi":      runtime.NewCoreFunction(mathPi),
+		"math:e":       runtime.NewCoreFunction(mathE),
+		"math:abs":     runtime.NewCoreFunction(mathAbs),
+		"math:floor":   runtime.NewCoreFunction(mathFloor),
+		"math:ceil":    runtime.NewCoreFunction(mathCeil),
+		"math:round":   runtime.NewCoreFunction(mathRound),
+		"math:sin":     runtime.NewCoreFunction(mathSin),
+		"math:cos":     runtime.NewCoreFunction(mathCos),
+		"math:tan":     runtime.NewCoreFunction(mathTan),
+		"math:min":     runtime.NewCoreFunction(mathMin),
+		"math:max":     runtime.NewCoreFunction(mathMax),
+		"math:sqrt":    runtime.NewCoreFunction(mathSqrt),
+		"math:pow":     runtime.NewCoreFunction(mathPow),
+		"math:log":     runtime.NewCoreFunction(mathLog),
+		"math:exp":     runtime.NewCoreFunction(mathExp),
+		"math:between": runtime.NewCoreFunction(mathBetween),
+		"math:rand":    runtime.NewCoreFunction(mathRand),
 	}
 
 	for name, fn := range functions {
 		if _, err := env.Define(name, fn); err != nil {
-			return fmt.Errorf("failed to register math function `%s`: %v", name, err)
+			return fmt.Errorf("failed to register math function `%s`: %w", name, err)
 		}
 	}
 
@@ -303,4 +306,64 @@ func mathExp(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	return runtime.NewNumber(math.Exp(num.Value)), nil
+}
+
+// mathBetween checks if a value is between min and max (inclusive).
+// Usage: (math:between 5 1 10) => true
+func mathBetween(args ...runtime.Value) (runtime.Value, error) {
+	const name = "math:between"
+
+	if err := expectArgs(name, 3, args); err != nil {
+		return nil, err
+	}
+
+	value, err := expectNumber(name, 0, args[0])
+	if err != nil {
+		return nil, err
+	}
+
+	min, err := expectNumber(name, 1, args[1])
+	if err != nil {
+		return nil, err
+	}
+
+	max, err := expectNumber(name, 2, args[2])
+	if err != nil {
+		return nil, err
+	}
+
+	result := value.Value >= min.Value && value.Value <= max.Value
+
+	return runtime.NewBool(result), nil
+}
+
+// mathRand generates a random integer between min and max (inclusive).
+// Usage: (math:rand 1 10) => 7
+func mathRand(args ...runtime.Value) (runtime.Value, error) {
+	const name = "math:rand"
+
+	if err := expectArgs(name, 2, args); err != nil {
+		return nil, err
+	}
+
+	minNum, err := expectNumber(name, 0, args[0])
+	if err != nil {
+		return nil, err
+	}
+
+	maxNum, err := expectNumber(name, 1, args[1])
+	if err != nil {
+		return nil, err
+	}
+
+	minInt := int(math.Floor(minNum.Value))
+	maxInt := int(math.Floor(maxNum.Value))
+
+	if minInt > maxInt {
+		return nil, fmt.Errorf("`%s` min (%d) cannot be greater than max (%d)", name, minInt, maxInt)
+	}
+
+	result := minInt + rand.Intn(maxInt-minInt+1)
+
+	return runtime.NewNumber(float64(result)), nil
 }

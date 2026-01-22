@@ -10,25 +10,25 @@ import (
 // RegisterTime registers time core functions in the environment.
 func RegisterTime(env *runtime.Environment) error {
 	functions := map[string]runtime.CoreFunction{
-		"time:now":      runtime.NewCoreFunction(timeNow),
-		"time:unix":     runtime.NewCoreFunction(timeUnix),
-		"time:year":     runtime.NewCoreFunction(timeYear),
-		"time:month":    runtime.NewCoreFunction(timeMonth),
-		"time:day":      runtime.NewCoreFunction(timeDay),
-		"time:hour":     runtime.NewCoreFunction(timeHour),
-		"time:minute":   runtime.NewCoreFunction(timeMinute),
-		"time:second":   runtime.NewCoreFunction(timeSecond),
-		"time:format":   runtime.NewCoreFunction(timeFormat),
-		"time:parse":    runtime.NewCoreFunction(timeParse),
-		"time:add":      runtime.NewCoreFunction(timeAdd),
-		"time:sub":      runtime.NewCoreFunction(timeSub),
-		"time:diff":     runtime.NewCoreFunction(timeDiff),
-		"time:is-leap":  runtime.NewCoreFunction(timeIsLeap),
+		"time:now":     runtime.NewCoreFunction(timeNow),
+		"time:unix":    runtime.NewCoreFunction(timeUnix),
+		"time:year":    runtime.NewCoreFunction(timeYear),
+		"time:month":   runtime.NewCoreFunction(timeMonth),
+		"time:day":     runtime.NewCoreFunction(timeDay),
+		"time:hour":    runtime.NewCoreFunction(timeHour),
+		"time:minute":  runtime.NewCoreFunction(timeMinute),
+		"time:second":  runtime.NewCoreFunction(timeSecond),
+		"time:format":  runtime.NewCoreFunction(timeFormat),
+		"time:parse":   runtime.NewCoreFunction(timeParse),
+		"time:add":     runtime.NewCoreFunction(timeAdd),
+		"time:sub":     runtime.NewCoreFunction(timeSub),
+		"time:diff":    runtime.NewCoreFunction(timeDiff),
+		"time:is-leap": runtime.NewCoreFunction(timeIsLeap),
 	}
 
 	for name, fn := range functions {
 		if _, err := env.Define(name, fn); err != nil {
-			return fmt.Errorf("failed to register time function `%s`: %v", name, err)
+			return fmt.Errorf("failed to register time function `%s`: %w", name, err)
 		}
 	}
 
@@ -79,6 +79,7 @@ func timeYear(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	t := time.Unix(int64(timestamp.Value), 0).UTC()
+
 	return runtime.NewNumber(float64(t.Year())), nil
 }
 
@@ -97,6 +98,7 @@ func timeMonth(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	t := time.Unix(int64(timestamp.Value), 0).UTC()
+
 	return runtime.NewNumber(float64(t.Month())), nil
 }
 
@@ -115,6 +117,7 @@ func timeDay(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	t := time.Unix(int64(timestamp.Value), 0).UTC()
+
 	return runtime.NewNumber(float64(t.Day())), nil
 }
 
@@ -133,6 +136,7 @@ func timeHour(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	t := time.Unix(int64(timestamp.Value), 0).UTC()
+
 	return runtime.NewNumber(float64(t.Hour())), nil
 }
 
@@ -151,6 +155,7 @@ func timeMinute(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	t := time.Unix(int64(timestamp.Value), 0).UTC()
+
 	return runtime.NewNumber(float64(t.Minute())), nil
 }
 
@@ -169,6 +174,7 @@ func timeSecond(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	t := time.Unix(int64(timestamp.Value), 0).UTC()
+
 	return runtime.NewNumber(float64(t.Second())), nil
 }
 
@@ -192,6 +198,7 @@ func timeFormat(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	t := time.Unix(int64(timestamp.Value), 0).UTC()
+
 	return runtime.NewString(t.Format(layout.Value)), nil
 }
 
@@ -216,7 +223,7 @@ func timeParse(args ...runtime.Value) (runtime.Value, error) {
 
 	t, err := time.Parse(layout.Value, value.Value)
 	if err != nil {
-		return nil, fmt.Errorf("`%s` failed to parse: %v", name, err)
+		return nil, fmt.Errorf("`%s` failed to parse: %w", name, err)
 	}
 
 	return runtime.NewNumber(float64(t.Unix())), nil
@@ -243,6 +250,7 @@ func timeAdd(args ...runtime.Value) (runtime.Value, error) {
 
 	t := time.Unix(int64(timestamp.Value), 0).UTC()
 	newTime := t.Add(time.Duration(seconds.Value) * time.Second)
+
 	return runtime.NewNumber(float64(newTime.Unix())), nil
 }
 
@@ -267,6 +275,7 @@ func timeSub(args ...runtime.Value) (runtime.Value, error) {
 
 	t := time.Unix(int64(timestamp.Value), 0).UTC()
 	newTime := t.Add(-time.Duration(seconds.Value) * time.Second)
+
 	return runtime.NewNumber(float64(newTime.Unix())), nil
 }
 

@@ -1,0 +1,5 @@
+; Test is-string with non-string value
+
+(is-string 42)
+
+; Expect: false

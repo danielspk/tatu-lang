@@ -17,7 +17,7 @@ func RegisterCasting(env *runtime.Environment) error {
 
 	for name, fn := range functions {
 		if _, err := env.Define(name, fn); err != nil {
-			return fmt.Errorf("failed to register casting function `%s`: %v", name, err)
+			return fmt.Errorf("failed to register casting function `%s`: %w", name, err)
 		}
 	}
 
@@ -41,12 +41,10 @@ func toString(args ...runtime.Value) (runtime.Value, error) {
 		return runtime.NewString(num.String()), nil
 	case runtime.BoolType:
 		b := args[0].(runtime.Bool)
-		if b.Value {
-			return runtime.NewString("true"), nil
-		}
-		return runtime.NewString("false"), nil
+		return runtime.NewString(b.String()), nil
 	case runtime.NilType:
-		return runtime.NewString("nil"), nil
+		n := args[0].(runtime.Nil)
+		return runtime.NewString(n.String()), nil
 	default:
 		return nil, fmt.Errorf("`%s` cannot convert %s to STRING", name, args[0].Type())
 	}
@@ -68,7 +66,7 @@ func toNumber(args ...runtime.Value) (runtime.Value, error) {
 		str := args[0].(runtime.String)
 		num, err := strconv.ParseFloat(str.Value, 64)
 		if err != nil {
-			return nil, fmt.Errorf("`%s` cannot parse STRING '%s' to NUMBER: %v", name, str.Value, err)
+			return nil, fmt.Errorf("`%s` cannot parse STRING '%s' to NUMBER: %w", name, str.Value, err)
 		}
 		return runtime.NewNumber(num), nil
 	case runtime.BoolType:

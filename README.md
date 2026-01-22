@@ -5,7 +5,7 @@
 [![CI](https://github.com/danielspk/tatu-lang/workflows/CI/badge.svg)](https://github.com/danielspk/tatu-lang/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/danielspk/tatu-lang)](https://github.com/danielspk/tatu-lang/releases)
 
-![](assets/tatu.png)
+![](docs/tatu.png)
 
 > The _Tatu_ mascot was generated with AI 🤖.
 

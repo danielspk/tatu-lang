@@ -1,0 +1,5 @@
+; Test regex matches with non-matching pattern
+
+(regex:matches "123hello" "^[a-z]+[0-9]+$")
+
+; Expect: false

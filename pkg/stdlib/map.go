@@ -21,7 +21,7 @@ func RegisterMap(env *runtime.Environment) error {
 
 	for name, fn := range functions {
 		if _, err := env.Define(name, fn); err != nil {
-			return fmt.Errorf("failed to register map function `%s`: %v", name, err)
+			return fmt.Errorf("failed to register map function `%s`: %w", name, err)
 		}
 	}
 
@@ -135,6 +135,7 @@ func mapKeys(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	keys := make([]runtime.Value, 0, len(mapValue.Elements))
+
 	for key := range mapValue.Elements {
 		keys = append(keys, runtime.NewString(key))
 	}
@@ -157,6 +158,7 @@ func mapValues(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	values := make([]runtime.Value, 0, len(mapValue.Elements))
+
 	for _, value := range mapValue.Elements {
 		values = append(values, value)
 	}

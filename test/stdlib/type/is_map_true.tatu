@@ -1,0 +1,5 @@
+; Test is-map with map value
+
+(is-map (map "key" "value"))
+
+; Expect: true

@@ -2,6 +2,7 @@ package stdlib
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/danielspk/tatu-lang/pkg/runtime"
 )
@@ -20,11 +21,12 @@ func RegisterVector(env *runtime.Environment) error {
 		"vec:contains": runtime.NewCoreFunction(vectorContains),
 		"vec:find":     runtime.NewCoreFunction(vectorFind),
 		"vec:reverse":  runtime.NewCoreFunction(vectorReverse),
+		"vec:sort":     runtime.NewCoreFunction(vectorSort),
 	}
 
 	for name, fn := range functions {
 		if _, err := env.Define(name, fn); err != nil {
-			return fmt.Errorf("failed to register vector function `%s`: %v", name, err)
+			return fmt.Errorf("failed to register vector function `%s`: %w", name, err)
 		}
 	}
 
@@ -281,6 +283,49 @@ func vectorReverse(args ...runtime.Value) (runtime.Value, error) {
 	for i, j := 0, len(vector.Elements)-1; i < j; i, j = i+1, j-1 {
 		vector.Elements[i], vector.Elements[j] = vector.Elements[j], vector.Elements[i]
 	}
+
+	return vector, nil
+}
+
+// vectorSort sorts a vector in ascending order.
+// Usage: (vec:sort (vector 3 1 2)) => (vector 1 2 3)
+func vectorSort(args ...runtime.Value) (runtime.Value, error) {
+	const name = "vec:sort"
+
+	if err := expectArgs(name, 1, args); err != nil {
+		return nil, err
+	}
+
+	vector, err := expectVector(name, 0, args[0])
+	if err != nil {
+		return nil, err
+	}
+
+	if len(vector.Elements) == 0 {
+		return vector, nil
+	}
+
+	firstType := vector.Elements[0].Type()
+
+	sort.Slice(vector.Elements, func(i, j int) bool {
+		a := vector.Elements[i]
+		b := vector.Elements[j]
+
+		if a.Type() != firstType || b.Type() != firstType {
+			return false
+		}
+
+		switch firstType {
+		case runtime.NumberType:
+			return a.(runtime.Number).Value < b.(runtime.Number).Value
+		case runtime.StringType:
+			return a.(runtime.String).Value < b.(runtime.String).Value
+		case runtime.BoolType:
+			return !a.(runtime.Bool).Value && b.(runtime.Bool).Value
+		default:
+			return false
+		}
+	})
 
 	return vector, nil
 }

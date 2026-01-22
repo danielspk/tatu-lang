@@ -1,0 +1,5 @@
+; Test math:rand error when min > max
+
+(math:rand 100 10)
+
+; Expect Error: cannot be greater than

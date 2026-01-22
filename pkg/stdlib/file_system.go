@@ -29,7 +29,7 @@ func RegisterFileSystem(env *runtime.Environment) error {
 
 	for name, fn := range functions {
 		if _, err := env.Define(name, fn); err != nil {
-			return fmt.Errorf("failed to register file system function `%s`: %v", name, err)
+			return fmt.Errorf("failed to register file system function `%s`: %w", name, err)
 		}
 	}
 
@@ -52,7 +52,7 @@ func fsRead(args ...runtime.Value) (runtime.Value, error) {
 
 	content, err := os.ReadFile(path.Value)
 	if err != nil {
-		return nil, fmt.Errorf("`%s` failed to read file: %v", name, err)
+		return nil, fmt.Errorf("`%s` failed to read file: %w", name, err)
 	}
 
 	return runtime.NewString(string(content)), nil
@@ -74,11 +74,12 @@ func fsReadLines(args ...runtime.Value) (runtime.Value, error) {
 
 	content, err := os.ReadFile(path.Value)
 	if err != nil {
-		return nil, fmt.Errorf("`%s` failed to read file: %v", name, err)
+		return nil, fmt.Errorf("`%s` failed to read file: %w", name, err)
 	}
 
 	lines := strings.Split(string(content), "\n")
 	elements := make([]runtime.Value, len(lines))
+
 	for i, line := range lines {
 		elements[i] = runtime.NewString(line)
 	}
@@ -105,8 +106,8 @@ func fsWrite(args ...runtime.Value) (runtime.Value, error) {
 		return nil, err
 	}
 
-	if err := os.WriteFile(path.Value, []byte(content.Value), 0644); err != nil {
-		return nil, fmt.Errorf("`%s` failed to write file: %v", name, err)
+	if err = os.WriteFile(path.Value, []byte(content.Value), 0644); err != nil {
+		return nil, fmt.Errorf("`%s` failed to write file: %w", name, err)
 	}
 
 	return runtime.NewNil(), nil
@@ -133,12 +134,12 @@ func fsAppend(args ...runtime.Value) (runtime.Value, error) {
 
 	file, err := os.OpenFile(path.Value, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return nil, fmt.Errorf("`%s` failed to open file: %v", name, err)
+		return nil, fmt.Errorf("`%s` failed to open file: %w", name, err)
 	}
 	defer file.Close()
 
-	if _, err := file.WriteString(content.Value); err != nil {
-		return nil, fmt.Errorf("`%s` failed to append to file: %v", name, err)
+	if _, err = file.WriteString(content.Value); err != nil {
+		return nil, fmt.Errorf("`%s` failed to append to file: %w", name, err)
 	}
 
 	return runtime.NewNil(), nil
@@ -166,7 +167,7 @@ func fsExists(args ...runtime.Value) (runtime.Value, error) {
 		return runtime.NewBool(false), nil
 	}
 
-	return nil, fmt.Errorf("`%s` failed to check file: %v", name, err)
+	return nil, fmt.Errorf("`%s` failed to check file: %w", name, err)
 }
 
 // fsList implements the directory listing core function.
@@ -185,10 +186,11 @@ func fsList(args ...runtime.Value) (runtime.Value, error) {
 
 	entries, err := os.ReadDir(path.Value)
 	if err != nil {
-		return nil, fmt.Errorf("`%s` failed to list directory: %v", name, err)
+		return nil, fmt.Errorf("`%s` failed to list directory: %w", name, err)
 	}
 
 	elements := make([]runtime.Value, len(entries))
+
 	for i, entry := range entries {
 		elements[i] = runtime.NewString(entry.Name())
 	}
@@ -210,8 +212,8 @@ func fsMkdir(args ...runtime.Value) (runtime.Value, error) {
 		return nil, err
 	}
 
-	if err := os.MkdirAll(path.Value, 0755); err != nil {
-		return nil, fmt.Errorf("`%s` failed to create directory: %v", name, err)
+	if err = os.MkdirAll(path.Value, 0755); err != nil {
+		return nil, fmt.Errorf("`%s` failed to create directory: %w", name, err)
 	}
 
 	return runtime.NewNil(), nil
@@ -236,8 +238,8 @@ func fsMove(args ...runtime.Value) (runtime.Value, error) {
 		return nil, err
 	}
 
-	if err := os.Rename(oldPath.Value, newPath.Value); err != nil {
-		return nil, fmt.Errorf("`%s` failed to move file: %v", name, err)
+	if err = os.Rename(oldPath.Value, newPath.Value); err != nil {
+		return nil, fmt.Errorf("`%s` failed to move file: %w", name, err)
 	}
 
 	return runtime.NewNil(), nil
@@ -257,8 +259,8 @@ func fsDelete(args ...runtime.Value) (runtime.Value, error) {
 		return nil, err
 	}
 
-	if err := os.RemoveAll(path.Value); err != nil {
-		return nil, fmt.Errorf("`%s` failed to delete: %v", name, err)
+	if err = os.RemoveAll(path.Value); err != nil {
+		return nil, fmt.Errorf("`%s` failed to delete: %w", name, err)
 	}
 
 	return runtime.NewNil(), nil
@@ -280,7 +282,7 @@ func fsIsDir(args ...runtime.Value) (runtime.Value, error) {
 
 	info, err := os.Stat(path.Value)
 	if err != nil {
-		return nil, fmt.Errorf("`%s` failed to check path: %v", name, err)
+		return nil, fmt.Errorf("`%s` failed to check path: %w", name, err)
 	}
 
 	return runtime.NewBool(info.IsDir()), nil
@@ -302,7 +304,7 @@ func fsSize(args ...runtime.Value) (runtime.Value, error) {
 
 	info, err := os.Stat(path.Value)
 	if err != nil {
-		return nil, fmt.Errorf("`%s` failed to get file info: %v", name, err)
+		return nil, fmt.Errorf("`%s` failed to get file info: %w", name, err)
 	}
 
 	return runtime.NewNumber(float64(info.Size())), nil
@@ -323,6 +325,7 @@ func fsBasename(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	basename := filepath.Base(path.Value)
+
 	return runtime.NewString(basename), nil
 }
 

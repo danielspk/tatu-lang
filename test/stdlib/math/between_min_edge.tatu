@@ -1,0 +1,5 @@
+; Test between at minimum edge (inclusive)
+
+(math:between 1 1 10)
+
+; Expect: true

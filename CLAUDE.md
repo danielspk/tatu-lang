@@ -99,14 +99,16 @@ Source → Scanner → Parser → Builder → Interpreter → Result
 
 All stdlib functions follow the pattern `namespace:function-name`.
 
-- **`math:`** - Mathematical operations (sqrt, abs, pow, sin, cos, tan, log, exp, floor, ceil, round, min, max, pi, e)
+- **`math:`** - Mathematical operations (sqrt, abs, pow, sin, cos, tan, log, exp, floor, ceil, round, min, max, between, rand, pi, e)
 - **`str:`** - String operations (len, concat, split, join, slice, contains, starts, ends, index, upper, lower, trim, replace, repeat, reverse)
-- **`vec:`** - Vector operations (len, get, set, push, pop, concat, slice, find, contains, delete, reverse)
+- **`vec:`** - Vector operations (len, get, set, push, pop, concat, slice, find, contains, delete, reverse, sort)
 - **`map:`** - Map operations (len, get, set, has, delete, keys, values, merge)
 - **`time:`** - Time operations (now, unix, year, month, day, hour, minute, second, format, parse, add, sub, diff, is-leap)
 - **`json:`** - JSON encoding/decoding (encode, decode)
 - **`fs:`** - File system operations (read, write, append, delete, exists, list, mkdir, move, is-dir, basename, size, temp-dir, read-lines)
+- **`regex:`** - Regular expressions (matches, find, replace)
 - **Type conversion** - to-string, to-number, to-bool
+- **Type checking** - is-bool, is-number, is-int, is-string, is-vector, is-map, is-nil, is-function
 - **Args** - args (command-line arguments)
 
 #### Module System

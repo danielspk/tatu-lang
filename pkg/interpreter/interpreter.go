@@ -36,10 +36,16 @@ func NewInterpreter() (*Interpreter, error) {
 	if err := stdlib.RegisterMath(env); err != nil {
 		return nil, err
 	}
+	if err := stdlib.RegisterRegex(env); err != nil {
+		return nil, err
+	}
 	if err := stdlib.RegisterString(env); err != nil {
 		return nil, err
 	}
 	if err := stdlib.RegisterTime(env); err != nil {
+		return nil, err
+	}
+	if err := stdlib.RegisterTypes(env); err != nil {
 		return nil, err
 	}
 	if err := stdlib.RegisterVector(env); err != nil {

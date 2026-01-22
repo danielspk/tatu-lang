@@ -1,0 +1,5 @@
+; Test regex matches with invalid pattern
+
+(regex:matches "hello" "[invalid")
+
+; Expect Error: invalid regex pattern

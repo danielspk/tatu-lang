@@ -66,7 +66,7 @@ func runSuccessTest(source []byte, filename string) error {
 
 	inter, err := interpreter.NewInterpreter()
 	if err != nil {
-		return fmt.Errorf("creating interpreter: %v", err)
+		return fmt.Errorf("creating interpreter: %w", err)
 	}
 
 	var lastValue runtime.Value
@@ -117,7 +117,7 @@ func runErrorTest(source []byte, filename string) error {
 
 	inter, err := interpreter.NewInterpreter()
 	if err != nil {
-		return fmt.Errorf("creating interpreter: %v", err)
+		return fmt.Errorf("creating interpreter: %w", err)
 	}
 
 	var evalError error

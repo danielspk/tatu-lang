@@ -16,7 +16,7 @@ func RegisterJSON(env *runtime.Environment) error {
 
 	for name, fn := range functions {
 		if _, err := env.Define(name, fn); err != nil {
-			return fmt.Errorf("failed to register json function `%s`: %v", name, err)
+			return fmt.Errorf("failed to register json function `%s`: %w", name, err)
 		}
 	}
 
@@ -34,12 +34,12 @@ func jsonEncode(args ...runtime.Value) (runtime.Value, error) {
 
 	data, err := tatuToJSON(args[0])
 	if err != nil {
-		return nil, fmt.Errorf("`%s` %v", name, err)
+		return nil, fmt.Errorf("`%s` unsupported type: %w", name, err)
 	}
 
 	jsonBytes, err := json.Marshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("`%s` failed to encode: %v", name, err)
+		return nil, fmt.Errorf("`%s` failed to encode: %w", name, err)
 	}
 
 	return runtime.NewString(string(jsonBytes)), nil
@@ -60,13 +60,13 @@ func jsonDecode(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	var data any
-	if err := json.Unmarshal([]byte(str.Value), &data); err != nil {
-		return nil, fmt.Errorf("`%s` failed to decode: %v", name, err)
+	if err = json.Unmarshal([]byte(str.Value), &data); err != nil {
+		return nil, fmt.Errorf("`%s` failed to decode: %w", name, err)
 	}
 
 	result, err := jsonToTatu(data)
 	if err != nil {
-		return nil, fmt.Errorf("`%s` %v", name, err)
+		return nil, fmt.Errorf("`%s` failed to convert: %w", name, err)
 	}
 
 	return result, nil
@@ -86,6 +86,7 @@ func tatuToJSON(value runtime.Value) (any, error) {
 	case runtime.VectorType:
 		vec := value.(runtime.Vector)
 		result := make([]any, len(vec.Elements))
+
 		for i, elem := range vec.Elements {
 			val, err := tatuToJSON(elem)
 			if err != nil {
@@ -97,6 +98,7 @@ func tatuToJSON(value runtime.Value) (any, error) {
 	case runtime.MapType:
 		m := value.(runtime.Map)
 		result := make(map[string]any)
+
 		for key, val := range m.Elements {
 			jsonVal, err := tatuToJSON(val)
 			if err != nil {
@@ -125,6 +127,7 @@ func jsonToTatu(data any) (runtime.Value, error) {
 		return runtime.NewString(v), nil
 	case []any:
 		elements := make([]runtime.Value, len(v))
+
 		for i, item := range v {
 			val, err := jsonToTatu(item)
 			if err != nil {
@@ -135,6 +138,7 @@ func jsonToTatu(data any) (runtime.Value, error) {
 		return runtime.NewVector(elements), nil
 	case map[string]any:
 		elements := make(map[string]runtime.Value)
+
 		for key, value := range v {
 			val, err := jsonToTatu(value)
 			if err != nil {

@@ -1,0 +1,5 @@
+; Test vec:sort with numbers
+
+(vec:sort (vector 3 1 4 1 5 9 2 6))
+
+; Expect: (1 1 2 3 4 5 6 9)

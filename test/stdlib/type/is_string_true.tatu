@@ -1,0 +1,5 @@
+; Test is-string with string value
+
+(is-string "hello")
+
+; Expect: true

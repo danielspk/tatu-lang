@@ -1,0 +1,5 @@
+; Test math:rand returns an integer
+
+(is-int (math:rand 1 100))
+
+; Expect: true

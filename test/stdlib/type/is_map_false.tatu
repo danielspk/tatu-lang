@@ -1,0 +1,5 @@
+; Test is-map with non-map value
+
+(is-map (vector 1 2))
+
+; Expect: false
