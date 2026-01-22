@@ -1,0 +1,5 @@
+; Test day extraction from timestamp
+
+(time:day 1609459200)
+
+; Expect: 1

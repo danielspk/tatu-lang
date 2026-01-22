@@ -1,0 +1,5 @@
+; Test get map core function
+
+(map:get (map "name" "John" "age" 30) "name")
+
+; Expect: John

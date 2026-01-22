@@ -1,0 +1,5 @@
+; Test to-number from string
+
+(to-number "42")
+
+; Expect: 42

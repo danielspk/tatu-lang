@@ -1,0 +1,5 @@
+; Test encode json core function - map
+
+(json:encode (map "name" "Alice" "age" 30))
+
+; Expect: {\"age\":30,\"name\":\"Alice\"}

@@ -1,0 +1,5 @@
+; Test ceil function
+
+(math:ceil 3.2)
+
+; Expect: 4

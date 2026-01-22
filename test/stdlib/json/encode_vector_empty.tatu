@@ -1,0 +1,5 @@
+; Test encode json core function - empty vector
+
+(json:encode (vector))
+
+; Expect: []

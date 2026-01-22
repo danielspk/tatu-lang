@@ -1,0 +1,11 @@
+; Test closure maintaining state
+
+(begin
+  (var counter 0)
+  (var increment (lambda () (set counter (+ counter 1))))
+  (increment)
+  (increment)
+  (increment)
+  counter)
+
+; Expect: 3

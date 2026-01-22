@@ -1,0 +1,5 @@
+; Test to-number from number
+
+(to-number 42)
+
+; Expect: 42

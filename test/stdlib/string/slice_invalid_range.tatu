@@ -1,0 +1,5 @@
+; Test string slice with invalid range
+
+(str:slice "hello" 10 20)
+
+; Expect Error: 

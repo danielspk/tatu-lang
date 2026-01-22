@@ -1,0 +1,5 @@
+; Test ends string core function - suffix found
+
+(str:ends "hello" "lo")
+
+; Expect: true

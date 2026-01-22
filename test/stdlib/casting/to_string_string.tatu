@@ -1,0 +1,5 @@
+; Test to-string from string
+
+(to-string "hello")
+
+; Expect: hello

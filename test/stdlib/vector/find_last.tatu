@@ -1,0 +1,5 @@
+; Test find vector core function - last element
+
+(vec:find (vector 10 20 30 40) 40)
+
+; Expect: 3

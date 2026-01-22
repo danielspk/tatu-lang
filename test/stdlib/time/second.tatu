@@ -1,0 +1,5 @@
+; Test second extraction from timestamp
+
+(time:second 1609466565)
+
+; Expect: 45

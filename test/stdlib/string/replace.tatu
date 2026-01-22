@@ -1,0 +1,5 @@
+; Test replace string core function
+
+(str:replace "hello world" "world" "Go")
+
+; Expect: hello Go

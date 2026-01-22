@@ -1,0 +1,5 @@
+; Test vector index out of bounds
+
+(vec:get (vector 1 2 3) 10)
+
+; Expect Error: index out of bounds

@@ -1,0 +1,5 @@
+; Test reverse vector core function - single element
+
+(vec:reverse (vector 10))
+
+; Expect: (10)

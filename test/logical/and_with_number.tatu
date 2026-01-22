@@ -1,0 +1,5 @@
+; Test and with number instead of bool
+
+(and true 42)
+
+; Expect Error: 

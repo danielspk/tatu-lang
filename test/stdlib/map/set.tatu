@@ -1,0 +1,8 @@
+; Test set map core function
+
+(begin
+  (var m (map "name" "John"))
+  (map:set m "age" 30)
+  (map:get m "age"))
+
+; Expect: 30

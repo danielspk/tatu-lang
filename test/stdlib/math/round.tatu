@@ -1,0 +1,5 @@
+; Test round function
+
+(math:round 3.5)
+
+; Expect: 4

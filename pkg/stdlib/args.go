@@ -24,6 +24,21 @@ func expectNumber(name string, argIndex int, arg runtime.Value) (runtime.Number,
 	return arg.(runtime.Number), nil
 }
 
+// expectIntegerNumber validates that an argument is a NUMBER with an integer value and returns it.
+func expectIntegerNumber(name string, argIndex int, arg runtime.Value) (runtime.Number, error) {
+	num, err := expectNumber(name, argIndex, arg)
+	if err != nil {
+		return runtime.Number{}, err
+	}
+
+	index := int(num.Value)
+	if float64(index) != num.Value {
+		return runtime.Number{}, fmt.Errorf("`%s` expects integer NUMBER at argument %d, got %f", name, argIndex+1, num.Value)
+	}
+
+	return arg.(runtime.Number), nil
+}
+
 // expectString validates that an argument is STRING and returns it.
 func expectString(name string, argIndex int, arg runtime.Value) (runtime.String, error) {
 	if arg.Type() != runtime.StringType {
@@ -31,15 +46,6 @@ func expectString(name string, argIndex int, arg runtime.Value) (runtime.String,
 	}
 
 	return arg.(runtime.String), nil
-}
-
-// expectBool validates that an argument is BOOL and returns it.
-func expectBool(name string, argIndex int, arg runtime.Value) (runtime.Bool, error) {
-	if arg.Type() != runtime.BoolType {
-		return runtime.Bool{}, fmt.Errorf("`%s` expects BOOL at argument %d, got %s", name, argIndex+1, arg.Type())
-	}
-
-	return arg.(runtime.Bool), nil
 }
 
 // expectVector validates that an argument is VECTOR and returns it.

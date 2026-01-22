@@ -1,0 +1,5 @@
+; Test find vector core function - first element
+
+(vec:find (vector 10 20 30) 10)
+
+; Expect: 0

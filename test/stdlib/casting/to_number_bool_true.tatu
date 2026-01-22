@@ -1,0 +1,5 @@
+; Test to-number from bool true
+
+(to-number true)
+
+; Expect: 1

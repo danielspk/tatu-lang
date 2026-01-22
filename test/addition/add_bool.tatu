@@ -1,0 +1,5 @@
+; Test addition with bool
+
+(+ 5 true)
+
+; Expect Error: 

@@ -1,0 +1,5 @@
+; Test encode json core function - boolean true
+
+(json:encode true)
+
+; Expect: true

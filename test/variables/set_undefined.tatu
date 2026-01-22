@@ -1,0 +1,5 @@
+; Test set on undefined variable
+
+(set undefined_var 42)
+
+; Expect Error: 

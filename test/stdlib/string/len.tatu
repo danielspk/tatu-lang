@@ -1,0 +1,5 @@
+; Test len string core function
+
+(str:len "hello")
+
+; Expect: 5

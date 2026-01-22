@@ -1,0 +1,5 @@
+; Test floor function - negative number
+
+(math:floor -3.2)
+
+; Expect: -4

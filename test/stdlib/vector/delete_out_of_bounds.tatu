@@ -1,0 +1,5 @@
+; Test vector delete out of bounds
+
+(vec:delete (vector 1 2 3) 10)
+
+; Expect Error: index out of bounds

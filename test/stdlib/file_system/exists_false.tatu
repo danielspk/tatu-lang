@@ -1,0 +1,5 @@
+; Test file exists false
+
+(fs:exists "stdlib/file_system/fixtures/nonexistent.txt")
+
+; Expect: false

@@ -1,0 +1,9 @@
+; Test closure with modified outer variable
+
+(begin
+  (var x 10)
+  (var f (lambda () x))
+  (set x 20)
+  (f))
+
+; Expect: 20

@@ -1,0 +1,5 @@
+; Test to-bool from bool
+
+(to-bool true)
+
+; Expect: true

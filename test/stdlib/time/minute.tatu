@@ -1,0 +1,5 @@
+; Test minute extraction from timestamp
+
+(time:minute 1609466565)
+
+; Expect: 2

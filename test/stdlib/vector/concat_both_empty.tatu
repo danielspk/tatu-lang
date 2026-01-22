@@ -1,0 +1,5 @@
+; Test concat vector core function - both empty
+
+(vec:concat (vector) (vector))
+
+; Expect: ()

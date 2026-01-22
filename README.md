@@ -36,8 +36,7 @@ _Tatu_ is a programming language with the following features:
 
 ### TODOs
 
-- ⚠️ Extend the Standard Library _(Math/String/DateTime/Vector/HashMap/IO)_
-- ⚠️ Add a Compiler and Virtual Machine
+- ⚠️ Finish the Compiler and Virtual Machine.
 
 ---
 

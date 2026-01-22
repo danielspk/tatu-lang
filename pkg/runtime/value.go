@@ -3,6 +3,7 @@ package runtime
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 
 	"github.com/danielspk/tatu-lang/pkg/ast"
@@ -47,16 +48,18 @@ func (n Number) Type() ValueType {
 
 // String returns the string representation of the number value.
 func (n Number) String() string {
-	// normalize -0 to 0 because is an IEEE 754 valid number
 	if n.Value == 0 {
 		return "0"
 	}
 
-	// hack to limit max 10 decimal places and remove trailing zeros
+	if n.Value == math.Trunc(n.Value) {
+		return fmt.Sprintf("%.0f", n.Value)
+	}
+
 	formatted := fmt.Sprintf("%.10f", n.Value)
 	value, _ := strconv.ParseFloat(formatted, 64)
 
-	return fmt.Sprintf("%v", value)
+	return fmt.Sprintf("%g", value)
 }
 
 // String represents a value of a string type.

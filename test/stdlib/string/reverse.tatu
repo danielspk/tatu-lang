@@ -1,0 +1,5 @@
+; Test reverse string core function
+
+(str:reverse "hello")
+
+; Expect: olleh

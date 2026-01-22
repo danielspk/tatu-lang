@@ -1,0 +1,5 @@
+; Test has map core function - key exists
+
+(map:has (map "name" "John" "age" 30) "name")
+
+; Expect: true

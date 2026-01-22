@@ -1,0 +1,5 @@
+; Test to-number from nil
+
+(to-number nil)
+
+; Expect: 0

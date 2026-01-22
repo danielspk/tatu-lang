@@ -1,0 +1,5 @@
+; Test e constant
+
+(math:e)
+
+; Expect: 2.7182818285

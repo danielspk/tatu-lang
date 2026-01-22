@@ -1,0 +1,5 @@
+; Test list directory contents
+
+(vec:len (fs:list "stdlib/file_system/fixtures"))
+
+; Expect: 2

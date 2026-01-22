@@ -1,0 +1,5 @@
+; Test decode json core function - string
+
+(vec:get (json:decode "[\"world\"]") 0)
+
+; Expect: world

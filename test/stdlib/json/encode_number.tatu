@@ -1,0 +1,5 @@
+; Test encode json core function - number
+
+(json:encode 42)
+
+; Expect: 42

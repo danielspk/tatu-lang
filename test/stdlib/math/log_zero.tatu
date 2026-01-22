@@ -1,0 +1,5 @@
+; Test log of zero
+
+(math:log 0)
+
+; Expect Error: 

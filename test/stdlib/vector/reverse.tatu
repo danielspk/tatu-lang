@@ -1,0 +1,5 @@
+; Test reverse vector core function
+
+(vec:reverse (vector 10 20 30 40))
+
+; Expect: (40 30 20 10)

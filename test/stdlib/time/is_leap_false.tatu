@@ -1,0 +1,5 @@
+; Test leap year check - false
+
+(time:is-leap 2023)
+
+; Expect: false

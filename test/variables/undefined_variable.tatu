@@ -1,0 +1,5 @@
+; Test undefined variable
+
+undefined_var
+
+; Expect Error: unknown symbol `undefined_var`

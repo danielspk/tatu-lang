@@ -1,0 +1,11 @@
+; Test append to file
+
+(begin
+  (var temp-path (str:concat (fs:temp-dir) "/tatu-test-append.txt"))
+  (fs:write temp-path "first")
+  (fs:append temp-path " second")
+  (var result (fs:read temp-path))
+  (fs:delete temp-path)
+  result)
+
+; Expect: first second

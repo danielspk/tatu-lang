@@ -21,13 +21,28 @@ type Interpreter struct {
 func NewInterpreter() (*Interpreter, error) {
 	env := runtime.NewEnvironment(nil, nil)
 
-	if err := stdlib.RegisterMath(env); err != nil {
+	if err := stdlib.RegisterCasting(env); err != nil {
 		return nil, err
 	}
-	if err := stdlib.RegisterVector(env); err != nil {
+	if err := stdlib.RegisterFileSystem(env); err != nil {
+		return nil, err
+	}
+	if err := stdlib.RegisterJSON(env); err != nil {
 		return nil, err
 	}
 	if err := stdlib.RegisterMap(env); err != nil {
+		return nil, err
+	}
+	if err := stdlib.RegisterMath(env); err != nil {
+		return nil, err
+	}
+	if err := stdlib.RegisterString(env); err != nil {
+		return nil, err
+	}
+	if err := stdlib.RegisterTime(env); err != nil {
+		return nil, err
+	}
+	if err := stdlib.RegisterVector(env); err != nil {
 		return nil, err
 	}
 

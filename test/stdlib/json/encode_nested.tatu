@@ -1,0 +1,5 @@
+; Test encode json core function - nested structure
+
+(json:encode (map "user" (map "name" "Bob" "scores" (vector 85 90 95))))
+
+; Expect: {\"user\":{\"name\":\"Bob\",\"scores\":[85,90,95]}}

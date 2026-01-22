@@ -1,0 +1,5 @@
+; Test concat string core function
+
+(str:concat "hello" " " "world")
+
+; Expect: hello world

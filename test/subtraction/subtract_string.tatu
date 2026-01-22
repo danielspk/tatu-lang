@@ -1,0 +1,5 @@
+; Test subtraction with string
+
+(- 10 "5")
+
+; Expect Error: 

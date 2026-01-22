@@ -1,0 +1,5 @@
+; Test to-bool from nil
+
+(to-bool nil)
+
+; Expect: false

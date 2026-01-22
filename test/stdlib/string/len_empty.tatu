@@ -1,0 +1,5 @@
+; Test len string core function - empty string
+
+(str:len "")
+
+; Expect: 0

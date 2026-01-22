@@ -1,0 +1,5 @@
+; Test temp dir returns non-empty string
+
+(to-bool (fs:temp-dir))
+
+; Expect: true

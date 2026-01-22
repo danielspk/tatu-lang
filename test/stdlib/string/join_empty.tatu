@@ -1,0 +1,5 @@
+; Test join string core function - empty separator
+
+(str:join (vector "hello" "world") "")
+
+; Expect: helloworld

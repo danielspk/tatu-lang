@@ -1,0 +1,5 @@
+; Test delete vector core function
+
+(vec:delete (vector 10 20 30 40 50) 2)
+
+; Expect: (10 20 40 50)

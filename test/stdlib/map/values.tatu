@@ -1,0 +1,5 @@
+; Test values map core function
+
+(vec:len (map:values (map "a" 1 "b" 2 "c" 3)))
+
+; Expect: 3

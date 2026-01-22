@@ -1,0 +1,5 @@
+; Test join string core function
+
+(str:join (vector "a" "b" "c") ",")
+
+; Expect: a,b,c

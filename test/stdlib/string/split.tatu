@@ -1,0 +1,5 @@
+; Test split string core function
+
+(vec:len (str:split "a,b,c" ","))
+
+; Expect: 3

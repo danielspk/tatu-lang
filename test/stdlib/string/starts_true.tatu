@@ -1,0 +1,5 @@
+; Test starts string core function - prefix found
+
+(str:starts "hello" "he")
+
+; Expect: true

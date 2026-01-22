@@ -1,0 +1,5 @@
+; Test ends string core function - suffix not found
+
+(str:ends "hello" "he")
+
+; Expect: false

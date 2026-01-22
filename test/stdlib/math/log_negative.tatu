@@ -1,0 +1,5 @@
+; Test log of negative number
+
+(math:log -5)
+
+; Expect Error: requires a positive number

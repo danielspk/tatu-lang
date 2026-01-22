@@ -1,0 +1,5 @@
+; Test set vector core function
+
+(vec:set (vector 10 20 30 40) 2 50)
+
+; Expect: (10 20 50 40)

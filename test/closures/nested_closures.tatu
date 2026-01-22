@@ -1,0 +1,12 @@
+; Test nested closures
+
+(begin
+  (var x 10)
+  (var outer (lambda ()
+    (begin
+      (var y 5)
+      (var inner (lambda () (+ x y)))
+      (inner))))
+  (outer))
+
+; Expect: 15

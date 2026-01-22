@@ -1,0 +1,5 @@
+; Test contains string core function - substring found
+
+(str:contains "hello world" "world")
+
+; Expect: true

@@ -1,0 +1,5 @@
+; Test month extraction from timestamp
+
+(time:month 1609459200)
+
+; Expect: 1

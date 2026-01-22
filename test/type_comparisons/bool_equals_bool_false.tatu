@@ -1,0 +1,5 @@
+; Test bool equals bool false
+
+(= true false)
+
+; Expect: false

@@ -1,0 +1,5 @@
+; Test to-number from string float
+
+(to-number "3.14")
+
+; Expect: 3.14

@@ -1,0 +1,5 @@
+; Test upper string core function
+
+(str:upper "hello")
+
+; Expect: HELLO

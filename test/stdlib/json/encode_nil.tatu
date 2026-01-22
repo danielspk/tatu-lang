@@ -1,0 +1,5 @@
+; Test encode json core function - nil
+
+(json:encode nil)
+
+; Expect: null

@@ -1,0 +1,5 @@
+; Test min function
+
+(math:min 3 5)
+
+; Expect: 3

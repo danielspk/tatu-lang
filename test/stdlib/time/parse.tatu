@@ -1,0 +1,5 @@
+; Test time parsing
+
+(time:parse "2021-01-01" "2006-01-02")
+
+; Expect: 1609459200

@@ -1,0 +1,5 @@
+; Test file size
+
+(fs:size "stdlib/file_system/fixtures/sample.txt")
+
+; Expect: 11

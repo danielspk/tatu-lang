@@ -1,0 +1,5 @@
+; Test cos function
+
+(math:cos 0)
+
+; Expect: 1

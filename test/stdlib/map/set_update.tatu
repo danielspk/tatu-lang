@@ -1,0 +1,8 @@
+; Test set map core function - update existing key
+
+(begin
+  (var m (map "name" "John"))
+  (map:set m "name" "Jane")
+  (map:get m "name"))
+
+; Expect: Jane

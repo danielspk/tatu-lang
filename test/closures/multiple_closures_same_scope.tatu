@@ -1,0 +1,12 @@
+; Test multiple closures sharing same outer scope
+
+(begin
+  (var x 0)
+  (var inc (lambda () (set x (+ x 1))))
+  (var dec (lambda () (set x (- x 1))))
+  (inc)
+  (inc)
+  (dec)
+  x)
+
+; Expect: 1

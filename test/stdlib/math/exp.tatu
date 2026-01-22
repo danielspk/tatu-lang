@@ -1,0 +1,5 @@
+; Test exp function
+
+(math:exp 1)
+
+; Expect: 2.7182818285

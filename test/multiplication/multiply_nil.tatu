@@ -1,0 +1,5 @@
+; Test multiplication with nil
+
+(* 5 nil)
+
+; Expect Error: 

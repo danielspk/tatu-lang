@@ -1,0 +1,5 @@
+; Test concat vector core function
+
+(vec:concat (vector 10 20 30) (vector 40 50))
+
+; Expect: (10 20 30 40 50)

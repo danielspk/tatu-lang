@@ -1,0 +1,5 @@
+; Test basename extraction
+
+(fs:basename "stdlib/file_system/fixtures/sample.txt")
+
+; Expect: sample.txt

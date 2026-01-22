@@ -1,0 +1,8 @@
+; Test delete map core function - nonexistent key
+
+(begin
+  (var m (map "name" "John"))
+  (map:delete m "age")
+  (map:len m))
+
+; Expect: 1

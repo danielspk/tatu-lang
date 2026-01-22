@@ -1,0 +1,5 @@
+; Test max function - negative numbers
+
+(math:max -3 -5)
+
+; Expect: -3

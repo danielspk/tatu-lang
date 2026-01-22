@@ -1,0 +1,5 @@
+; Test slice vector core function
+
+(vec:slice (vector 10 20 30 40 50) 1 4)
+
+; Expect: (20 30 40)

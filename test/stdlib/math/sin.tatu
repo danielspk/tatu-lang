@@ -1,0 +1,5 @@
+; Test sin function
+
+(math:sin 0)
+
+; Expect: 0

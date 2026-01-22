@@ -1,0 +1,5 @@
+; Test log function
+
+(math:log (math:e))
+
+; Expect: 1

@@ -1,0 +1,5 @@
+; Test get map core function - key not found
+
+(map:get (map "name" "John") "age")
+
+; Expect: <nil>

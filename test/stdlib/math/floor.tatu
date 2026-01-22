@@ -1,0 +1,5 @@
+; Test floor function
+
+(math:floor 3.7)
+
+; Expect: 3

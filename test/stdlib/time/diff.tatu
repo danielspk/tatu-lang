@@ -1,0 +1,5 @@
+; Test time difference
+
+(time:diff 1609462800 1609459200)
+
+; Expect: 3600

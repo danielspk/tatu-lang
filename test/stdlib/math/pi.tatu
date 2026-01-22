@@ -1,0 +1,5 @@
+; Test pi constant
+
+(math:pi)
+
+; Expect: 3.1415926536

@@ -1,0 +1,5 @@
+; Test contains vector core function - element not found
+
+(vec:contains (vector 10 20 30 40) 99)
+
+; Expect: false

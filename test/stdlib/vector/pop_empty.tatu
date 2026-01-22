@@ -1,0 +1,5 @@
+; Test pop from empty vector
+
+(vec:pop (vector))
+
+; Expect Error: cannot pop from empty vector

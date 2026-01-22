@@ -1,0 +1,5 @@
+; Test to-bool from non-empty string
+
+(to-bool "hello")
+
+; Expect: true

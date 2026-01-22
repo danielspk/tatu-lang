@@ -1,0 +1,9 @@
+; Test closure capturing multiple outer variables
+
+(begin
+  (var x 5)
+  (var y 10)
+  (var f (lambda () (+ x y)))
+  (f))
+
+; Expect: 15

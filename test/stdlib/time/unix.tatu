@@ -1,0 +1,5 @@
+; Test unix timestamp passthrough
+
+(time:unix 1609459200)
+
+; Expect: 1609459200

@@ -1,0 +1,5 @@
+; Test slice string core function - full string
+
+(str:slice "hello" 0 5)
+
+; Expect: hello

@@ -1,0 +1,5 @@
+; Test to-string from bool true
+
+(to-string true)
+
+; Expect: true

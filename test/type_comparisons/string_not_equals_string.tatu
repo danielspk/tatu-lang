@@ -1,0 +1,5 @@
+; Test string not equals string
+
+(= "hello" "world")
+
+; Expect: false

@@ -1,0 +1,5 @@
+; Test lower string core function
+
+(str:lower "HELLO")
+
+; Expect: hello

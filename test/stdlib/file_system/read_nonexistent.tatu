@@ -1,0 +1,5 @@
+; Test reading nonexistent file
+
+(fs:read "nonexistent_file_12345.txt")
+
+; Expect Error: 

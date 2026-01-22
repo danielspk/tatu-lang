@@ -1,0 +1,5 @@
+; Test trim string core function
+
+(str:trim "  hello  ")
+
+; Expect: hello

@@ -14,6 +14,7 @@ import (
 )
 
 const expectPrefix = "; Expect: "
+const expectErrorPrefix = "; Expect Error: "
 
 func TestPrograms(t *testing.T) {
 	var files []string
@@ -49,6 +50,14 @@ func TestPrograms(t *testing.T) {
 }
 
 func runTestSource(source []byte, filename string) error {
+	if strings.Contains(string(source), expectErrorPrefix) {
+		return runErrorTest(source, filename)
+	}
+
+	return runSuccessTest(source, filename)
+}
+
+func runSuccessTest(source []byte, filename string) error {
 	progBuilder := builder.NewProgramBuilder(builder.NewDefaultScanner(), builder.NewDefaultParser())
 	_, ast, err := progBuilder.BuildFromFile(filename)
 	if err != nil {
@@ -94,6 +103,56 @@ func runTestSource(source []byte, filename string) error {
 
 	if checkValue != string(source[startIdx:endIdx]) {
 		return fmt.Errorf("expected: `%s`, found: `%s`", string(source[startIdx:endIdx]), checkValue)
+	}
+
+	return nil
+}
+
+func runErrorTest(source []byte, filename string) error {
+	progBuilder := builder.NewProgramBuilder(builder.NewDefaultScanner(), builder.NewDefaultParser())
+	_, ast, err := progBuilder.BuildFromFile(filename)
+	if err != nil {
+		return fmt.Errorf("building source: %w", err)
+	}
+
+	inter, err := interpreter.NewInterpreter()
+	if err != nil {
+		return fmt.Errorf("creating interpreter: %v", err)
+	}
+
+	var evalError error
+	for _, expr := range ast.Program {
+		_, evalError = inter.Eval(expr, nil)
+		if evalError != nil {
+			break
+		}
+	}
+
+	if evalError == nil {
+		return errors.New("expected error but program succeeded")
+	}
+
+	startIdx := strings.Index(string(source), expectErrorPrefix)
+	if startIdx == -1 {
+		return nil
+	}
+
+	startIdx += len(expectErrorPrefix)
+
+	endIdx := strings.Index(string(source[startIdx:]), "\n")
+	if endIdx == -1 {
+		endIdx = len(source) - startIdx
+	}
+
+	expectedError := strings.TrimSpace(string(source[startIdx : startIdx+endIdx]))
+
+	if expectedError == "" {
+		return nil
+	}
+
+	actualError := evalError.Error()
+	if !strings.Contains(actualError, expectedError) {
+		return fmt.Errorf("expected error containing: `%s`, found: `%s`", expectedError, actualError)
 	}
 
 	return nil

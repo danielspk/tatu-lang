@@ -1,0 +1,5 @@
+; Test pop vector core function
+
+(vec:pop (vector 10 20 30 40))
+
+; Expect: (10 20 30)

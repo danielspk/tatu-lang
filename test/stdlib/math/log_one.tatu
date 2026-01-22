@@ -1,0 +1,5 @@
+; Test log function - log of 1
+
+(math:log 1)
+
+; Expect: 0

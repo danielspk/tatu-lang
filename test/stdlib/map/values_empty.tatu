@@ -1,0 +1,5 @@
+; Test values map core function - empty map
+
+(map:values (map))
+
+; Expect: ()

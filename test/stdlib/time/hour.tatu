@@ -1,0 +1,5 @@
+; Test hour extraction from timestamp
+
+(time:hour 1609466565)
+
+; Expect: 2

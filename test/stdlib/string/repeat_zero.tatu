@@ -1,0 +1,5 @@
+; Test repeat string core function - zero times
+
+(str:repeat "ha" 0)
+
+; Expect: 

@@ -1,0 +1,5 @@
+; Test comparison between string and number
+
+(> "hello" 5)
+
+; Expect Error: 

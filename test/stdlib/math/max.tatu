@@ -1,0 +1,5 @@
+; Test max function
+
+(math:max 3 5)
+
+; Expect: 5

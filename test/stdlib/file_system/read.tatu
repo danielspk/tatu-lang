@@ -1,0 +1,5 @@
+; Test read file
+
+(fs:read "stdlib/file_system/fixtures/sample.txt")
+
+; Expect: hello world

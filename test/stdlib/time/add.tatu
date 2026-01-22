@@ -1,0 +1,5 @@
+; Test time addition
+
+(time:add 1609459200 3600)
+
+; Expect: 1609462800

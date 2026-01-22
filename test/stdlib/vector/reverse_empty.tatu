@@ -1,0 +1,5 @@
+; Test reverse vector core function - empty vector
+
+(vec:reverse (vector))
+
+; Expect: ()

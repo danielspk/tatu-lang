@@ -1,0 +1,5 @@
+; Test string repeat with negative count
+
+(str:repeat "hello" -1)
+
+; Expect Error: 

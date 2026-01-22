@@ -1,0 +1,12 @@
+; Test JSON encode with deeply nested objects
+
+(begin
+  (var result (json:encode
+    (map
+      "data" (map
+        "items" (vector 1 2 3)
+        "count" 3))))
+  (var decoded (json:decode result))
+  (map:get (map:get decoded "data") "count"))
+
+; Expect: 3

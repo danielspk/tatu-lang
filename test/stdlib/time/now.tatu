@@ -1,0 +1,5 @@
+; Test current timestamp is greater than test creation date
+
+(> (time:now) 1769040757)
+
+; Expect: true

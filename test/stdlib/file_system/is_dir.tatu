@@ -1,0 +1,5 @@
+; Test is directory
+
+(fs:is-dir "stdlib/file_system/fixtures")
+
+; Expect: true

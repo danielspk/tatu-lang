@@ -1,0 +1,9 @@
+; Test merge map core function
+
+(begin
+  (var m1 (map "a" 1 "b" 2))
+  (var m2 (map "c" 3 "d" 4))
+  (map:merge m1 m2)
+  (map:len m1))
+
+; Expect: 4

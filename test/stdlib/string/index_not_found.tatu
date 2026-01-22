@@ -1,0 +1,5 @@
+; Test index string core function - substring not found
+
+(str:index "hello" "xyz")
+
+; Expect: -1

@@ -1,0 +1,5 @@
+; Test comparison between nil and number
+
+(< nil 10)
+
+; Expect Error: 

@@ -1,0 +1,5 @@
+; Test sqrt of negative number
+
+(math:sqrt -1)
+
+; Expect Error: cannot compute a negative number

@@ -1,0 +1,5 @@
+; Test or with string instead of bool
+
+(or false "hello")
+
+; Expect Error: 

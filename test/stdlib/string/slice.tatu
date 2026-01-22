@@ -1,0 +1,5 @@
+; Test slice string core function
+
+(str:slice "hello" 1 4)
+
+; Expect: ell

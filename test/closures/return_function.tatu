@@ -1,0 +1,9 @@
+; Test function returning a closure
+
+(begin
+  (var make-adder (lambda (x)
+    (lambda (y) (+ x y))))
+  (var add5 (make-adder 5))
+  (add5 10))
+
+; Expect: 15

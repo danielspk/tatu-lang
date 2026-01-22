@@ -1,0 +1,5 @@
+; Test read file lines
+
+(vec:get (fs:read-lines "stdlib/file_system/fixtures/lines.txt") 0)
+
+; Expect: line1

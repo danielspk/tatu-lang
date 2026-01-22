@@ -1,0 +1,5 @@
+; Test year extraction from timestamp
+
+(time:year 1609459200)
+
+; Expect: 2021

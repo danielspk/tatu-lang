@@ -1,0 +1,5 @@
+; Test get vector core function
+
+(vec:get (vector 10 20 30 40) 2)
+
+; Expect: 30

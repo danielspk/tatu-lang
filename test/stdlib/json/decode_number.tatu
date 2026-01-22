@@ -1,0 +1,5 @@
+; Test decode json core function - number
+
+(json:decode "42")
+
+; Expect: 42

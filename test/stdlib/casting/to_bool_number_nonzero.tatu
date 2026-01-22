@@ -1,0 +1,5 @@
+; Test to-bool from number non-zero
+
+(to-bool 42)
+
+; Expect: true

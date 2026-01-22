@@ -1,0 +1,5 @@
+; Test division by zero
+
+(/ 10 0)
+
+; Expect Error: division by zero

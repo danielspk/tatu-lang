@@ -1,0 +1,5 @@
+; Test nil equals nil
+
+(= nil nil)
+
+; Expect: true

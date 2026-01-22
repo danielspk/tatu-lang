@@ -1,0 +1,8 @@
+; Test delete map core function
+
+(begin
+  (var m (map "name" "John" "age" 30))
+  (map:delete m "age")
+  (map:len m))
+
+; Expect: 1

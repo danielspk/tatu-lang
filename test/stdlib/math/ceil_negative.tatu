@@ -1,0 +1,5 @@
+; Test ceil function - negative number
+
+(math:ceil -3.7)
+
+; Expect: -3

@@ -1,0 +1,5 @@
+; Test concat string core function - no arguments
+
+(str:concat)
+
+; Expect: 

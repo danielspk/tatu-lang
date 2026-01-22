@@ -1,0 +1,5 @@
+; Test contains string core function - substring not found
+
+(str:contains "hello" "xyz")
+
+; Expect: false

@@ -1,0 +1,5 @@
+; Test JSON decode with invalid JSON
+
+(json:decode "{invalid json")
+
+; Expect Error: 

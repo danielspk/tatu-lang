@@ -1,0 +1,12 @@
+; Test move file
+
+(begin
+  (var temp-path1 (str:concat (fs:temp-dir) "/tatu-test-move1.txt"))
+  (var temp-path2 (str:concat (fs:temp-dir) "/tatu-test-move2.txt"))
+  (fs:write temp-path1 "movable")
+  (fs:move temp-path1 temp-path2)
+  (var result (fs:read temp-path2))
+  (fs:delete temp-path2)
+  result)
+
+; Expect: movable

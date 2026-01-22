@@ -1,0 +1,5 @@
+; Test push vector core function - empty vector
+
+(vec:push (vector) 10)
+
+; Expect: (10)

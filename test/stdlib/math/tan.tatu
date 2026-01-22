@@ -1,0 +1,5 @@
+; Test tan function
+
+(math:tan 0)
+
+; Expect: 0

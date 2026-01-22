@@ -1,0 +1,9 @@
+; Test merge map core function - override existing keys
+
+(begin
+  (var m1 (map "a" 1 "b" 2))
+  (var m2 (map "b" 99))
+  (map:merge m1 m2)
+  (map:get m1 "b"))
+
+; Expect: 99

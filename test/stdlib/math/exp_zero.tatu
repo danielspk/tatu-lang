@@ -1,0 +1,5 @@
+; Test exp function - exp of 0
+
+(math:exp 0)
+
+; Expect: 1

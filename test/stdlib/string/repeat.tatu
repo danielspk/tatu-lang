@@ -1,0 +1,5 @@
+; Test repeat string core function
+
+(str:repeat "ha" 3)
+
+; Expect: hahaha

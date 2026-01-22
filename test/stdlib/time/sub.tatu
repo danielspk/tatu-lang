@@ -1,0 +1,5 @@
+; Test time subtraction
+
+(time:sub 1609459200 3600)
+
+; Expect: 1609455600

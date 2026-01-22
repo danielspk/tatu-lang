@@ -1,0 +1,5 @@
+; Test encode json core function - string
+
+(json:encode "hello")
+
+; Expect: \"hello\"

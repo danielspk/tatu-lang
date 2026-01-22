@@ -1,0 +1,5 @@
+; Test contains vector core function - string element
+
+(vec:contains (vector "apple" "banana" "orange") "banana")
+
+; Expect: true
