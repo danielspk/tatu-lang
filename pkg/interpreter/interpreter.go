@@ -3,6 +3,7 @@ package interpreter
 
 import (
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/danielspk/tatu-lang/pkg/ast"
@@ -145,7 +146,7 @@ func (i *Interpreter) evalList(expr ast.SExpr, env *runtime.Environment) (runtim
 		switch exprSymbol.Symbol {
 		case "+":
 			return i.evalPlusSymbol(exprList, env)
-		case "-", "*", "/":
+		case "-", "*", "/", "%":
 			return i.evalMathSymbol(exprList, env)
 		case "=", ">", ">=", "<", "<=", "and", "or":
 			return i.evalLogicalSymbol(exprList, env)
@@ -238,6 +239,10 @@ func (i *Interpreter) evalMathSymbol(expr ast.SExpr, env *runtime.Environment) (
 		results = append(results, result)
 	}
 
+	if operator == "%" && len(results) != 2 {
+		return nil, i.error("invalid operands length for modulo operator", expr.Location())
+	}
+
 	total := results[0].(runtime.Number).Value
 
 	if len(results) == 1 {
@@ -262,6 +267,12 @@ func (i *Interpreter) evalMathSymbol(expr ast.SExpr, env *runtime.Environment) (
 			}
 
 			total /= value
+		case "%":
+			if value == 0 {
+				return nil, i.error("modulo by zero", expr.Location())
+			}
+
+			total = math.Mod(total, value)
 		}
 	}
 

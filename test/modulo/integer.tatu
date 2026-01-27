@@ -1,0 +1,5 @@
+; Test modulo with integers
+
+(% 10 3)
+
+; Expect: 1

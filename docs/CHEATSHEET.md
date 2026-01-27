@@ -16,7 +16,9 @@ symbol      ; symbol/identifier
 ### Lists (S-expressions)
 ```lisp
 (operator arg1 arg2 ...)
+
 (+ 1 2 3)
+
 (print "hello")
 ```
 
@@ -29,13 +31,15 @@ symbol      ; symbol/identifier
 
 ```lisp
 (var name value)           ; define variable
+
 (set name new-value)       ; assign to variable
 ```
 
 ## Functions
 
 ```lisp
-(lambda (x y) body)        ; anonymous function
+(lambda (params) body)     ; anonymous function
+
 (def name (params) body)   ; define function (sugar)
 ```
 
@@ -43,8 +47,8 @@ symbol      ; symbol/identifier
 
 ```lisp
 (if condition 
-    then-expr 
-    else-expr)
+    then 
+    else)
 
 (while condition
     body)
@@ -56,7 +60,7 @@ symbol      ; symbol/identifier
 (switch
     (cond1 result1)
     (cond2 result2)
-    (default result))
+    (default result3))
 
 (begin 
     expr1
@@ -72,7 +76,8 @@ symbol      ; symbol/identifier
 (+ a b ...)            ; addition
 (- a b ...)            ; subtraction
 (* a b ...)            ; multiplication
-(/ a b)                ; division
+(/ a b ...)            ; division
+(% a b)                ; modulo
 (- x)                  ; unary negation
 
 ; Comparison
@@ -129,7 +134,8 @@ symbol      ; symbol/identifier
     inc)
 
 ; expands to:
-(begin init 
+(begin
+    init 
     (while cond 
         (begin
             body
@@ -141,12 +147,12 @@ symbol      ; symbol/identifier
 (switch
     (cond1 result1)
     (cond2 result2)
-    (default result))
+    (default result3))
 
 ; expands to
 (if cond1 result1
 (if cond2 result2
-          default))
+          result3))
 
 ```
 
@@ -307,18 +313,22 @@ symbol      ; symbol/identifier
 (args)  ; Returns vector of command-line arguments
 ```
 
-## Example
+## Examples
 
 ```lisp
 ; Factorial with tail recursion
+
 (def factorial (n acc)
   (if (= n 0)
     acc
     (recur (- n 1) (* acc n))))
 
 (factorial 5 1)
+```
 
+```lisp
 ; Filter numbers in range
+
 (def filter-range (numbers min max)
   (var result (vector))
   (var i 0)

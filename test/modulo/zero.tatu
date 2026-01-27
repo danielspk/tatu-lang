@@ -1,0 +1,5 @@
+; Test modulo by zero should error
+
+(% 10 0)
+
+; Expect Error: modulo by zero

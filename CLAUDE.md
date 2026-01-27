@@ -91,6 +91,7 @@ Source → Scanner → Parser → Builder → Interpreter → Result
   - `-` - Subtraction
   - `*` - Multiplication
   - `/` - Division
+  - `%` - Modulo (remainder of division)
 - **Comparison**: `>`, `>=`, `<`, `<=`, `=`
 - **Logical**: `and`, `or`
 - **I/O**: `print` - Print values to stdout

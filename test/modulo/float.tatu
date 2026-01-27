@@ -1,0 +1,5 @@
+; Test modulo with floats
+
+(% 10.5 3.2)
+
+; Expect: 0.9

@@ -1,0 +1,5 @@
+; Test modulo with mixed integer and float
+
+(% 10 3.5)
+
+; Expect: 3
