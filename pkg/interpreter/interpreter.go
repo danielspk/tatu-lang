@@ -64,6 +64,21 @@ func (i *Interpreter) Eval(expr ast.SExpr, env *runtime.Environment) (runtime.Va
 	return i.eval(expr, env)
 }
 
+// EvalProgram evaluates an AST and returns the resulting value.
+func (i *Interpreter) EvalProgram(ast *ast.AST, env *runtime.Environment) (runtime.Value, error) {
+	var lastValue runtime.Value
+	var err error
+
+	for _, expr := range ast.Program {
+		lastValue, err = i.eval(expr, env)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return lastValue, nil
+}
+
 // eval evaluates an S-expression in non-tail position.
 func (i *Interpreter) eval(expr ast.SExpr, env *runtime.Environment) (runtime.Value, error) {
 	result, err := i.evalInTailPosition(expr, env)

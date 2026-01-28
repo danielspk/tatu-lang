@@ -69,15 +69,12 @@ func runSuccessTest(source []byte, filename string) error {
 		return fmt.Errorf("creating interpreter: %w", err)
 	}
 
-	var lastValue runtime.Value
-	var checkValue string
-
-	for _, expr := range ast.Program {
-		lastValue, err = inter.Eval(expr, nil)
-		if err != nil {
-			return fmt.Errorf("evaluating program: %w", err)
-		}
+	lastValue, err := inter.EvalProgram(ast, nil)
+	if err != nil {
+		return fmt.Errorf("evaluating program: %w", err)
 	}
+
+	var checkValue string
 
 	if lastValue != nil {
 		checkValue = lastValue.String()
