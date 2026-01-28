@@ -58,6 +58,11 @@ func NewInterpreter() (*Interpreter, error) {
 	}, nil
 }
 
+// Environment returns the global environment.
+func (i *Interpreter) Environment() *runtime.Environment {
+	return i.global
+}
+
 // Eval evaluates an S-expression and returns the resulting value.
 // Note: the format of the S-expressions is guaranteed by the syntax analyzer.
 func (i *Interpreter) Eval(expr ast.SExpr, env *runtime.Environment) (runtime.Value, error) {
