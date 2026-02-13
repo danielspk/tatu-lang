@@ -1,4 +1,4 @@
-; Test values map core function
+; Test values map
 
 (vec:len (map:values (map "a" 1 "b" 2 "c" 3)))
 

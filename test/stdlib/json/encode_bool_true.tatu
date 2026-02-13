@@ -1,4 +1,4 @@
-; Test encode json core function - boolean true
+; Test encode json - boolean true
 
 (json:encode true)
 

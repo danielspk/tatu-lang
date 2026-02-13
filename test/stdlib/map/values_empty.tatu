@@ -1,4 +1,4 @@
-; Test values map core function - empty map
+; Test values map - empty map
 
 (map:values (map))
 

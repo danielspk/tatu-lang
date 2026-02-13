@@ -1,4 +1,4 @@
-; Test get vector core function
+; Test get vector
 
 (vec:get (vector 10 20 30 40) 2)
 

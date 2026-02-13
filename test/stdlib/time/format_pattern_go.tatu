@@ -1,4 +1,4 @@
-; Test time formatting
+; Test time formatting with go pattern
 
 (time:format 1609459200 "2006-01-02")
 

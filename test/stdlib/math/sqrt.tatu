@@ -1,4 +1,4 @@
-; Test sqrt math core function
+; Test sqrt math
 
 (math:sqrt 16)
 

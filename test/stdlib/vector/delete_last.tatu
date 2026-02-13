@@ -1,4 +1,4 @@
-; Test delete vector core function - last element
+; Test delete vector - last element
 
 (vec:delete (vector 10 20 30) 2)
 

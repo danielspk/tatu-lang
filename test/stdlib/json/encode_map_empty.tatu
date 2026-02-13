@@ -1,4 +1,4 @@
-; Test encode json core function - empty map
+; Test encode json - empty map
 
 (json:encode (map))
 

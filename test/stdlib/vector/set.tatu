@@ -1,4 +1,4 @@
-; Test set vector core function
+; Test set vector
 
 (vec:set (vector 10 20 30 40) 2 50)
 

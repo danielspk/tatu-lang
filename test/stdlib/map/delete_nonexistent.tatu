@@ -1,4 +1,4 @@
-; Test delete map core function - nonexistent key
+; Test delete map - nonexistent key
 
 (begin
   (var m (map "name" "John"))

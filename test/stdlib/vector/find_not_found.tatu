@@ -1,4 +1,4 @@
-; Test find vector core function - element not found
+; Test find vector - element not found
 
 (vec:find (vector 10 20 30 40) 99)
 

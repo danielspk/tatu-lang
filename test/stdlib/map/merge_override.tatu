@@ -1,4 +1,4 @@
-; Test merge map core function - override existing keys
+; Test merge map - override existing keys
 
 (begin
   (var m1 (map "a" 1 "b" 2))

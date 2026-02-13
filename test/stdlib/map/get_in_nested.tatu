@@ -1,0 +1,12 @@
+; Test map:get-in with nested maps and vectors
+
+(var data (map
+  "user" (map
+    "name" "John"
+    "addresses" (vector
+      (map "street" "Main St" "city" "NYC")
+      (map "street" "Oak Ave" "city" "LA")))))
+
+(map:get-in data (vector "user" "addresses" 1 "city"))
+
+; Expect: LA

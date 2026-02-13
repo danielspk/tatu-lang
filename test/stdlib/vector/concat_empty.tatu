@@ -1,4 +1,4 @@
-; Test concat vector core function - with empty vector
+; Test concat vector - with empty vector
 
 (vec:concat (vector 10 20) (vector))
 

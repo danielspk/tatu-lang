@@ -1,4 +1,4 @@
-; Test get map core function
+; Test get map
 
 (map:get (map "name" "John" "age" 30) "name")
 

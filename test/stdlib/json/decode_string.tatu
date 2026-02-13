@@ -1,4 +1,4 @@
-; Test decode json core function - string
+; Test decode json - string
 
 (vec:get (json:decode "[\"world\"]") 0)
 

@@ -1,4 +1,4 @@
-; Test contains vector core function - string element
+; Test contains vector - string element
 
 (vec:contains (vector "apple" "banana" "orange") "banana")
 

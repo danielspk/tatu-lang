@@ -1,0 +1,5 @@
+; Test print
+
+(print "hello" ", " "world")
+
+; Expect: <nil>

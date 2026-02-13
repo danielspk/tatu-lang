@@ -4,24 +4,15 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/danielspk/tatu-lang/pkg/core"
 	"github.com/danielspk/tatu-lang/pkg/runtime"
 )
 
-// RegisterRegex registers regular expression core functions in the environment.
-func RegisterRegex(env *runtime.Environment) error {
-	functions := map[string]runtime.CoreFunction{
-		"regex:matches": runtime.NewCoreFunction(regexMatches),
-		"regex:find":    runtime.NewCoreFunction(regexFind),
-		"regex:replace": runtime.NewCoreFunction(regexReplace),
-	}
-
-	for name, fn := range functions {
-		if _, err := env.Define(name, fn); err != nil {
-			return fmt.Errorf("failed to register regex function `%s`: %w", name, err)
-		}
-	}
-
-	return nil
+// RegisterRegex registers regular expression functions.
+func RegisterRegex(natives map[string]runtime.NativeFunction) {
+	natives["regex:matches"] = runtime.NewNativeFunction(regexMatches)
+	natives["regex:find"] = runtime.NewNativeFunction(regexFind)
+	natives["regex:replace"] = runtime.NewNativeFunction(regexReplace)
 }
 
 // regexMatches checks if a string matches a regular expression pattern.
@@ -29,16 +20,16 @@ func RegisterRegex(env *runtime.Environment) error {
 func regexMatches(args ...runtime.Value) (runtime.Value, error) {
 	const name = "regex:matches"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	pattern, err := expectString(name, 1, args[1])
+	pattern, err := core.ExpectString(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -56,16 +47,16 @@ func regexMatches(args ...runtime.Value) (runtime.Value, error) {
 func regexFind(args ...runtime.Value) (runtime.Value, error) {
 	const name = "regex:find"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	pattern, err := expectString(name, 1, args[1])
+	pattern, err := core.ExpectString(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -85,21 +76,21 @@ func regexFind(args ...runtime.Value) (runtime.Value, error) {
 func regexReplace(args ...runtime.Value) (runtime.Value, error) {
 	const name = "regex:replace"
 
-	if err := expectArgs(name, 3, args); err != nil {
+	if err := core.ExpectArgs(name, 3, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	pattern, err := expectString(name, 1, args[1])
+	pattern, err := core.ExpectString(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
 
-	replacement, err := expectString(name, 2, args[2])
+	replacement, err := core.ExpectString(name, 2, args[2])
 	if err != nil {
 		return nil, err
 	}

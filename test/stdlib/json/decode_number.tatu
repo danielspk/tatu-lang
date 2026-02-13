@@ -1,4 +1,4 @@
-; Test decode json core function - number
+; Test decode json - number
 
 (json:decode "42")
 

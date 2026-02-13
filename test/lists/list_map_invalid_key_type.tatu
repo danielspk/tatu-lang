@@ -1,0 +1,5 @@
+; Test map with non-string key type
+
+(map 42 "value")
+
+; Expect Error: invalid map key type

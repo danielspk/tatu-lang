@@ -1,0 +1,7 @@
+; Test user defined functions are first-class value
+
+(def double (x) (* x 2))
+(var f double)
+(f 5)
+
+; Expect: 10

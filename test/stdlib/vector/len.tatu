@@ -1,4 +1,4 @@
-; Test len vector core function
+; Test len vector
 
 (vec:len (vector 2 3 4))
 

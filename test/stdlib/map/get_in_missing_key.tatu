@@ -1,0 +1,6 @@
+; Test map:get-in with missing key
+
+(var data (map "user" (map "name" "John")))
+(map:get-in data (vector "user" "email"))
+
+; Expect: <nil>

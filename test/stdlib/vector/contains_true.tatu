@@ -1,4 +1,4 @@
-; Test contains vector core function - element found
+; Test contains vector - element found
 
 (vec:contains (vector 10 20 30 40) 30)
 

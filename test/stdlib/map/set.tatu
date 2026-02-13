@@ -1,4 +1,4 @@
-; Test set map core function
+; Test set map
 
 (begin
   (var m (map "name" "John"))

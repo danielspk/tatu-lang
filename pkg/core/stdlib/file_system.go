@@ -6,46 +6,37 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/danielspk/tatu-lang/pkg/core"
 	"github.com/danielspk/tatu-lang/pkg/runtime"
 )
 
-// RegisterFileSystem registers file system core functions in the environment.
-func RegisterFileSystem(env *runtime.Environment) error {
-	functions := map[string]runtime.CoreFunction{
-		"fs:read":       runtime.NewCoreFunction(fsRead),
-		"fs:read-lines": runtime.NewCoreFunction(fsReadLines),
-		"fs:write":      runtime.NewCoreFunction(fsWrite),
-		"fs:append":     runtime.NewCoreFunction(fsAppend),
-		"fs:exists":     runtime.NewCoreFunction(fsExists),
-		"fs:list":       runtime.NewCoreFunction(fsList),
-		"fs:mkdir":      runtime.NewCoreFunction(fsMkdir),
-		"fs:move":       runtime.NewCoreFunction(fsMove),
-		"fs:delete":     runtime.NewCoreFunction(fsDelete),
-		"fs:is-dir":     runtime.NewCoreFunction(fsIsDir),
-		"fs:size":       runtime.NewCoreFunction(fsSize),
-		"fs:basename":   runtime.NewCoreFunction(fsBasename),
-		"fs:temp-dir":   runtime.NewCoreFunction(fsTempDir),
-	}
-
-	for name, fn := range functions {
-		if _, err := env.Define(name, fn); err != nil {
-			return fmt.Errorf("failed to register file system function `%s`: %w", name, err)
-		}
-	}
-
-	return nil
+// RegisterFileSystem registers file system functions.
+func RegisterFileSystem(natives map[string]runtime.NativeFunction) {
+	natives["fs:read"] = runtime.NewNativeFunction(fsRead)
+	natives["fs:read-lines"] = runtime.NewNativeFunction(fsReadLines)
+	natives["fs:write"] = runtime.NewNativeFunction(fsWrite)
+	natives["fs:append"] = runtime.NewNativeFunction(fsAppend)
+	natives["fs:exists"] = runtime.NewNativeFunction(fsExists)
+	natives["fs:list"] = runtime.NewNativeFunction(fsList)
+	natives["fs:mkdir"] = runtime.NewNativeFunction(fsMkdir)
+	natives["fs:move"] = runtime.NewNativeFunction(fsMove)
+	natives["fs:delete"] = runtime.NewNativeFunction(fsDelete)
+	natives["fs:is-dir"] = runtime.NewNativeFunction(fsIsDir)
+	natives["fs:size"] = runtime.NewNativeFunction(fsSize)
+	natives["fs:basename"] = runtime.NewNativeFunction(fsBasename)
+	natives["fs:temp-dir"] = runtime.NewNativeFunction(fsTempDir)
 }
 
-// fsRead implements the file reading core function.
+// fsRead implements the file reading function.
 // Usage: (fs:read "file.txt") => "content"
 func fsRead(args ...runtime.Value) (runtime.Value, error) {
 	const name = "fs:read"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	path, err := expectString(name, 0, args[0])
+	path, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -58,16 +49,16 @@ func fsRead(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewString(string(content)), nil
 }
 
-// fsReadLines implements the file reading by lines core function.
+// fsReadLines implements the file reading by lines function.
 // Usage: (fs:read-lines "file.txt") => (vector "line1" "line2")
 func fsReadLines(args ...runtime.Value) (runtime.Value, error) {
 	const name = "fs:read-lines"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	path, err := expectString(name, 0, args[0])
+	path, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -87,21 +78,21 @@ func fsReadLines(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewVector(elements), nil
 }
 
-// fsWrite implements the file writing core function.
+// fsWrite implements the file writing function.
 // Usage: (fs:write "file.txt" "content") => nil
 func fsWrite(args ...runtime.Value) (runtime.Value, error) {
 	const name = "fs:write"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	path, err := expectString(name, 0, args[0])
+	path, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	content, err := expectString(name, 1, args[1])
+	content, err := core.ExpectString(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -113,21 +104,21 @@ func fsWrite(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewNil(), nil
 }
 
-// fsAppend implements the file appending core function.
+// fsAppend implements the file appending function.
 // Usage: (fs:append "file.txt" "more content") => nil
 func fsAppend(args ...runtime.Value) (runtime.Value, error) {
 	const name = "fs:append"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	path, err := expectString(name, 0, args[0])
+	path, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	content, err := expectString(name, 1, args[1])
+	content, err := core.ExpectString(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -145,16 +136,16 @@ func fsAppend(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewNil(), nil
 }
 
-// fsExists implements the file existence check core function.
+// fsExists implements the file existence check function.
 // Usage: (fs:exists "file.txt") => true
 func fsExists(args ...runtime.Value) (runtime.Value, error) {
 	const name = "fs:exists"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	path, err := expectString(name, 0, args[0])
+	path, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -170,16 +161,16 @@ func fsExists(args ...runtime.Value) (runtime.Value, error) {
 	return nil, fmt.Errorf("`%s` failed to check file: %w", name, err)
 }
 
-// fsList implements the directory listing core function.
+// fsList implements the directory listing function.
 // Usage: (fs:list "dir") => (vector "file1.txt" "file2.txt")
 func fsList(args ...runtime.Value) (runtime.Value, error) {
 	const name = "fs:list"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	path, err := expectString(name, 0, args[0])
+	path, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -198,16 +189,16 @@ func fsList(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewVector(elements), nil
 }
 
-// fsMkdir implements the directory creation core function.
+// fsMkdir implements the directory creation function.
 // Usage: (fs:mkdir "newdir") => nil
 func fsMkdir(args ...runtime.Value) (runtime.Value, error) {
 	const name = "fs:mkdir"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	path, err := expectString(name, 0, args[0])
+	path, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -219,21 +210,21 @@ func fsMkdir(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewNil(), nil
 }
 
-// fsMove implements the file/directory moving core function.
+// fsMove implements the file/directory moving function.
 // Usage: (fs:move "old.txt" "new.txt") => nil
 func fsMove(args ...runtime.Value) (runtime.Value, error) {
 	const name = "fs:move"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	oldPath, err := expectString(name, 0, args[0])
+	oldPath, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	newPath, err := expectString(name, 1, args[1])
+	newPath, err := core.ExpectString(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -245,16 +236,16 @@ func fsMove(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewNil(), nil
 }
 
-// fsDelete implements the file/directory deletion core function.
+// fsDelete implements the file/directory deletion function.
 // Usage: (fs:delete "file.txt") => nil
 func fsDelete(args ...runtime.Value) (runtime.Value, error) {
 	const name = "fs:delete"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	path, err := expectString(name, 0, args[0])
+	path, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -266,16 +257,16 @@ func fsDelete(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewNil(), nil
 }
 
-// fsIsDir implements the directory check core function.
+// fsIsDir implements the directory check function.
 // Usage: (fs:is-dir "path") => true
 func fsIsDir(args ...runtime.Value) (runtime.Value, error) {
 	const name = "fs:is-dir"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	path, err := expectString(name, 0, args[0])
+	path, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -288,16 +279,16 @@ func fsIsDir(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewBool(info.IsDir()), nil
 }
 
-// fsSize implements the file size core function.
+// fsSize implements the file size function.
 // Usage: (fs:size "file.txt") => 1024
 func fsSize(args ...runtime.Value) (runtime.Value, error) {
 	const name = "fs:size"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	path, err := expectString(name, 0, args[0])
+	path, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -310,16 +301,16 @@ func fsSize(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewNumber(float64(info.Size())), nil
 }
 
-// fsBasename implements the basename extraction core function.
+// fsBasename implements the basename extraction function.
 // Usage: (fs:basename "/path/to/file.txt") => "file.txt"
 func fsBasename(args ...runtime.Value) (runtime.Value, error) {
 	const name = "fs:basename"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	path, err := expectString(name, 0, args[0])
+	path, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -329,12 +320,12 @@ func fsBasename(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewString(basename), nil
 }
 
-// fsTempDir implements the temporary directory core function.
+// fsTempDir implements the temporary directory function.
 // Usage: (fs:temp-dir) => "/tmp" or "C:\Users\...\Temp"
 func fsTempDir(args ...runtime.Value) (runtime.Value, error) {
 	const name = "fs:temp-dir"
 
-	if err := expectArgs(name, 0, args); err != nil {
+	if err := core.ExpectArgs(name, 0, args); err != nil {
 		return nil, err
 	}
 

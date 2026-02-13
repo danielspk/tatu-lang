@@ -1,4 +1,4 @@
-; Test trim string core function
+; Test trim string
 
 (str:trim "  hello  ")
 

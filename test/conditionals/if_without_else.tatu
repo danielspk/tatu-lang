@@ -1,0 +1,5 @@
+; Test if condition without else
+
+(if (> 1 10) "yes")
+
+; Expect: <nil>

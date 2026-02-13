@@ -1,5 +1,5 @@
 ; Test list map
 
-(map age 10)
+(map "age" 10)
 
 ; Expect: [age 10]

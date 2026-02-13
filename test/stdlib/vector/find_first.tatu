@@ -1,4 +1,4 @@
-; Test find vector core function - first element
+; Test find vector - first element
 
 (vec:find (vector 10 20 30) 10)
 

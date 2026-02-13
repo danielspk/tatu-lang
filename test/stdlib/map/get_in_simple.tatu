@@ -1,0 +1,6 @@
+; Test map:get-in with simple path
+
+(var data (map "name" "John"))
+(map:get-in data (vector "name"))
+
+; Expect: John

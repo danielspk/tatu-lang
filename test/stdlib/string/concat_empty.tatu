@@ -1,4 +1,4 @@
-; Test concat string core function - no arguments
+; Test concat string - no arguments
 
 (str:concat)
 

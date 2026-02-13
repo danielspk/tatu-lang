@@ -4,48 +4,39 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/danielspk/tatu-lang/pkg/core"
 	"github.com/danielspk/tatu-lang/pkg/runtime"
 )
 
-// RegisterString registers string core functions in the environment.
-func RegisterString(env *runtime.Environment) error {
-	functions := map[string]runtime.CoreFunction{
-		"str:len":      runtime.NewCoreFunction(stringLen),
-		"str:contains": runtime.NewCoreFunction(stringContains),
-		"str:index":    runtime.NewCoreFunction(stringIndex),
-		"str:upper":    runtime.NewCoreFunction(stringUpper),
-		"str:lower":    runtime.NewCoreFunction(stringLower),
-		"str:trim":     runtime.NewCoreFunction(stringTrim),
-		"str:slice":    runtime.NewCoreFunction(stringSlice),
-		"str:split":    runtime.NewCoreFunction(stringSplit),
-		"str:join":     runtime.NewCoreFunction(stringJoin),
-		"str:replace":  runtime.NewCoreFunction(stringReplace),
-		"str:starts":   runtime.NewCoreFunction(stringStarts),
-		"str:ends":     runtime.NewCoreFunction(stringEnds),
-		"str:reverse":  runtime.NewCoreFunction(stringReverse),
-		"str:repeat":   runtime.NewCoreFunction(stringRepeat),
-		"str:concat":   runtime.NewCoreFunction(stringConcat),
-	}
-
-	for name, fn := range functions {
-		if _, err := env.Define(name, fn); err != nil {
-			return fmt.Errorf("failed to register string function `%s`: %w", name, err)
-		}
-	}
-
-	return nil
+// RegisterString registers string functions.
+func RegisterString(natives map[string]runtime.NativeFunction) {
+	natives["str:len"] = runtime.NewNativeFunction(stringLen)
+	natives["str:contains"] = runtime.NewNativeFunction(stringContains)
+	natives["str:index"] = runtime.NewNativeFunction(stringIndex)
+	natives["str:upper"] = runtime.NewNativeFunction(stringUpper)
+	natives["str:lower"] = runtime.NewNativeFunction(stringLower)
+	natives["str:trim"] = runtime.NewNativeFunction(stringTrim)
+	natives["str:slice"] = runtime.NewNativeFunction(stringSlice)
+	natives["str:split"] = runtime.NewNativeFunction(stringSplit)
+	natives["str:join"] = runtime.NewNativeFunction(stringJoin)
+	natives["str:replace"] = runtime.NewNativeFunction(stringReplace)
+	natives["str:starts"] = runtime.NewNativeFunction(stringStarts)
+	natives["str:ends"] = runtime.NewNativeFunction(stringEnds)
+	natives["str:reverse"] = runtime.NewNativeFunction(stringReverse)
+	natives["str:repeat"] = runtime.NewNativeFunction(stringRepeat)
+	natives["str:concat"] = runtime.NewNativeFunction(stringConcat)
 }
 
-// stringLen implements the string length core function.
+// stringLen implements the string length function.
 // Usage: (str:len "hello") => 5
 func stringLen(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:len"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -53,21 +44,21 @@ func stringLen(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewNumber(float64(len([]rune(str.Value)))), nil
 }
 
-// stringContains implements the string contains check core function.
+// stringContains implements the string contains check function.
 // Usage: (str:contains "hello world" "world") => true
 func stringContains(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:contains"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	substr, err := expectString(name, 1, args[1])
+	substr, err := core.ExpectString(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -75,21 +66,21 @@ func stringContains(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewBool(strings.Contains(str.Value, substr.Value)), nil
 }
 
-// stringIndex implements the string index search core function.
+// stringIndex implements the string index search function.
 // Usage: (str:index "hello" "ll") => 2
 func stringIndex(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:index"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	substr, err := expectString(name, 1, args[1])
+	substr, err := core.ExpectString(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -117,16 +108,16 @@ func stringIndex(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewNumber(float64(index)), nil
 }
 
-// stringUpper implements the string uppercase conversion core function.
+// stringUpper implements the string uppercase conversion function.
 // Usage: (str:upper "hello") => "HELLO"
 func stringUpper(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:upper"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -134,16 +125,16 @@ func stringUpper(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewString(strings.ToUpper(str.Value)), nil
 }
 
-// stringLower implements the string lowercase conversion core function.
+// stringLower implements the string lowercase conversion function.
 // Usage: (str:lower "HELLO") => "hello"
 func stringLower(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:lower"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -151,16 +142,16 @@ func stringLower(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewString(strings.ToLower(str.Value)), nil
 }
 
-// stringTrim implements the string whitespace trimming core function.
+// stringTrim implements the string whitespace trimming function.
 // Usage: (str:trim "  hello  ") => "hello"
 func stringTrim(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:trim"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -168,26 +159,26 @@ func stringTrim(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewString(strings.TrimSpace(str.Value)), nil
 }
 
-// stringSlice implements the string slice extraction core function.
+// stringSlice implements the string slice extraction function.
 // Usage: (str:slice "hello" 1 4) => "ell"
 func stringSlice(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:slice"
 
-	if err := expectArgs(name, 3, args); err != nil {
+	if err := core.ExpectArgs(name, 3, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	startNum, err := expectIntegerNumber(name, 1, args[1])
+	startNum, err := core.ExpectIntegerNumber(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
 
-	endNum, err := expectIntegerNumber(name, 2, args[2])
+	endNum, err := core.ExpectIntegerNumber(name, 2, args[2])
 	if err != nil {
 		return nil, err
 	}
@@ -211,21 +202,21 @@ func stringSlice(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewString(string(runes[start:end])), nil
 }
 
-// stringSplit implements the string split core function.
+// stringSplit implements the string split function.
 // Usage: (str:split "a,b,c" ",") => ("a" "b" "c")
 func stringSplit(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:split"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	sep, err := expectString(name, 1, args[1])
+	sep, err := core.ExpectString(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -240,21 +231,21 @@ func stringSplit(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewVector(elements), nil
 }
 
-// stringJoin implements the string join core function.
+// stringJoin implements the string join function.
 // Usage: (str:join (vector "a" "b" "c") ",") => "a,b,c"
 func stringJoin(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:join"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	vec, err := expectVector(name, 0, args[0])
+	vec, err := core.ExpectVector(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	sep, err := expectString(name, 1, args[1])
+	sep, err := core.ExpectString(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -271,26 +262,26 @@ func stringJoin(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewString(strings.Join(parts, sep.Value)), nil
 }
 
-// stringReplace implements the string replacement core function.
+// stringReplace implements the string replacement function.
 // Usage: (str:replace "hello world" "world" "Go") => "hello Go"
 func stringReplace(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:replace"
 
-	if err := expectArgs(name, 3, args); err != nil {
+	if err := core.ExpectArgs(name, 3, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	oldStr, err := expectString(name, 1, args[1])
+	oldStr, err := core.ExpectString(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
 
-	newStr, err := expectString(name, 2, args[2])
+	newStr, err := core.ExpectString(name, 2, args[2])
 	if err != nil {
 		return nil, err
 	}
@@ -298,21 +289,21 @@ func stringReplace(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewString(strings.ReplaceAll(str.Value, oldStr.Value, newStr.Value)), nil
 }
 
-// stringStarts implements the string prefix check core function.
+// stringStarts implements the string prefix check function.
 // Usage: (str:starts "hello" "he") => true
 func stringStarts(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:starts"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	prefix, err := expectString(name, 1, args[1])
+	prefix, err := core.ExpectString(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -320,21 +311,21 @@ func stringStarts(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewBool(strings.HasPrefix(str.Value, prefix.Value)), nil
 }
 
-// stringEnds implements the string suffix check core function.
+// stringEnds implements the string suffix check function.
 // Usage: (str:ends "hello" "lo") => true
 func stringEnds(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:ends"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	suffix, err := expectString(name, 1, args[1])
+	suffix, err := core.ExpectString(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -342,16 +333,16 @@ func stringEnds(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewBool(strings.HasSuffix(str.Value, suffix.Value)), nil
 }
 
-// stringReverse implements the string reversal core function.
+// stringReverse implements the string reversal function.
 // Usage: (str:reverse "hello") => "olleh"
 func stringReverse(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:reverse"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -365,21 +356,21 @@ func stringReverse(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewString(string(runes)), nil
 }
 
-// stringRepeat implements the string repetition core function.
+// stringRepeat implements the string repetition function.
 // Usage: (str:repeat "ha" 3) => "hahaha"
 func stringRepeat(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:repeat"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	countNum, err := expectIntegerNumber(name, 1, args[1])
+	countNum, err := core.ExpectIntegerNumber(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -393,7 +384,7 @@ func stringRepeat(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewString(strings.Repeat(str.Value, count)), nil
 }
 
-// stringConcat implements the string concatenation core function.
+// stringConcat implements the string concatenation function.
 // Usage: (str:concat "hello" " " "world") => "hello world"
 func stringConcat(args ...runtime.Value) (runtime.Value, error) {
 	const name = "str:concat"
@@ -405,7 +396,7 @@ func stringConcat(args ...runtime.Value) (runtime.Value, error) {
 	var result strings.Builder
 
 	for i, arg := range args {
-		str, err := expectString(name, i, arg)
+		str, err := core.ExpectString(name, i, arg)
 		if err != nil {
 			return nil, err
 		}

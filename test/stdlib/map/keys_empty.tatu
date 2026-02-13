@@ -1,4 +1,4 @@
-; Test keys map core function - empty map
+; Test keys map - empty map
 
 (map:keys (map))
 

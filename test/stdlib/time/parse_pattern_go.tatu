@@ -1,4 +1,4 @@
-; Test time parsing
+; Test time parsing with go pattern
 
 (time:parse "2021-01-01" "2006-01-02")
 

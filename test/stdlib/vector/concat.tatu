@@ -1,4 +1,4 @@
-; Test concat vector core function
+; Test concat vector
 
 (vec:concat (vector 10 20 30) (vector 40 50))
 

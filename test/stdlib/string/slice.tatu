@@ -1,4 +1,4 @@
-; Test slice string core function
+; Test slice string
 
 (str:slice "hello" 1 4)
 

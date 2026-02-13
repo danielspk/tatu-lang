@@ -1,4 +1,4 @@
-; Test encode json core function - nil
+; Test encode json - nil
 
 (json:encode nil)
 

@@ -4,31 +4,22 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/danielspk/tatu-lang/pkg/core"
 	"github.com/danielspk/tatu-lang/pkg/runtime"
 )
 
-// RegisterJSON registers JSON core functions in the environment.
-func RegisterJSON(env *runtime.Environment) error {
-	functions := map[string]runtime.CoreFunction{
-		"json:encode": runtime.NewCoreFunction(jsonEncode),
-		"json:decode": runtime.NewCoreFunction(jsonDecode),
-	}
-
-	for name, fn := range functions {
-		if _, err := env.Define(name, fn); err != nil {
-			return fmt.Errorf("failed to register json function `%s`: %w", name, err)
-		}
-	}
-
-	return nil
+// RegisterJSON registers JSON functions.
+func RegisterJSON(natives map[string]runtime.NativeFunction) {
+	natives["json:encode"] = runtime.NewNativeFunction(jsonEncode)
+	natives["json:decode"] = runtime.NewNativeFunction(jsonDecode)
 }
 
-// jsonEncode implements the JSON encoding core function.
+// jsonEncode implements the JSON encoding function.
 // Usage: (json:encode (map "name" "John" "age" 30)) => "{\"age\":30,\"name\":\"John\"}"
 func jsonEncode(args ...runtime.Value) (runtime.Value, error) {
 	const name = "json:encode"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
@@ -45,16 +36,16 @@ func jsonEncode(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewString(string(jsonBytes)), nil
 }
 
-// jsonDecode implements the JSON decoding core function.
+// jsonDecode implements the JSON decoding function.
 // Usage: (json:decode "{\"name\":\"John\",\"age\":30}") => (map "name" "John" "age" 30)
 func jsonDecode(args ...runtime.Value) (runtime.Value, error) {
 	const name = "json:decode"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	str, err := expectString(name, 0, args[0])
+	str, err := core.ExpectString(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}

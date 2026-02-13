@@ -1,4 +1,4 @@
-; Test set map core function - update existing key
+; Test set map - update existing key
 
 (begin
   (var m (map "name" "John"))

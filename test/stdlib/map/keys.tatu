@@ -1,4 +1,4 @@
-; Test keys map core function
+; Test keys map
 
 (vec:len (map:keys (map "a" 1 "b" 2 "c" 3)))
 

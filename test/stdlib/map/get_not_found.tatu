@@ -1,4 +1,4 @@
-; Test get map core function - key not found
+; Test get map - key not found
 
 (map:get (map "name" "John") "age")
 

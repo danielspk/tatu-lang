@@ -1,4 +1,4 @@
-; Test reverse string core function
+; Test reverse string
 
 (str:reverse "hello")
 

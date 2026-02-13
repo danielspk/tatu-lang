@@ -1,4 +1,4 @@
-; Test abs math core function
+; Test abs math
 
 (math:abs -5)
 

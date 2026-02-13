@@ -1,0 +1,13 @@
+; Test JSON decode with nested maps and vectors
+
+(var json-str "{\"user\": {\"name\": \"John\", \"age\": 30, \"addresses\": [{\"street\": \"Main St\", \"city\": \"NYC\", \"zip\": 10001}, {\"street\": \"Oak Ave\", \"city\": \"LA\", \"zip\": 90001}]}}")
+(var data (json:decode json-str))
+
+(var user (map:get data "user"))
+(var addresses (map:get user "addresses"))
+(var first-address (vec:get addresses 0))
+(var street (map:get first-address "street"))
+
+street
+
+; Expect: Main St

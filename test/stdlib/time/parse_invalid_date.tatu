@@ -1,0 +1,5 @@
+; Test time parse with invalid date
+
+(time:parse "invalid-date" "YYY-MM-DD")
+
+; Expect Error: 

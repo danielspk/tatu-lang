@@ -1,4 +1,4 @@
-; Test push vector core function - empty vector
+; Test push vector - empty vector
 
 (vec:push (vector) 10)
 

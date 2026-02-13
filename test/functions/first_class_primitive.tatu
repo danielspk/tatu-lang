@@ -1,0 +1,6 @@
+; Test s are first-class value
+
+(var f math:pi)
+(f)
+
+; Expect: 3.1415926536

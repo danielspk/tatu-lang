@@ -1,4 +1,4 @@
-; Test join string core function - empty separator
+; Test join string - empty separator
 
 (str:join (vector "hello" "world") "")
 

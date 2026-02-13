@@ -1,4 +1,4 @@
-; Test pop vector core function - single element
+; Test pop vector - single element
 
 (vec:pop (vector 10))
 

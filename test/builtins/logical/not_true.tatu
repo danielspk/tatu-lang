@@ -1,0 +1,5 @@
+; Test not with true
+
+(not true)
+
+; Expect: false

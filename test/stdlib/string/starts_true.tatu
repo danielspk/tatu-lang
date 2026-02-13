@@ -1,4 +1,4 @@
-; Test starts string core function - prefix found
+; Test starts string - prefix found
 
 (str:starts "hello" "he")
 

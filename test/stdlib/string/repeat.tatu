@@ -1,4 +1,4 @@
-; Test repeat string core function
+; Test repeat string
 
 (str:repeat "ha" 3)
 

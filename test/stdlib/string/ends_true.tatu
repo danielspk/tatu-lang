@@ -1,4 +1,4 @@
-; Test ends string core function - suffix found
+; Test ends string - suffix found
 
 (str:ends "hello" "lo")
 

@@ -1,5 +1,0 @@
-; Test modulo with only one argument
-
-(% 10)
-
-; Expect Error: invalid operands length for modulo operator

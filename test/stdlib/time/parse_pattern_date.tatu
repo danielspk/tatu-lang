@@ -1,0 +1,5 @@
+; Test time parsing with date pattern
+
+(time:parse "2021-01-01" "YYYY-MM-DD")
+
+; Expect: 1609459200

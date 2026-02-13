@@ -1,4 +1,4 @@
-; Test encode json core function - map
+; Test encode json - map
 
 (json:encode (map "name" "Alice" "age" 30))
 

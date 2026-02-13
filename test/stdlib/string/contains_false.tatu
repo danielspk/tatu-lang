@@ -1,4 +1,4 @@
-; Test contains string core function - substring not found
+; Test contains string - substring not found
 
 (str:contains "hello" "xyz")
 

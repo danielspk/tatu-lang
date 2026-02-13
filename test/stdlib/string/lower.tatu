@@ -1,4 +1,4 @@
-; Test lower string core function
+; Test lower string
 
 (str:lower "HELLO")
 

@@ -1,4 +1,4 @@
-; Test reverse vector core function
+; Test reverse vector
 
 (vec:reverse (vector 10 20 30 40))
 

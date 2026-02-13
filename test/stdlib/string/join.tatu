@@ -1,4 +1,4 @@
-; Test join string core function
+; Test join string
 
 (str:join (vector "a" "b" "c") ",")
 

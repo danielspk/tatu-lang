@@ -1,4 +1,4 @@
-; Test encode json core function - number
+; Test encode json - number
 
 (json:encode 42)
 

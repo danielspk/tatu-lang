@@ -1,4 +1,4 @@
-; Test encode json core function - empty vector
+; Test encode json - empty vector
 
 (json:encode (vector))
 

@@ -1,4 +1,4 @@
-; Test reverse vector core function - empty vector
+; Test reverse vector - empty vector
 
 (vec:reverse (vector))
 

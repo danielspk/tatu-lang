@@ -1,4 +1,4 @@
-; Test upper string core function
+; Test upper string
 
 (str:upper "hello")
 

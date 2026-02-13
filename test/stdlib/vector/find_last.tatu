@@ -1,4 +1,4 @@
-; Test find vector core function - last element
+; Test find vector - last element
 
 (vec:find (vector 10 20 30 40) 40)
 

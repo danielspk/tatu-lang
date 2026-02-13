@@ -1,4 +1,4 @@
-; Test index string core function - substring not found
+; Test index string - substring not found
 
 (str:index "hello" "xyz")
 

@@ -14,15 +14,15 @@ type ValueType string
 
 // Value types.
 const (
-	NumberType   ValueType = "NUMBER"
-	StringType   ValueType = "STRING"
-	BoolType     ValueType = "BOOL"
-	NilType      ValueType = "NIL"
-	VectorType   ValueType = "VECTOR"
-	MapType      ValueType = "MAP"
-	FuncType     ValueType = "FUNC"
-	CoreFuncType ValueType = "CORE_FUNC"
-	RecurType    ValueType = "RECUR"
+	NumberType     ValueType = "NUMBER"
+	StringType     ValueType = "STRING"
+	BoolType       ValueType = "BOOL"
+	NilType        ValueType = "NIL"
+	VectorType     ValueType = "VECTOR"
+	MapType        ValueType = "MAP"
+	FuncType       ValueType = "FUNC"
+	NativeFuncType ValueType = "NATIVE_FUNC"
+	RecurType      ValueType = "RECUR"
 )
 
 // Value represents a value interface.
@@ -208,24 +208,24 @@ func (uf Function) String() string {
 	return "Function()"
 }
 
-// CoreFunction represents a built-in/native function value.
-type CoreFunction struct {
+// NativeFunction represents a native function value.
+type NativeFunction struct {
 	Value func(args ...Value) (Value, error)
 }
 
-// NewCoreFunction builds a new CoreFunction.
-func NewCoreFunction(value func(args ...Value) (Value, error)) CoreFunction {
-	return CoreFunction{value}
+// NewNativeFunction builds a new NativeFunction.
+func NewNativeFunction(value func(args ...Value) (Value, error)) NativeFunction {
+	return NativeFunction{value}
 }
 
-// Type returns the type of the core function value.
-func (f CoreFunction) Type() ValueType {
-	return CoreFuncType
+// Type returns the type of the native function value.
+func (f NativeFunction) Type() ValueType {
+	return NativeFuncType
 }
 
-// String returns the string representation of the core function value.
-func (f CoreFunction) String() string {
-	return "CoreFunction()"
+// String returns the string representation of the native function value.
+func (f NativeFunction) String() string {
+	return "NativeFunction()"
 }
 
 // RecurBindings represents a tail-call marker value for TCO.

@@ -1,4 +1,4 @@
-; Test delete map core function
+; Test delete map
 
 (begin
   (var m (map "name" "John" "age" 30))

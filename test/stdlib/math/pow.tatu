@@ -1,4 +1,4 @@
-; Test pow math core function
+; Test pow math
 
 (math:pow 2 3)
 

@@ -1,0 +1,5 @@
+; Test time formatting with datetime pattern
+
+(time:format 1609502523 "YYYY-MM-DD HH:mm:ss")
+
+; Expect: 2021-01-01 12:02:03

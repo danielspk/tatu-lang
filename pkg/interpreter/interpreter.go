@@ -3,58 +3,42 @@ package interpreter
 
 import (
 	"fmt"
-	"math"
-	"strings"
 
 	"github.com/danielspk/tatu-lang/pkg/ast"
+	"github.com/danielspk/tatu-lang/pkg/core/builtins"
+	"github.com/danielspk/tatu-lang/pkg/core/stdlib"
 	"github.com/danielspk/tatu-lang/pkg/debug"
 	"github.com/danielspk/tatu-lang/pkg/location"
 	"github.com/danielspk/tatu-lang/pkg/runtime"
-	"github.com/danielspk/tatu-lang/pkg/stdlib"
 )
 
 // Interpreter represents a tree-walking interpreter.
 type Interpreter struct {
-	global *runtime.Environment
+	natives map[string]runtime.NativeFunction
+	global     *runtime.Environment
 }
 
 // NewInterpreter builds a new Interpreter.
 func NewInterpreter() (*Interpreter, error) {
-	env := runtime.NewEnvironment(nil, nil)
+	natives := make(map[string]runtime.NativeFunction)
 
-	if err := stdlib.RegisterCasting(env); err != nil {
-		return nil, err
-	}
-	if err := stdlib.RegisterFileSystem(env); err != nil {
-		return nil, err
-	}
-	if err := stdlib.RegisterJSON(env); err != nil {
-		return nil, err
-	}
-	if err := stdlib.RegisterMap(env); err != nil {
-		return nil, err
-	}
-	if err := stdlib.RegisterMath(env); err != nil {
-		return nil, err
-	}
-	if err := stdlib.RegisterRegex(env); err != nil {
-		return nil, err
-	}
-	if err := stdlib.RegisterString(env); err != nil {
-		return nil, err
-	}
-	if err := stdlib.RegisterTime(env); err != nil {
-		return nil, err
-	}
-	if err := stdlib.RegisterTypes(env); err != nil {
-		return nil, err
-	}
-	if err := stdlib.RegisterVector(env); err != nil {
-		return nil, err
-	}
+	builtins.RegisterArithmetic(natives)
+	builtins.RegisterComparison(natives)
+	builtins.RegisterIO(natives)
+	builtins.RegisterTypes(natives)
+
+	stdlib.RegisterFileSystem(natives)
+	stdlib.RegisterJSON(natives)
+	stdlib.RegisterMap(natives)
+	stdlib.RegisterMath(natives)
+	stdlib.RegisterRegex(natives)
+	stdlib.RegisterString(natives)
+	stdlib.RegisterTime(natives)
+	stdlib.RegisterVector(natives)
 
 	return &Interpreter{
-		global: env,
+		natives: natives,
+		global:     runtime.NewEnvironment(nil, nil),
 	}, nil
 }
 
@@ -141,11 +125,15 @@ func (i *Interpreter) evalSymbol(expr ast.SExpr, env *runtime.Environment) (runt
 	exprSymbol := expr.(*ast.SymbolExpr)
 
 	value, found := env.Lookup(exprSymbol.Symbol)
-	if !found {
-		return nil, i.error(fmt.Sprintf("unknown symbol `%s`", exprSymbol.Symbol), exprSymbol.Location())
+	if found {
+		return value, nil
 	}
 
-	return value, nil
+	if fn, ok := i.natives[exprSymbol.Symbol]; ok {
+		return fn, nil
+	}
+
+	return nil, i.error(fmt.Sprintf("unknown symbol `%s`", exprSymbol.Symbol), exprSymbol.Location())
 }
 
 // evalList evaluates a list expression.
@@ -164,14 +152,10 @@ func (i *Interpreter) evalList(expr ast.SExpr, env *runtime.Environment) (runtim
 		exprSymbol := exprList.List[0].(*ast.SymbolExpr)
 
 		switch exprSymbol.Symbol {
-		case "+":
-			return i.evalPlusSymbol(exprList, env)
-		case "-", "*", "/", "%":
-			return i.evalMathSymbol(exprList, env)
-		case "=", ">", ">=", "<", "<=", "and", "or":
-			return i.evalLogicalSymbol(exprList, env)
 		case "include":
-			return nil, i.error("include not resolver", exprList.Location())
+			return nil, i.error("include not resolved", exprList.Location())
+		case "and", "or":
+			return i.evalLogical(exprList, env)
 		case "begin":
 			return i.evalBegin(exprList, env)
 		case "var":
@@ -190,8 +174,6 @@ func (i *Interpreter) evalList(expr ast.SExpr, env *runtime.Environment) (runtim
 			return i.evalVector(exprList, env)
 		case "map":
 			return i.evalMap(exprList, env)
-		case "print":
-			return i.evalPrint(exprList, env)
 		}
 	}
 
@@ -199,224 +181,33 @@ func (i *Interpreter) evalList(expr ast.SExpr, env *runtime.Environment) (runtim
 	return i.evalCallFunction(exprList, env)
 }
 
-// evalPlusSymbol evaluates the plus operator (addition or concatenation).
-func (i *Interpreter) evalPlusSymbol(expr ast.SExpr, env *runtime.Environment) (runtime.Value, error) {
-	operator := expr.(*ast.ListExpr).List[0].(*ast.SymbolExpr).Symbol
+// evalLogical evaluates the `and` and `or` logical special forms.
+func (i *Interpreter) evalLogical(expr ast.SExpr, env *runtime.Environment) (runtime.Value, error) {
+	exprList := expr.(*ast.ListExpr)
+	operator := exprList.List[0].(*ast.SymbolExpr).Symbol
 
-	results := make([]runtime.Value, 0, len(expr.(*ast.ListExpr).List)-1)
-	hasString := false
-
-	for _, e := range expr.(*ast.ListExpr).List[1:] {
+	for _, e := range exprList.List[1:] {
 		result, err := i.eval(e, env)
 		if err != nil {
 			return nil, err
 		}
 
-		if result.Type() != runtime.NumberType && result.Type() != runtime.StringType {
-			return nil, i.error(fmt.Sprintf("invalid type %s for `%s`", result.Type(), operator), e.Location())
-		} else if result.Type() == runtime.StringType {
-			hasString = true
-		}
-
-		results = append(results, result)
-	}
-
-	if hasString {
-		var out strings.Builder
-
-		for _, r := range results {
-			out.WriteString(fmt.Sprintf("%v", r))
-		}
-
-		return runtime.NewString(out.String()), nil
-	}
-
-	var total float64
-
-	for _, r := range results {
-		total += r.(runtime.Number).Value
-	}
-
-	return runtime.NewNumber(total), nil
-}
-
-// evalMathSymbol evaluates mathematical operators.
-func (i *Interpreter) evalMathSymbol(expr ast.SExpr, env *runtime.Environment) (runtime.Value, error) {
-	operator := expr.(*ast.ListExpr).List[0].(*ast.SymbolExpr).Symbol
-
-	results := make([]runtime.Value, 0, len(expr.(*ast.ListExpr).List)-1)
-
-	for _, e := range expr.(*ast.ListExpr).List[1:] {
-		result, err := i.eval(e, env)
-		if err != nil {
-			return nil, err
-		}
-
-		if result.Type() != runtime.NumberType {
+		if result.Type() != runtime.BoolType {
 			return nil, i.error(fmt.Sprintf("invalid type %s for `%s`", result.Type(), operator), e.Location())
 		}
 
-		results = append(results, result)
-	}
+		value := result.(runtime.Bool).Value
 
-	if operator == "%" && len(results) != 2 {
-		return nil, i.error("invalid operands length for modulo operator", expr.Location())
-	}
-
-	total := results[0].(runtime.Number).Value
-
-	if len(results) == 1 {
-		if operator != "-" {
-			return nil, i.error("invalid operand length", expr.Location())
+		if operator == "and" && !value {
+			return runtime.NewBool(false), nil
 		}
 
-		return runtime.NewNumber(-total), nil
-	}
-
-	for _, r := range results[1:] {
-		value := r.(runtime.Number).Value
-
-		switch operator {
-		case "-":
-			total -= value
-		case "*":
-			total *= value
-		case "/":
-			if value == 0 {
-				return nil, i.error("division by zero", expr.Location())
-			}
-
-			total /= value
-		case "%":
-			if value == 0 {
-				return nil, i.error("modulo by zero", expr.Location())
-			}
-
-			total = math.Mod(total, value)
-		}
-	}
-
-	return runtime.NewNumber(total), nil
-}
-
-// evalLogicalSymbol evaluates logical and comparison operators.
-func (i *Interpreter) evalLogicalSymbol(expr ast.SExpr, env *runtime.Environment) (runtime.Value, error) {
-	operator := expr.(*ast.ListExpr).List[0].(*ast.SymbolExpr).Symbol
-
-	// = => same type (any) between 2 expressions
-	if operator == "=" {
-		resultLeft, err := i.eval(expr.(*ast.ListExpr).List[1], env)
-		if err != nil {
-			return nil, err
-		}
-
-		resultRight, err := i.eval(expr.(*ast.ListExpr).List[2], env)
-		if err != nil {
-			return nil, err
-		}
-
-		if resultLeft.Type() != resultRight.Type() {
-			return nil, i.error(fmt.Sprintf("cannot apply %s operator for %s and %s expressiones", operator, resultLeft.Type(), resultRight.Type()), expr.Location())
-		}
-
-		if resultLeft.Type() == runtime.NumberType {
-			return runtime.NewBool(resultLeft.(runtime.Number).Value == resultRight.(runtime.Number).Value), nil
-		}
-
-		if resultLeft.Type() == runtime.StringType {
-			return runtime.NewBool(resultLeft.(runtime.String).Value == resultRight.(runtime.String).Value), nil
-		}
-
-		if resultLeft.Type() == runtime.BoolType {
-			return runtime.NewBool(resultLeft.(runtime.Bool).Value == resultRight.(runtime.Bool).Value), nil
-		}
-
-		if resultLeft.Type() == runtime.NilType {
+		if operator == "or" && value {
 			return runtime.NewBool(true), nil
 		}
-
-		return nil, i.error(fmt.Sprintf("invalid type %s for `%s`", resultLeft.Type(), operator), expr.Location())
 	}
 
-	// > >= < <= => same type (string or number) between 2 expressions
-	if operator == "<" || operator == "<=" || operator == ">" || operator == ">=" {
-		resultLeft, err := i.eval(expr.(*ast.ListExpr).List[1], env)
-		if err != nil {
-			return nil, err
-		}
-
-		resultRight, err := i.eval(expr.(*ast.ListExpr).List[2], env)
-		if err != nil {
-			return nil, err
-		}
-
-		if resultLeft.Type() != resultRight.Type() {
-			return nil, i.error(fmt.Sprintf("cannot apply %s operator for %s and %s expressions", operator, resultLeft.Type(), resultRight.Type()), expr.Location())
-		}
-
-		if resultLeft.Type() == runtime.NumberType {
-			switch operator {
-			case "<":
-				return runtime.NewBool(resultLeft.(runtime.Number).Value < resultRight.(runtime.Number).Value), nil
-			case "<=":
-				return runtime.NewBool(resultLeft.(runtime.Number).Value <= resultRight.(runtime.Number).Value), nil
-			case ">":
-				return runtime.NewBool(resultLeft.(runtime.Number).Value > resultRight.(runtime.Number).Value), nil
-			case ">=":
-				return runtime.NewBool(resultLeft.(runtime.Number).Value >= resultRight.(runtime.Number).Value), nil
-			}
-		}
-
-		if resultLeft.Type() == runtime.StringType {
-			switch operator {
-			case "<":
-				return runtime.NewBool(resultLeft.(runtime.String).Value < resultRight.(runtime.String).Value), nil
-			case "<=":
-				return runtime.NewBool(resultLeft.(runtime.String).Value <= resultRight.(runtime.String).Value), nil
-			case ">":
-				return runtime.NewBool(resultLeft.(runtime.String).Value > resultRight.(runtime.String).Value), nil
-			case ">=":
-				return runtime.NewBool(resultLeft.(runtime.String).Value >= resultRight.(runtime.String).Value), nil
-			}
-		}
-
-		return nil, i.error(fmt.Sprintf("invalid type %s for `%s`", resultLeft.Type(), operator), expr.Location())
-	}
-
-	// and or => only booleans between multiple expressions
-	if operator == "and" || operator == "or" {
-		results := make([]runtime.Value, 0, len(expr.(*ast.ListExpr).List)-1)
-
-		for _, e := range expr.(*ast.ListExpr).List[1:] {
-			result, err := i.eval(e, env)
-			if err != nil {
-				return nil, err
-			}
-
-			if result.Type() != runtime.BoolType {
-				return nil, i.error(fmt.Sprintf("invalid type %s for `%s`", result.Type(), operator), e.Location())
-			}
-
-			results = append(results, result)
-		}
-
-		logical := results[0].(runtime.Bool).Value
-
-		for _, r := range results[1:] {
-			value := r.(runtime.Bool).Value
-
-			switch operator {
-			case "and":
-				logical = logical && value
-			case "or":
-				logical = logical || value
-			}
-		}
-
-		return runtime.NewBool(logical), nil
-	}
-
-	return nil, i.error(fmt.Sprintf("unknown operator `%s`", operator), expr.Location())
+	return runtime.NewBool(operator == "and"), nil
 }
 
 // evalBegin evaluates a `begin` expression (block of expressions).
@@ -469,7 +260,6 @@ func (i *Interpreter) evalIf(expr ast.SExpr, env *runtime.Environment) (runtime.
 
 	condition := exprList.List[1]
 	consequent := exprList.List[2]
-	alternate := exprList.List[3]
 
 	value, err := i.eval(condition, env)
 	if err != nil {
@@ -484,7 +274,11 @@ func (i *Interpreter) evalIf(expr ast.SExpr, env *runtime.Environment) (runtime.
 		return i.evalInTailPosition(consequent, env)
 	}
 
-	return i.evalInTailPosition(alternate, env)
+	if len(exprList.List) == 4 {
+		return i.evalInTailPosition(exprList.List[3], env)
+	}
+
+	return runtime.NewNil(), nil
 }
 
 // evalWhile evaluates a `while` expression.
@@ -527,24 +321,6 @@ func (i *Interpreter) evalLambda(expr ast.SExpr, env *runtime.Environment) (runt
 	body := exprList.List[2]
 
 	return runtime.NewFunction(env, params, body), nil
-}
-
-// evalPrint evaluates a `print` expression.
-func (i *Interpreter) evalPrint(expr ast.SExpr, env *runtime.Environment) (runtime.Value, error) {
-	exprList := expr.(*ast.ListExpr)
-
-	for _, e := range exprList.List[1:] {
-		result, err := i.eval(e, env)
-		if err != nil {
-			return nil, err
-		}
-
-		fmt.Print(result)
-	}
-
-	fmt.Println()
-
-	return runtime.NewNil(), nil
 }
 
 // evalRecur evaluates a `recur` expression for TCO.
@@ -593,12 +369,13 @@ func (i *Interpreter) evalMap(expr ast.SExpr, env *runtime.Environment) (runtime
 		keyExpr := exprList.List[idx]
 		valueExpr := exprList.List[idx+1]
 
-		var key string
+		key, err := i.eval(keyExpr, env)
+		if err != nil {
+			return nil, err
+		}
 
-		if keyExpr.Kind() == ast.SymbolKind {
-			key = keyExpr.(*ast.SymbolExpr).Symbol
-		} else if keyExpr.Kind() == ast.StringKind {
-			key = keyExpr.(*ast.StringExpr).String
+		if key.Type() != runtime.StringType {
+			return nil, i.error(fmt.Sprintf("invalid map key type: expected string, got %s", key.Type()), keyExpr.Location())
 		}
 
 		result, err := i.eval(valueExpr, env)
@@ -606,7 +383,7 @@ func (i *Interpreter) evalMap(expr ast.SExpr, env *runtime.Environment) (runtime
 			return nil, err
 		}
 
-		elements[key] = result
+		elements[key.(runtime.String).Value] = result
 	}
 
 	return runtime.NewMap(elements), nil
@@ -621,7 +398,7 @@ func (i *Interpreter) evalCallFunction(expr ast.SExpr, env *runtime.Environment)
 		return nil, err
 	}
 
-	if funcValue.Type() != runtime.CoreFuncType && funcValue.Type() != runtime.FuncType {
+	if funcValue.Type() != runtime.NativeFuncType && funcValue.Type() != runtime.FuncType {
 		return nil, i.error("expression is not a function", exprList.List[0].Location())
 	}
 
@@ -630,12 +407,17 @@ func (i *Interpreter) evalCallFunction(expr ast.SExpr, env *runtime.Environment)
 		return nil, err
 	}
 
-	// native core function
-	if funcValue.Type() == runtime.CoreFuncType {
-		return funcValue.(runtime.CoreFunction).Value(valArgs...)
+	// native function
+	if funcValue.Type() == runtime.NativeFuncType {
+		result, err := funcValue.(runtime.NativeFunction).Value(valArgs...)
+		if err != nil {
+			return nil, i.error(err.Error(), exprList.Location())
+		}
+
+		return result, nil
 	}
 
-	// lambda function with TCO
+	// lambda function
 	fn := funcValue.(runtime.Function)
 	currentArgs := valArgs
 

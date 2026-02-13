@@ -1,4 +1,4 @@
-; Test slice vector core function - from start
+; Test slice vector - from start
 
 (vec:slice (vector 10 20 30 40) 0 2)
 

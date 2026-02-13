@@ -127,19 +127,18 @@ The _Tatu_ BNF is extremely simple.
 <list>         ::= "(" <list-body> ")"
 
 <list-body>    ::= <expr>*
-                | <primitive>
+                | <special-form>
 
-<primitive>    ::= <include>
-                 | <block>
-                 | <definition>
-                 | <assignment>
-                 | <conditional>
-                 | <while>
-                 | <lambda>
-                 | <recur>
-                 | <vector>
-                 | <hash-map>
-                 | <print>
+<special-form> ::= <include>
+                | <block>
+                | <definition>
+                | <assignment>
+                | <conditional>
+                | <while>
+                | <lambda>
+                | <recur>
+                | <vector>
+                | <hash-map>
 
 <include>      ::= "include" <string>
 <block>        ::= "begin" <expr>+
@@ -151,8 +150,6 @@ The _Tatu_ BNF is extremely simple.
 <recur>        ::= "recur" <expr>+
 <vector>       ::= "vector" <expr>*
 <hash-map>     ::= "map" <key-value>*
-<print>        ::= "print" <expr>*
-
 <key-value>    ::= (<identifier> | <string>) <expr>
 
 <comment>      ::= ";" [^\n]*
@@ -165,11 +162,11 @@ The _Tatu_ BNF is extremely simple.
 <letter>       ::= "a" | ... | "z" | "A" | ... | "Z"
 <character>    ::= [^"\\] | "\\\\" | "\\\"" | "\\n" | "\\r" | "\\t"
 <identifier>   ::= (<letter> | "_") (<letter> | <digit> | "-" | "_" | "?" | ":")*
-<operator>     ::= ("+" | "-" | "*" | "/" | "%" | "=" | ">" | "<" | "!" | "&" | "|")+
+<operator>     ::= ("+" | "-" | "*" | "/" | "%" | "=" | ">" | "<")+
 
 ```
 
-> Although the BNF could lack primitives since everything is ultimately an expression, they are included to provide
+> Although the BNF could lack special forms since everything is ultimately an expression, they are included to provide
 > the parser with greater control to detect invalid syntax.
 
 ---

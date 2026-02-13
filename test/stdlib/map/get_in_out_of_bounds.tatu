@@ -1,0 +1,6 @@
+; Test map:get-in with out of bounds index
+
+(var data (map "items" (vector 1 2 3)))
+(map:get-in data (vector "items" 10))
+
+; Expect: <nil>

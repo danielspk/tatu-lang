@@ -4,7 +4,7 @@ This file provides guidance when working with the Tatu programming language code
 
 ## About Tatu
 
-Tatu is an educational functional programming language for general scripting or embedding in Go applications.
+Tatu is an educational multi-paradigm scripting language designed for general scripting or embedding in Go applications.
 
 **Key Features:**
 - S-expression syntax (Lisp-like but not a Lisp)
@@ -24,7 +24,7 @@ Tatu is an educational functional programming language for general scripting or 
 - `make clean` - Remove dist directory
 
 ### Testing
-- `go test ./test` - Run all tests (300+ test files)
+- `go test ./test` - Run all tests (350+ test files)
 - **Success tests**: `; Expect: <expected_result>`
 - **Error tests**: `; Expect Error: <optional_error_substring>`
 - Tests organized by feature in `test/` subdirectories
@@ -44,9 +44,11 @@ Tatu is an educational functional programming language for general scripting or 
 - **`pkg/parser/`** - Syntactic analysis (tokens → AST)
 - **`pkg/ast/`** - AST node definitions (NumberExpr, StringExpr, ListExpr, etc.)
 - **`pkg/builder/`** - Program construction, handles file inclusion
-- **`pkg/runtime/`** - Runtime values (Number, String, Bool, Nil, Function, Vector, Map) and Environment
+- **`pkg/runtime/`** - Runtime values (Number, String, Bool, Nil, Function, NativeFunction, Vector, Map) and Environment
 - **`pkg/interpreter/`** - Tree-walking interpreter with tail-call optimization
-- **`pkg/stdlib/`** - Standard library modules (math, string, vector, map, time, json, file_system, casting, args)
+- **`pkg/core/`** - Shared helpers for argument validation (`expects.go`)
+- **`pkg/core/builtins/`** - Built-in native functions (arithmetic, comparison, I/O, type checking/conversion)
+- **`pkg/core/stdlib/`** - Standard library modules (math, string, vector, map, time, json, file_system, regex)
 - **`pkg/vm/`** - Virtual machine (work in progress)
 - **`pkg/pretty/`** - Colored output and formatting
 - **`pkg/debug/`** - Error reporting with location tracking
@@ -74,10 +76,12 @@ Source → Scanner → Parser → Builder → Interpreter → Result
 - **Functions**:
   - `(lambda (param1 param2 ...) body)` - Anonymous function (closure)
   - User-defined functions are closures with lexical scoping
+- **Logical**:
+  - `and`, `or` - Logical comparison operators
 - **Control Flow**:
   - `(if condition true-expr false-expr)` - Conditional expression
   - `(while condition body)` - Loop while condition is true
-  - `(for init condition body increment)` - For loop (syntactic sugar)
+  - `(for init condition increment body)` - For loop (syntactic sugar)
   - `(switch (cond1 result1) (cond2 result2) ... (default default-result))` - Pattern matching (syntactic sugar)
 - **Blocks**:
   - `(begin expr1 expr2 ...)` - Evaluate expressions sequentially, return last result
@@ -93,7 +97,6 @@ Source → Scanner → Parser → Builder → Interpreter → Result
   - `/` - Division
   - `%` - Modulo (remainder of division)
 - **Comparison**: `>`, `>=`, `<`, `<=`, `=`
-- **Logical**: `and`, `or`
 - **I/O**: `print` - Print values to stdout
 
 #### Standard Library
@@ -103,14 +106,13 @@ All stdlib functions follow the pattern `namespace:function-name`.
 - **`math:`** - Mathematical operations (sqrt, abs, pow, sin, cos, tan, log, exp, floor, ceil, round, min, max, between, rand, pi, e)
 - **`str:`** - String operations (len, concat, split, join, slice, contains, starts, ends, index, upper, lower, trim, replace, repeat, reverse)
 - **`vec:`** - Vector operations (len, get, set, push, pop, concat, slice, find, contains, delete, reverse, sort)
-- **`map:`** - Map operations (len, get, set, has, delete, keys, values, merge)
+- **`map:`** - Map operations (len, get, get-in, set, has, delete, keys, values, merge)
 - **`time:`** - Time operations (now, unix, year, month, day, hour, minute, second, format, parse, add, sub, diff, is-leap)
 - **`json:`** - JSON encoding/decoding (encode, decode)
 - **`fs:`** - File system operations (read, write, append, delete, exists, list, mkdir, move, is-dir, basename, size, temp-dir, read-lines)
 - **`regex:`** - Regular expressions (matches, find, replace)
 - **Type conversion** - to-string, to-number, to-bool
 - **Type checking** - is-bool, is-number, is-int, is-string, is-vector, is-map, is-nil, is-function
-- **Args** - args (command-line arguments)
 
 #### Module System
 - `(include "path/to/file.tatu")` - Include and evaluate external files with circular dependency prevention
@@ -118,7 +120,7 @@ All stdlib functions follow the pattern `namespace:function-name`.
 #### Syntactic Sugar
 - `def` - Function definition: `(def name (params) body)` → `(var name (lambda (params) body))`
 - `switch` - Pattern matching (expands to nested `if`)
-- `for` - Loop construct: `(for init cond body inc)` → `(begin init (while cond (begin body inc)))`
+- `for` - Loop construct: `(for init cond inc body)` → `(begin init (while cond (begin body inc)))`
 - Unary negation: `(- 5)` → `-5`
 - Variadic operators: `+`, `*`, `and`, `or`
 
@@ -140,6 +142,30 @@ Use `(recur arg1 arg2 ...)` for tail-recursive calls to prevent stack overflow.
 
 **Limitations:** Must be used explicitly (not automatic), only works in tail position, cannot optimize mutual recursion between different functions.
 
+## Future: Higher-Order Functions (vec:map, vec:filter, vec:reduce)
+
+Native functions can't call user lambdas because they don't have access to the interpreter. The solution is a `CallFunc` callback pattern:
+
+1. Define `CallFunc` type in `pkg/runtime/`: `type CallFunc func(fn Value, args ...Value) (Value, error)`
+2. The interpreter creates a concrete `CallFunc` that reuses the existing function-calling logic from `evalCallFunction` (the part that already handles both `NativeFunction` and `Function` with evaluated arguments — no code duplication)
+3. Pass it to `RegisterVector`: `stdlib.RegisterVector(natives, call)`
+4. `vec:map`, `vec:filter`, `vec:reduce` use the callback to invoke user-provided functions without knowing if they're lambdas or native functions
+5. If a VM is implemented later, the VM provides its own `CallFunc`
+
+Only `RegisterVector` signature changes — other Register functions stay the same.
+
+## Future: Typed AST
+
+The current AST uses generic `ListExpr` for all constructs — the interpreter inspects the first symbol to determine what kind of expression it is. A typed AST would replace this with specific node types (`IfExpr`, `WhileExpr`, `CallExpr`, `BinaryExpr`, etc.) so the parser produces semantically meaningful nodes instead of flat lists.
+
+Benefits:
+- The interpreter uses type switches instead of symbol string matching
+- `analysis.go` merges into the parser (validation happens when constructing typed nodes)
+- The AST is self-documenting (node type = construct type)
+- Enables multiple parser frontends (S-expression, Lua-like, etc.) producing the same typed AST — the interpreter stays unchanged
+
+Cost: mechanical rewrite of parser + interpreter (logic stays the same, structure changes).
+
 ## Contributing Guidelines
 
 ### Adding Tests
@@ -148,9 +174,9 @@ Use `(recur arg1 arg2 ...)` for tail-recursive calls to prevent stack overflow.
 - Use `; Expect Error: <substring>` for error tests (substring is optional)
 - Test files should be simple and focused on single functionality
 
-### Adding Standard Library Functions
-1. Add function to appropriate file in `pkg/stdlib/` (or create new module)
-2. Use `expectArgs()` helper for argument validation
+### Adding Native Functions
+1. Add function to appropriate file in `pkg/core/builtins/` (core operations) or `pkg/core/stdlib/` (library functions)
+2. Use `core.ExpectArgs()`, `core.ExpectNumber()`, etc. helpers for argument validation
 3. Register function in `Register<Module>()` function with namespace
 4. Register module in `pkg/interpreter/interpreter.go:NewInterpreter()`
 5. Add tests in `test/stdlib/<module>/`

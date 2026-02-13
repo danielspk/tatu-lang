@@ -1,4 +1,4 @@
-; Test slice vector core function - empty slice
+; Test slice vector - empty slice
 
 (vec:slice (vector 10 20 30) 1 1)
 

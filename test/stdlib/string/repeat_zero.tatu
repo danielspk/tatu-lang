@@ -1,4 +1,4 @@
-; Test repeat string core function - zero times
+; Test repeat string - zero times
 
 (str:repeat "ha" 0)
 

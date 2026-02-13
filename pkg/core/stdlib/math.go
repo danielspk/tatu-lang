@@ -1,4 +1,4 @@
-// Package stdlib implements standard library core functions.
+// Package stdlib implements standard library functions.
 package stdlib
 
 import (
@@ -6,38 +6,29 @@ import (
 	"math"
 	"math/rand"
 
+	"github.com/danielspk/tatu-lang/pkg/core"
 	"github.com/danielspk/tatu-lang/pkg/runtime"
 )
 
-// RegisterMath registers mathematical core functions in the environment.
-func RegisterMath(env *runtime.Environment) error {
-	functions := map[string]runtime.CoreFunction{
-		"math:pi":      runtime.NewCoreFunction(mathPi),
-		"math:e":       runtime.NewCoreFunction(mathE),
-		"math:abs":     runtime.NewCoreFunction(mathAbs),
-		"math:floor":   runtime.NewCoreFunction(mathFloor),
-		"math:ceil":    runtime.NewCoreFunction(mathCeil),
-		"math:round":   runtime.NewCoreFunction(mathRound),
-		"math:sin":     runtime.NewCoreFunction(mathSin),
-		"math:cos":     runtime.NewCoreFunction(mathCos),
-		"math:tan":     runtime.NewCoreFunction(mathTan),
-		"math:min":     runtime.NewCoreFunction(mathMin),
-		"math:max":     runtime.NewCoreFunction(mathMax),
-		"math:sqrt":    runtime.NewCoreFunction(mathSqrt),
-		"math:pow":     runtime.NewCoreFunction(mathPow),
-		"math:log":     runtime.NewCoreFunction(mathLog),
-		"math:exp":     runtime.NewCoreFunction(mathExp),
-		"math:between": runtime.NewCoreFunction(mathBetween),
-		"math:rand":    runtime.NewCoreFunction(mathRand),
-	}
-
-	for name, fn := range functions {
-		if _, err := env.Define(name, fn); err != nil {
-			return fmt.Errorf("failed to register math function `%s`: %w", name, err)
-		}
-	}
-
-	return nil
+// RegisterMath registers mathematical functions.
+func RegisterMath(natives map[string]runtime.NativeFunction) {
+	natives["math:pi"] = runtime.NewNativeFunction(mathPi)
+	natives["math:e"] = runtime.NewNativeFunction(mathE)
+	natives["math:abs"] = runtime.NewNativeFunction(mathAbs)
+	natives["math:floor"] = runtime.NewNativeFunction(mathFloor)
+	natives["math:ceil"] = runtime.NewNativeFunction(mathCeil)
+	natives["math:round"] = runtime.NewNativeFunction(mathRound)
+	natives["math:sin"] = runtime.NewNativeFunction(mathSin)
+	natives["math:cos"] = runtime.NewNativeFunction(mathCos)
+	natives["math:tan"] = runtime.NewNativeFunction(mathTan)
+	natives["math:min"] = runtime.NewNativeFunction(mathMin)
+	natives["math:max"] = runtime.NewNativeFunction(mathMax)
+	natives["math:sqrt"] = runtime.NewNativeFunction(mathSqrt)
+	natives["math:pow"] = runtime.NewNativeFunction(mathPow)
+	natives["math:log"] = runtime.NewNativeFunction(mathLog)
+	natives["math:exp"] = runtime.NewNativeFunction(mathExp)
+	natives["math:between"] = runtime.NewNativeFunction(mathBetween)
+	natives["math:rand"] = runtime.NewNativeFunction(mathRand)
 }
 
 // mathPi implements the pi constant.
@@ -45,7 +36,7 @@ func RegisterMath(env *runtime.Environment) error {
 func mathPi(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:pi"
 
-	if err := expectArgs(name, 0, args); err != nil {
+	if err := core.ExpectArgs(name, 0, args); err != nil {
 		return nil, err
 	}
 
@@ -57,7 +48,7 @@ func mathPi(args ...runtime.Value) (runtime.Value, error) {
 func mathE(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:e"
 
-	if err := expectArgs(name, 0, args); err != nil {
+	if err := core.ExpectArgs(name, 0, args); err != nil {
 		return nil, err
 	}
 
@@ -69,11 +60,11 @@ func mathE(args ...runtime.Value) (runtime.Value, error) {
 func mathAbs(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:abs"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	num, err := expectNumber(name, 0, args[0])
+	num, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -86,11 +77,11 @@ func mathAbs(args ...runtime.Value) (runtime.Value, error) {
 func mathFloor(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:floor"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	num, err := expectNumber(name, 0, args[0])
+	num, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -103,11 +94,11 @@ func mathFloor(args ...runtime.Value) (runtime.Value, error) {
 func mathCeil(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:ceil"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	num, err := expectNumber(name, 0, args[0])
+	num, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -120,11 +111,11 @@ func mathCeil(args ...runtime.Value) (runtime.Value, error) {
 func mathRound(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:round"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	num, err := expectNumber(name, 0, args[0])
+	num, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -137,11 +128,11 @@ func mathRound(args ...runtime.Value) (runtime.Value, error) {
 func mathSin(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:sin"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	num, err := expectNumber(name, 0, args[0])
+	num, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -154,11 +145,11 @@ func mathSin(args ...runtime.Value) (runtime.Value, error) {
 func mathCos(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:cos"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	num, err := expectNumber(name, 0, args[0])
+	num, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -171,11 +162,11 @@ func mathCos(args ...runtime.Value) (runtime.Value, error) {
 func mathTan(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:tan"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	num, err := expectNumber(name, 0, args[0])
+	num, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -188,16 +179,16 @@ func mathTan(args ...runtime.Value) (runtime.Value, error) {
 func mathMin(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:min"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	a, err := expectNumber(name, 0, args[0])
+	a, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	b, err := expectNumber(name, 1, args[1])
+	b, err := core.ExpectNumber(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -210,16 +201,16 @@ func mathMin(args ...runtime.Value) (runtime.Value, error) {
 func mathMax(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:max"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	a, err := expectNumber(name, 0, args[0])
+	a, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	b, err := expectNumber(name, 1, args[1])
+	b, err := core.ExpectNumber(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -227,16 +218,16 @@ func mathMax(args ...runtime.Value) (runtime.Value, error) {
 	return runtime.NewNumber(math.Max(a.Value, b.Value)), nil
 }
 
-// mathSqrt implements the square core function.
+// mathSqrt implements the square function.
 // Usage: (math:sqrt 16) => 4
 func mathSqrt(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:sqrt"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	num, err := expectNumber(name, 0, args[0])
+	num, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -253,16 +244,16 @@ func mathSqrt(args ...runtime.Value) (runtime.Value, error) {
 func mathPow(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:pow"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	base, err := expectNumber(name, 0, args[0])
+	base, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	exponent, err := expectNumber(name, 1, args[1])
+	exponent, err := core.ExpectNumber(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
@@ -275,11 +266,11 @@ func mathPow(args ...runtime.Value) (runtime.Value, error) {
 func mathLog(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:log"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	num, err := expectNumber(name, 0, args[0])
+	num, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -296,11 +287,11 @@ func mathLog(args ...runtime.Value) (runtime.Value, error) {
 func mathExp(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:exp"
 
-	if err := expectArgs(name, 1, args); err != nil {
+	if err := core.ExpectArgs(name, 1, args); err != nil {
 		return nil, err
 	}
 
-	num, err := expectNumber(name, 0, args[0])
+	num, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -313,21 +304,21 @@ func mathExp(args ...runtime.Value) (runtime.Value, error) {
 func mathBetween(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:between"
 
-	if err := expectArgs(name, 3, args); err != nil {
+	if err := core.ExpectArgs(name, 3, args); err != nil {
 		return nil, err
 	}
 
-	value, err := expectNumber(name, 0, args[0])
+	value, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	min, err := expectNumber(name, 1, args[1])
+	min, err := core.ExpectNumber(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}
 
-	max, err := expectNumber(name, 2, args[2])
+	max, err := core.ExpectNumber(name, 2, args[2])
 	if err != nil {
 		return nil, err
 	}
@@ -342,16 +333,16 @@ func mathBetween(args ...runtime.Value) (runtime.Value, error) {
 func mathRand(args ...runtime.Value) (runtime.Value, error) {
 	const name = "math:rand"
 
-	if err := expectArgs(name, 2, args); err != nil {
+	if err := core.ExpectArgs(name, 2, args); err != nil {
 		return nil, err
 	}
 
-	minNum, err := expectNumber(name, 0, args[0])
+	minNum, err := core.ExpectNumber(name, 0, args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	maxNum, err := expectNumber(name, 1, args[1])
+	maxNum, err := core.ExpectNumber(name, 1, args[1])
 	if err != nil {
 		return nil, err
 	}

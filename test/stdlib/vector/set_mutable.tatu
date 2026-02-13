@@ -1,4 +1,4 @@
-; Test set vector core function - mutability
+; Test set vector - mutability
 
 (begin
   (var v1 (vector 10 20 30))

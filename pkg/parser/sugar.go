@@ -71,7 +71,7 @@ func (ss *SyntaxSugar) defToVar(expr *ast.SExpr) error {
 }
 
 // forToWhile transforms `for` expression to `while` expression.
-// Example: (for init condition body) -> (begin init (while condition (begin body increment)))
+// Example: (for init condition increment body) -> (begin init (while condition (begin body increment)))
 func (ss *SyntaxSugar) forToWhile(expr *ast.SExpr) error {
 	listExpr, ok := (*expr).(*ast.ListExpr)
 	if !ok || len(listExpr.List) != 5 {

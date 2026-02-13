@@ -1,0 +1,6 @@
+; Test map with symbol key resolution
+
+(var k "name")
+(map k "John")
+
+; Expect: [name John]

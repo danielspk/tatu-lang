@@ -1,4 +1,4 @@
-; Test replace string core function
+; Test replace string
 
 (str:replace "hello world" "world" "Go")
 

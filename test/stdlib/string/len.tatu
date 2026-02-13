@@ -1,4 +1,4 @@
-; Test len string core function
+; Test len string
 
 (str:len "hello")
 

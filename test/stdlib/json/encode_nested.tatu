@@ -1,4 +1,4 @@
-; Test encode json core function - nested structure
+; Test encode json - nested structure
 
 (json:encode (map "user" (map "name" "Bob" "scores" (vector 85 90 95))))
 

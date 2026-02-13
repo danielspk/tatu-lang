@@ -48,14 +48,13 @@ symbol      ; symbol/identifier
 ```lisp
 (if condition 
     then 
-    else)
+    [else])
 
 (while condition
     body)
 
-(for init condition 
-    body
-    increment)
+(for init condition increment
+    body)
 
 (switch
     (cond1 result1)
@@ -88,11 +87,9 @@ symbol      ; symbol/identifier
 (>= a b)
 
 ; Logical
-(and a b ...)          ; logical and (variadic)
-(or a b ...)           ; logical or (variadic)
-
-; I/O
-(print value)
+(and a b ...)          ; logical and
+(or a b ...)           ; logical or
+(not a)                ; logical negation
 ```
 
 ## Data Structures
@@ -129,9 +126,8 @@ symbol      ; symbol/identifier
 
 ```lisp
 ; for loop:
-(for init cond
-    body
-    inc)
+(for init cond inc
+    body)
 
 ; expands to:
 (begin
@@ -162,7 +158,12 @@ symbol      ; symbol/identifier
 (include "path/to/file.tatu")
 ```
 
-## Standard Library
+## Core Builtins
+
+### I/O
+```lisp
+(print x ...)
+```
 
 ### Type Checking
 ```lisp
@@ -182,6 +183,8 @@ symbol      ; symbol/identifier
 (to-number x)
 (to-bool x)
 ```
+
+## Standard Library
 
 ### Math
 
@@ -248,6 +251,7 @@ symbol      ; symbol/identifier
 |----------|-------------|
 | `(map:len m)` | Number of keys |
 | `(map:get m key)` | Get value |
+| `(map:get-in m path)` | Deep access with path vector |
 | `(map:set m key val)` | Set key-value |
 | `(map:has m key)` | Check key exists |
 | `(map:delete m key)` | Delete key |
@@ -306,12 +310,6 @@ symbol      ; symbol/identifier
 | `(regex:matches s pattern)` | Check if matches |
 | `(regex:find s pattern)` | Find first match |
 | `(regex:replace s pattern repl)` | Replace all |
-
-### Args
-
-```lisp
-(args)  ; Returns vector of command-line arguments
-```
 
 ## Examples
 

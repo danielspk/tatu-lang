@@ -1,4 +1,4 @@
-; Test pop vector core function
+; Test pop vector
 
 (vec:pop (vector 10 20 30 40))
 

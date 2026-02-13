@@ -32,12 +32,14 @@ func (sa *SyntaxAnalyzer) Validate(expr ast.SExpr) error {
 	switch symbolExpr.Symbol {
 	case "+":
 		return sa.validatePlus(listExpr)
-	case "-", "*", "/":
+	case "-", "*", "/", "%":
 		return sa.validateArithmetic(listExpr)
 	case "=", "<", "<=", ">", ">=":
 		return sa.validateComparison(listExpr)
 	case "and", "or":
 		return sa.validateLogical(listExpr)
+	case "not":
+		return sa.validateNot(listExpr)
 	case "include":
 		return sa.validateInclude(listExpr)
 	case "begin":
@@ -63,7 +65,7 @@ func (sa *SyntaxAnalyzer) Validate(expr ast.SExpr) error {
 	return nil
 }
 
-// validatePlus validates the plus operator.
+// validatePlus validates the plus native function.
 // Format: (+ <expr>+)
 func (sa *SyntaxAnalyzer) validatePlus(expr *ast.ListExpr) error {
 	if len(expr.List) < 3 {
@@ -73,7 +75,7 @@ func (sa *SyntaxAnalyzer) validatePlus(expr *ast.ListExpr) error {
 	return nil
 }
 
-// validateArithmetic validates arithmetic operators (-, *, /).
+// validateArithmetic validates arithmetic native functions (-, *, /).
 // Format: (op <expr>+) or (- <expr>) for unary negation
 func (sa *SyntaxAnalyzer) validateArithmetic(expr *ast.ListExpr) error {
 	operator := expr.List[0].(*ast.SymbolExpr).Symbol
@@ -87,6 +89,11 @@ func (sa *SyntaxAnalyzer) validateArithmetic(expr *ast.ListExpr) error {
 		return nil
 	}
 
+	// special case: modulo
+	if operator == "%" && len(expr.List) != 3 {
+		return sa.error("invalid `%` format: expected exactly two operands", expr.Location())
+	}
+
 	if operator != "-" && len(expr.List) < 3 {
 		return sa.error(fmt.Sprintf("invalid `%s` format: expected at least two operands", operator), expr.Location())
 	}
@@ -94,7 +101,7 @@ func (sa *SyntaxAnalyzer) validateArithmetic(expr *ast.ListExpr) error {
 	return nil
 }
 
-// validateComparison validates comparison operators (=, <, <=, >, >=).
+// validateComparison validates comparison native functions (=, <, <=, >, >=).
 // Format: (op <expr> <expr>)
 func (sa *SyntaxAnalyzer) validateComparison(expr *ast.ListExpr) error {
 	operator := expr.List[0].(*ast.SymbolExpr).Symbol
@@ -106,7 +113,7 @@ func (sa *SyntaxAnalyzer) validateComparison(expr *ast.ListExpr) error {
 	return nil
 }
 
-// validateLogical validates logical operators (and, or).
+// validateLogical validates logical special forms (and, or).
 // Format: (op <expr>+)
 func (sa *SyntaxAnalyzer) validateLogical(expr *ast.ListExpr) error {
 	operator := expr.List[0].(*ast.SymbolExpr).Symbol
@@ -118,7 +125,17 @@ func (sa *SyntaxAnalyzer) validateLogical(expr *ast.ListExpr) error {
 	return nil
 }
 
-// validateInclude validates the `include` primitive.
+// validateNot validates the `not` native function.
+// Format: (not <expr>)
+func (sa *SyntaxAnalyzer) validateNot(expr *ast.ListExpr) error {
+	if len(expr.List) != 2 {
+		return sa.error("invalid `not` format: expected exactly one operand", expr.Location())
+	}
+
+	return nil
+}
+
+// validateInclude validates the `include` special form.
 // Format: (include <string>)
 func (sa *SyntaxAnalyzer) validateInclude(expr *ast.ListExpr) error {
 	if len(expr.List) != 2 {
@@ -132,7 +149,7 @@ func (sa *SyntaxAnalyzer) validateInclude(expr *ast.ListExpr) error {
 	return nil
 }
 
-// validateBegin validates the `begin` primitive.
+// validateBegin validates the `begin` special form.
 // Format: (begin <expr>+)
 func (sa *SyntaxAnalyzer) validateBegin(expr *ast.ListExpr) error {
 	if len(expr.List) < 2 {
@@ -142,7 +159,7 @@ func (sa *SyntaxAnalyzer) validateBegin(expr *ast.ListExpr) error {
 	return nil
 }
 
-// validateVar validates the `var` primitive.
+// validateVar validates the `var` special form.
 // Format: (var <identifier> <expr>)
 func (sa *SyntaxAnalyzer) validateVar(expr *ast.ListExpr) error {
 	if len(expr.List) != 3 {
@@ -156,7 +173,7 @@ func (sa *SyntaxAnalyzer) validateVar(expr *ast.ListExpr) error {
 	return nil
 }
 
-// validateSet validates the `set` primitive.
+// validateSet validates the `set` special form.
 // Format: (set <identifier> <expr>)
 func (sa *SyntaxAnalyzer) validateSet(expr *ast.ListExpr) error {
 	if len(expr.List) != 3 {
@@ -170,17 +187,17 @@ func (sa *SyntaxAnalyzer) validateSet(expr *ast.ListExpr) error {
 	return nil
 }
 
-// validateIf validates the `if` primitive.
-// Format: (if <expr> <expr> <expr>)
+// validateIf validates the `if` special form.
+// Format: (if <expr> <expr> [<expr>])
 func (sa *SyntaxAnalyzer) validateIf(expr *ast.ListExpr) error {
-	if len(expr.List) != 4 {
-		return sa.error("invalid `if` format: expected (if <condition> <then> <else>)", expr.Location())
+	if len(expr.List) < 3 || len(expr.List) > 4 {
+		return sa.error("invalid `if` format: expected (if <condition> <then> [<else>])", expr.Location())
 	}
 
 	return nil
 }
 
-// validateWhile validates the `while` primitive.
+// validateWhile validates the `while` special form.
 // Format: (while <expr> <expr>)
 func (sa *SyntaxAnalyzer) validateWhile(expr *ast.ListExpr) error {
 	if len(expr.List) != 3 {
@@ -190,7 +207,7 @@ func (sa *SyntaxAnalyzer) validateWhile(expr *ast.ListExpr) error {
 	return nil
 }
 
-// validateLambda validates the `lambda` primitive.
+// validateLambda validates the `lambda` special form.
 // Format: (lambda (<identifier>*) <expr>)
 func (sa *SyntaxAnalyzer) validateLambda(expr *ast.ListExpr) error {
 	if len(expr.List) != 3 {
@@ -211,31 +228,23 @@ func (sa *SyntaxAnalyzer) validateLambda(expr *ast.ListExpr) error {
 	return nil
 }
 
-// validateVector validates the `vector` primitive.
+// validateVector validates the `vector` special form.
 // Format: (vector <expr>*)
 func (sa *SyntaxAnalyzer) validateVector(_ *ast.ListExpr) error {
 	return nil // no validation required
 }
 
-// validateMap validates the `map` primitive.
+// validateMap validates the `map` special form.
 // Format: (map <key-value>*)
 func (sa *SyntaxAnalyzer) validateMap(expr *ast.ListExpr) error {
 	if len(expr.List)%2 != 1 {
 		return sa.error("invalid `map` format: expected (map <key-value>*)", expr.Location())
 	}
 
-	for idx := 1; idx < len(expr.List); idx += 2 {
-		keyExpr := expr.List[idx]
-
-		if keyExpr.Kind() != ast.SymbolKind && keyExpr.Kind() != ast.StringKind {
-			return sa.error("invalid `map` key: expected symbol or string", keyExpr.Location())
-		}
-	}
-
 	return nil
 }
 
-// validatePrint validates the `print` built-in.
+// validatePrint validates the `print` native function.
 // Format: (print <expr>*)
 func (sa *SyntaxAnalyzer) validatePrint(expr *ast.ListExpr) error {
 	if len(expr.List) < 2 {

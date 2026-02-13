@@ -1,4 +1,4 @@
-; Test has map core function - key does not exist
+; Test has map - key does not exist
 
 (map:has (map "name" "John") "age")
 
