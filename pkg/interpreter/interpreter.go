@@ -15,7 +15,7 @@ import (
 // Interpreter represents a tree-walking interpreter.
 type Interpreter struct {
 	natives map[string]runtime.NativeFunction
-	global     *runtime.Environment
+	global  *runtime.Environment
 }
 
 // NewInterpreter builds a new Interpreter.
@@ -38,7 +38,7 @@ func NewInterpreter() (*Interpreter, error) {
 
 	return &Interpreter{
 		natives: natives,
-		global:     runtime.NewEnvironment(nil, nil),
+		global:  runtime.NewEnvironment(nil, nil),
 	}, nil
 }
 
@@ -152,8 +152,6 @@ func (i *Interpreter) evalList(expr ast.SExpr, env *runtime.Environment) (runtim
 		exprSymbol := exprList.List[0].(*ast.SymbolExpr)
 
 		switch exprSymbol.Symbol {
-		case "include":
-			return nil, i.error("include not resolved", exprList.Location())
 		case "and", "or":
 			return i.evalLogical(exprList, env)
 		case "begin":

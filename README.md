@@ -133,6 +133,7 @@ The _Tatu_ BNF is extremely simple.
                 | <block>
                 | <definition>
                 | <assignment>
+                | <logical>
                 | <conditional>
                 | <while>
                 | <lambda>
@@ -144,6 +145,7 @@ The _Tatu_ BNF is extremely simple.
 <block>        ::= "begin" <expr>+
 <definition>   ::= "var" <identifier> <expr>
 <assignment>   ::= "set" <identifier> <expr>
+<logical>      ::= ("and" | "or") <expr>*
 <conditional>  ::= "if" <expr> <expr> <expr>?
 <while>        ::= "while" <expr> <expr>
 <lambda>       ::= "lambda" "(" <identifier>* ")" <expr>
