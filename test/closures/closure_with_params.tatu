@@ -1,6 +1,6 @@
 ; Test closure with parameters capturing outer variable
 
-(begin
+(block
   (var x 10)
   (var f (lambda (y) (+ x y)))
   (f 5))

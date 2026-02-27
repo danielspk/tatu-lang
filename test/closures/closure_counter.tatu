@@ -1,6 +1,6 @@
 ; Test closure maintaining state
 
-(begin
+(block
   (var counter 0)
   (var increment (lambda () (set counter (+ counter 1))))
   (increment)

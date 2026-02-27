@@ -1,7 +1,7 @@
 ; Test lambda function 2
 
 (def onclick (callback)
-  (begin
+  (block
     (var x 10)
     (var y 20)
     (callback (+ x y))))

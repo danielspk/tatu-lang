@@ -1,10 +1,10 @@
 ; Test assignation and scope 2
 
-(begin
+(block
   (var value1 10)
   (var value2 10)
-  (var result (begin
-    (var x (+ value1 (begin
+  (var result (block
+    (var x (+ value1 (block
       (+ 10 value2))))
     x)
   )

@@ -42,8 +42,8 @@ func (sa *SyntaxAnalyzer) Validate(expr ast.SExpr) error {
 		return sa.validateNot(listExpr)
 	case "include":
 		return sa.validateInclude(listExpr)
-	case "begin":
-		return sa.validateBegin(listExpr)
+	case "block":
+		return sa.validateBlock(listExpr)
 	case "var":
 		return sa.validateVar(listExpr)
 	case "set":
@@ -149,11 +149,11 @@ func (sa *SyntaxAnalyzer) validateInclude(expr *ast.ListExpr) error {
 	return nil
 }
 
-// validateBegin validates the `begin` special form.
-// Format: (begin <expr>+)
-func (sa *SyntaxAnalyzer) validateBegin(expr *ast.ListExpr) error {
+// validateBlock validates the `block` special form.
+// Format: (block <expr>+)
+func (sa *SyntaxAnalyzer) validateBlock(expr *ast.ListExpr) error {
 	if len(expr.List) < 2 {
-		return sa.error("invalid `begin` format: expected at least one expression", expr.Location())
+		return sa.error("invalid `block` format: expected at least one expression", expr.Location())
 	}
 
 	return nil

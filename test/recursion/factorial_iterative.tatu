@@ -1,11 +1,11 @@
 ; Test iterative factorial
 
-(begin
+(block
   (def factorial (x)
-    (begin
+    (block
       (var result x)
       (while (> x 1)
-        (begin
+        (block
           (set x (- x 1))
           (set result (* result x))))))
 

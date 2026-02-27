@@ -2,7 +2,7 @@
 
 (var x 10)
 
-(begin
+(block
   (var x 20)
   x
 )

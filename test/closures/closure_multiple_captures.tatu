@@ -1,6 +1,6 @@
 ; Test closure capturing multiple outer variables
 
-(begin
+(block
   (var x 5)
   (var y 10)
   (var f (lambda () (+ x y)))

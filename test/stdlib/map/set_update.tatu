@@ -1,6 +1,6 @@
 ; Test set map - update existing key
 
-(begin
+(block
   (var m (map "name" "John"))
   (map:set m "name" "Jane")
   (map:get m "name"))

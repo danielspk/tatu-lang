@@ -1,6 +1,6 @@
 ; Test move file
 
-(begin
+(block
   (var temp-path1 (str:concat (fs:temp-dir) "/tatu-test-move1.txt"))
   (var temp-path2 (str:concat (fs:temp-dir) "/tatu-test-move2.txt"))
   (fs:write temp-path1 "movable")

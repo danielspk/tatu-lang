@@ -71,7 +71,7 @@ func (ss *SyntaxSugar) defToVar(expr *ast.SExpr) error {
 }
 
 // forToWhile transforms `for` expression to `while` expression.
-// Example: (for init condition increment body) -> (begin init (while condition (begin body increment)))
+// Example: (for init condition increment body) -> (block init (while condition (block body increment)))
 func (ss *SyntaxSugar) forToWhile(expr *ast.SExpr) error {
 	listExpr, ok := (*expr).(*ast.ListExpr)
 	if !ok || len(listExpr.List) != 5 {
@@ -89,16 +89,16 @@ func (ss *SyntaxSugar) forToWhile(expr *ast.SExpr) error {
 		}
 	}
 
-	// locations for synthetic tokens (begin and while) are derived from the original expression's location
+	// locations for synthetic tokens (block and while) are derived from the original expression's location
 	*expr = ast.NewListExpr(
 		[]ast.SExpr{
-			ast.NewSymbolExpr("begin", listExpr.List[0].Location()),
+			ast.NewSymbolExpr("block", listExpr.List[0].Location()),
 			listExpr.List[1], // init
 			ast.NewListExpr([]ast.SExpr{
 				ast.NewSymbolExpr("while", listExpr.List[1].Location()),
 				listExpr.List[2], // condition
 				ast.NewListExpr([]ast.SExpr{
-					ast.NewSymbolExpr("begin", listExpr.List[2].Location()),
+					ast.NewSymbolExpr("block", listExpr.List[2].Location()),
 					listExpr.List[4], // body
 					listExpr.List[3], // increment
 				}, listExpr.List[2].Location()),

@@ -154,8 +154,8 @@ func (i *Interpreter) evalList(expr ast.SExpr, env *runtime.Environment) (runtim
 		switch exprSymbol.Symbol {
 		case "and", "or":
 			return i.evalLogical(exprList, env)
-		case "begin":
-			return i.evalBegin(exprList, env)
+		case "block":
+			return i.evalBlock(exprList, env)
 		case "var":
 			return i.evalVar(exprList, env)
 		case "set":
@@ -208,8 +208,8 @@ func (i *Interpreter) evalLogical(expr ast.SExpr, env *runtime.Environment) (run
 	return runtime.NewBool(operator == "and"), nil
 }
 
-// evalBegin evaluates a `begin` expression (block of expressions).
-func (i *Interpreter) evalBegin(expr ast.SExpr, env *runtime.Environment) (runtime.Value, error) {
+// evalBlock evaluates a `block` expression (block of expressions).
+func (i *Interpreter) evalBlock(expr ast.SExpr, env *runtime.Environment) (runtime.Value, error) {
 	exprList := expr.(*ast.ListExpr)
 
 	newEnv := runtime.NewEnvironment(nil, env)

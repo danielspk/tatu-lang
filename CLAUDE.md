@@ -84,7 +84,7 @@ Source → Scanner → Parser → Builder → Interpreter → Result
   - `(for init condition increment body)` - For loop (syntactic sugar)
   - `(switch (cond1 result1) (cond2 result2) ... (default default-result))` - Pattern matching (syntactic sugar)
 - **Blocks**:
-  - `(begin expr1 expr2 ...)` - Evaluate expressions sequentially, return last result
+  - `(block expr1 expr2 ...)` - Evaluate expressions sequentially, return last result
   - Creates new lexical scope
 - **Recursion**:
   - `(recur arg1 arg2 ...)` - Tail-recursive call (see Tail-Call Optimization section)
@@ -120,7 +120,7 @@ All stdlib functions follow the pattern `namespace:function-name`.
 #### Syntactic Sugar
 - `def` - Function definition: `(def name (params) body)` → `(var name (lambda (params) body))`
 - `switch` - Pattern matching (expands to nested `if`)
-- `for` - Loop construct: `(for init cond inc body)` → `(begin init (while cond (begin body inc)))`
+- `for` - Loop construct: `(for init cond inc body)` → `(block init (while cond (block body inc)))`
 - Unary negation: `(- 5)` → `-5`
 - Variadic operators: `+`, `*`, `and`, `or`
 

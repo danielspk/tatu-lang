@@ -1,7 +1,7 @@
 ; Test define function 2
 
 (def calc (x y)
-  (begin
+  (block
     (var z 30)
     (+ (* x y) z)
   ))

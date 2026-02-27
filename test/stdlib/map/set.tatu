@@ -1,6 +1,6 @@
 ; Test set map
 
-(begin
+(block
   (var m (map "name" "John"))
   (map:set m "age" 30)
   (map:get m "age"))

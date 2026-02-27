@@ -1,6 +1,6 @@
 ; Test merge map - override existing keys
 
-(begin
+(block
   (var m1 (map "a" 1 "b" 2))
   (var m2 (map "b" 99))
   (map:merge m1 m2)

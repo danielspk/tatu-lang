@@ -1,6 +1,6 @@
 ; Test delete map
 
-(begin
+(block
   (var m (map "name" "John" "age" 30))
   (map:delete m "age")
   (map:len m))

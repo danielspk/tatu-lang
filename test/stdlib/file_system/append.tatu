@@ -1,6 +1,6 @@
 ; Test append to file
 
-(begin
+(block
   (var temp-path (str:concat (fs:temp-dir) "/tatu-test-append.txt"))
   (fs:write temp-path "first")
   (fs:append temp-path " second")

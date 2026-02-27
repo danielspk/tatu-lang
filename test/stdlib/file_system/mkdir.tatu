@@ -1,6 +1,6 @@
 ; Test create directory
 
-(begin
+(block
   (var temp-dir (str:concat (fs:temp-dir) "/tatu-test-mkdir"))
   (fs:mkdir temp-dir)
   (var result (fs:is-dir temp-dir))

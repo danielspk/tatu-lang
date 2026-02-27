@@ -1,8 +1,8 @@
 ; Test assignation, update and scope 4
 
-(begin
+(block
   (var data 20)
-  (begin
+  (block
     (var data 10)
     (set data 100)
   )

@@ -1,6 +1,6 @@
 ; Test delete map - nonexistent key
 
-(begin
+(block
   (var m (map "name" "John"))
   (map:delete m "age")
   (map:len m))

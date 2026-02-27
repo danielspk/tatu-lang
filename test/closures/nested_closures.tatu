@@ -1,9 +1,9 @@
 ; Test nested closures
 
-(begin
+(block
   (var x 10)
   (var outer (lambda ()
-    (begin
+    (block
       (var y 5)
       (var inner (lambda () (+ x y)))
       (inner))))

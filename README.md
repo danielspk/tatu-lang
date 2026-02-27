@@ -13,7 +13,7 @@
 
 ## What is _Tatu_
 
-_Tatu_ is a toy language developed for general scripting that can be embedded within **Go** applications.
+_Tatu_ is a strange toy language designed for general scripting that can be embedded within **Go** applications.
 
 ---
 
@@ -22,17 +22,18 @@ _Tatu_ is a toy language developed for general scripting that can be embedded wi
 _Tatu_ is a programming language with the following features:
 
 - ✅ Based on _s-expressions_.
+- ✅ Imperative semantics with explicit mutable state.
 - ✅ Everything is an expression _(no statements)_.
 - ✅ The last evaluated expression always returns its value.
 - ✅ First-class functions with lexical closures.
 - ✅ Lambda functions.
 - ✅ File inclusion system.
 - ✅ Syntactic sugar support.
-- ✅ Explicit tail call optimization (TCO).
+- ✅ Explicit tail call optimization _(TCO)_.
 - ✅ UTF-8 native support.
 - ✅ Pure Go implementation.
 
-> _Tatu_ is not a _Lisp_ dialect and does not support metaprogramming.
+> Despite its S-expression syntax, _Tatu_ is not a _Lisp_ dialect and does not support metaprogramming.
 
 ### TODOs
 
@@ -142,7 +143,7 @@ The _Tatu_ BNF is extremely simple.
                 | <hash-map>
 
 <include>      ::= "include" <string>
-<block>        ::= "begin" <expr>+
+<block>        ::= "block" <expr>+
 <definition>   ::= "var" <identifier> <expr>
 <assignment>   ::= "set" <identifier> <expr>
 <logical>      ::= ("and" | "or") <expr>*

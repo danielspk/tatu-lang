@@ -4,7 +4,7 @@
 (var number 10)
 
 (while (> i 0)
-  (begin
+  (block
     (set i (- i 1))
     (set number (+ number 1))))
 

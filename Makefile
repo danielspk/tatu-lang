@@ -1,4 +1,4 @@
-VERSION := v0.3.1
+VERSION := v0.4.0
 
 all: clean build-linux build-mac build-windows
 

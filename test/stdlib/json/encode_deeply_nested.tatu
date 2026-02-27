@@ -1,6 +1,6 @@
 ; Test JSON encode with deeply nested objects
 
-(begin
+(block
   (var result (json:encode
     (map
       "data" (map

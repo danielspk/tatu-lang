@@ -3,7 +3,7 @@
 (var value 100)
 
 (def calc (x y)
-  (begin
+  (block
     (var z (+ x y))
     (def inner (foo)
       (+ (+ foo z) value))

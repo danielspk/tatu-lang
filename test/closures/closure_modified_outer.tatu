@@ -1,6 +1,6 @@
 ; Test closure with modified outer variable
 
-(begin
+(block
   (var x 10)
   (var f (lambda () x))
   (set x 20)

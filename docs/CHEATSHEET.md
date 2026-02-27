@@ -61,7 +61,7 @@ symbol      ; symbol/identifier
     (cond2 result2)
     (default result3))
 
-(begin 
+(block 
     expr1
     expr2 ...)
 
@@ -130,10 +130,10 @@ symbol      ; symbol/identifier
     body)
 
 ; expands to:
-(begin
+(block
     init 
     (while cond 
-        (begin
+        (block
             body
             inc)))
 ```
@@ -332,7 +332,7 @@ symbol      ; symbol/identifier
   (var i 0)
 
   (while (< i (vec:len numbers))
-    (begin
+    (block
       (var num (vec:get numbers i))
       (if (math:between num min max)
         (vec:push result num))
@@ -341,7 +341,3 @@ symbol      ; symbol/identifier
 
 (filter-range (vector 1 5 10 15 3 20) 5 15)
 ```
-
----
-
-> *This cheatsheet was AI-generated and may contain errors. Please refer to official documentation for accurate information.*
