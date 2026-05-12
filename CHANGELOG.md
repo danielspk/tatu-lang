@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [v0.5.0](https://github.com/danielspk/tatu-lang/releases/tag/v0.5.0) - _2026-05-12_
+
+### Changed
+
+- `for` now creates a per-iteration binding of the loop variable.
+- `Number.String()` outputs full IEEE 754 precision, matching `=`.
+- `Map.String()` sorts keys alphabetically for stable output.
+- `regex:find` returns `nil` on no match _(was `""`)_.
+- `=` returns `false` when comparing different types, not an error.
+- `=` does structural equality on vectors and maps; functions are unequal.
+- `to-string` now accepts vectors, maps and functions.
+- `to-bool` now accepts vectors, maps and functions.
+- `to-number` no longer accepts `"Inf"` and `"NaN"` strings.
+- `math:pow` no longer returns infinity or NaN on edge cases.
+- `math:exp` no longer returns infinity on large arguments.
+- `debug.Error.Dump` removed; error rendering moved to `pretty`.
+- Test harness `; Expect Error:` matches build-time errors too.
+- Remove unreachable recursive `Transform` calls in `sugar.go`.
+
+### Fixed
+
+- `sugar.go` errors now include line, column and file location.
+- Scanner escape processing corrupting literal `\\n` into a newline.
+- Scanner mis-terminating strings ending with escaped backslash `"a\\"`.
+- Lambda call with wrong arity panicking with `index out of range`.
+- CLI taking the last argument as filename even if it was a flag.
+- Parser atom location had `End.Offset` copying `Start.Offset`.
+- Scanner line count off-by-one when string ends with a newline.
+- `vec:push`, `vec:pop`, `vec:delete`, `vec:concat` now mutate the receiver.
+- `vec:sort` errors on mixed or unsortable types _(was indeterminate order)_.
+- `map:keys` and `map:values` non-deterministic order.
+- `fs:read-lines` left trailing empty line and `\r` on CRLF files.
+
 ## [v0.4.0](https://github.com/danielspk/tatu-lang/releases/tag/v0.4.0) - _2026-02-26_
 
 ### Changed

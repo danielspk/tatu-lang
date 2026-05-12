@@ -1,0 +1,5 @@
+; Test nested vector equality is recursive
+
+(= (vector (vector 1) (vector 2 3)) (vector (vector 1) (vector 2 3)))
+
+; Expect: true

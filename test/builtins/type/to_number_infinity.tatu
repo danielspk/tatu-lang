@@ -1,0 +1,5 @@
+; Test to-number rejects infinity string
+
+(to-number "Inf")
+
+; Expect Error: cannot parse STRING 'Inf' to NUMBER

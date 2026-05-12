@@ -1,0 +1,5 @@
+; Test math:exp overflow returns error
+
+(math:exp 800)
+
+; Expect Error: cannot produce infinity or NaN

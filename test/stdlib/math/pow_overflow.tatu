@@ -1,0 +1,5 @@
+; Test math:pow overflow returns error
+
+(math:pow 10 1000)
+
+; Expect Error: cannot produce infinity or NaN

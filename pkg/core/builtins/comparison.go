@@ -16,7 +16,7 @@ func RegisterComparison(natives map[string]runtime.NativeFunction) {
 	natives["not"] = runtime.NewNativeFunction(not)
 }
 
-// equal implements the = operator (equality between same types).
+// equal implements the = operator.
 // Usage: (= 1 1) => true
 // Usage: (= "a" "b") => false
 func equal(args ...runtime.Value) (runtime.Value, error) {
@@ -26,24 +26,7 @@ func equal(args ...runtime.Value) (runtime.Value, error) {
 		return nil, fmt.Errorf("`%s` expected 2 arguments, got %d", name, len(args))
 	}
 
-	left, right := args[0], args[1]
-
-	if left.Type() != right.Type() {
-		return nil, fmt.Errorf("`%s` cannot compare %s and %s", name, left.Type(), right.Type())
-	}
-
-	switch left.Type() {
-	case runtime.NumberType:
-		return runtime.NewBool(left.(runtime.Number).Value == right.(runtime.Number).Value), nil
-	case runtime.StringType:
-		return runtime.NewBool(left.(runtime.String).Value == right.(runtime.String).Value), nil
-	case runtime.BoolType:
-		return runtime.NewBool(left.(runtime.Bool).Value == right.(runtime.Bool).Value), nil
-	case runtime.NilType:
-		return runtime.NewBool(true), nil
-	default:
-		return nil, fmt.Errorf("`%s` invalid type %s", name, left.Type())
-	}
+	return runtime.NewBool(args[0].Equal(args[1])), nil
 }
 
 // compareOrdered evaluates an ordering comparison between two values of the same type.

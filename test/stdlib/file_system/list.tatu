@@ -2,4 +2,4 @@
 
 (vec:len (fs:list "stdlib/file_system/fixtures"))
 
-; Expect: 2
+; Expect: 4

@@ -1,0 +1,5 @@
+; Test to-bool from non-empty vector
+
+(to-bool (vector 1 2 3))
+
+; Expect: true

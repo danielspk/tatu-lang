@@ -1,0 +1,5 @@
+; Test vector not equals vector
+
+(= (vector 1 2) (vector 1 3))
+
+; Expect: false

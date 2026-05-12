@@ -49,12 +49,12 @@ func ExpectString(name string, argIndex int, arg runtime.Value) (runtime.String,
 }
 
 // ExpectVector validates that an argument is VECTOR and returns it.
-func ExpectVector(name string, argIndex int, arg runtime.Value) (runtime.Vector, error) {
+func ExpectVector(name string, argIndex int, arg runtime.Value) (*runtime.Vector, error) {
 	if arg.Type() != runtime.VectorType {
-		return runtime.Vector{}, fmt.Errorf("`%s` expects VECTOR at argument %d, got %s", name, argIndex+1, arg.Type())
+		return nil, fmt.Errorf("`%s` expects VECTOR at argument %d, got %s", name, argIndex+1, arg.Type())
 	}
 
-	return arg.(runtime.Vector), nil
+	return arg.(*runtime.Vector), nil
 }
 
 // ExpectMap validates that an argument is MAP and returns it.

@@ -19,17 +19,17 @@ func main() {
 	printInfo := flag.Bool("printInfo", true, "print the tatu header info")
 	flag.Parse()
 
-	if len(os.Args) <= 1 {
-		exitWithError(fmt.Errorf("usage `tatu [arguments] <source file>`"))
+	if flag.NArg() == 0 {
+		exitWithError(fmt.Errorf("usage `tatu [arguments] <source file>`"), nil)
 	}
 
-	filename := os.Args[len(os.Args)-1]
+	filename := flag.Arg(0)
 
 	// building from a source file
 	progBuilder := builder.NewProgramBuilder(builder.NewDefaultScanner(), builder.NewDefaultParser())
 	tokens, ast, err := progBuilder.BuildFromFile(filename)
 	if err != nil {
-		exitWithError(err)
+		exitWithError(err, progBuilder.Sources())
 	}
 
 	// compiling to bytecode
@@ -62,13 +62,13 @@ func main() {
 	// evaluating by interpreter
 	inter, err := interpreter.NewInterpreter()
 	if err != nil {
-		exitWithError(err)
+		exitWithError(err, progBuilder.Sources())
 	}
 
 	for _, expr := range ast.Program {
 		result, err := inter.Eval(expr, nil)
 		if err != nil {
-			exitWithError(err)
+			exitWithError(err, progBuilder.Sources())
 		}
 
 		fmt.Println(result)
@@ -84,7 +84,7 @@ func main() {
 	fmt.Println(result)*/
 }
 
-func exitWithError(err error) {
-	fmt.Print(pretty.FormatError(err))
+func exitWithError(err error, sources map[string][]byte) {
+	fmt.Print(pretty.FormatError(err, sources))
 	os.Exit(1)
 }

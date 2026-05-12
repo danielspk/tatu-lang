@@ -1,0 +1,5 @@
+; Test to-bool from function
+
+(to-bool (lambda (x) x))
+
+; Expect: true

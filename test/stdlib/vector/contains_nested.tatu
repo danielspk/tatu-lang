@@ -1,0 +1,5 @@
+; Test contains vector - nested element matched by structural equality
+
+(vec:contains (vector (vector 1) (vector 2)) (vector 1))
+
+; Expect: true

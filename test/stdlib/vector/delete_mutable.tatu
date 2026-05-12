@@ -1,0 +1,7 @@
+; Test delete vector - mutates the receiver
+
+(var v (vector 1 2 3))
+(vec:delete v 0)
+(vec:len v)
+
+; Expect: 2

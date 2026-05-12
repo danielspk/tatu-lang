@@ -1,0 +1,10 @@
+; Test recur with too few arguments
+
+(def f (a b)
+  (if (= a 0)
+    b
+    (recur (- a 1))))
+
+(f 3 0)
+
+; Expect Error: expected 2 arguments, got 1

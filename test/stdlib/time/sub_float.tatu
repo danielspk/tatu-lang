@@ -1,0 +1,5 @@
+; Test time:sub with float seconds (fractional part has no effect)
+
+(time:sub 1609459200 0.9)
+
+; Expect: 1609459200

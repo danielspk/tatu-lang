@@ -24,15 +24,21 @@ type Parser interface {
 type ProgramBuilder struct {
 	scanner     Scanner
 	parser      Parser
-	parsedFiles []string
+	parsedFiles map[string][]byte
 }
 
 // NewProgramBuilder builds a new ProgramBuilder.
 func NewProgramBuilder(scanner Scanner, parser Parser) *ProgramBuilder {
 	return &ProgramBuilder{
-		scanner: scanner,
-		parser:  parser,
+		scanner:     scanner,
+		parser:      parser,
+		parsedFiles: make(map[string][]byte),
 	}
+}
+
+// Sources return the source of every file parsed.
+func (pb *ProgramBuilder) Sources() map[string][]byte {
+	return pb.parsedFiles
 }
 
 // BuildFromFile builds an AST from a file path.
@@ -51,7 +57,7 @@ func (pb *ProgramBuilder) BuildFromFile(filename string) ([]token.Token, *ast.AS
 func (pb *ProgramBuilder) BuildFromSource(source []byte, filename string) ([]token.Token, *ast.AST, error) {
 	filename = pb.fullPath(filename)
 
-	pb.addParsedFile(filename)
+	pb.addParsedFile(filename, source)
 
 	tokens, err := pb.scanner.Scan(source, filename)
 	if err != nil {
@@ -107,20 +113,16 @@ func (pb *ProgramBuilder) isIncludeExpr(expr ast.SExpr) (filename string, ok boo
 	return "", false
 }
 
-// addParsedFile adds a file to the list of building files.
-func (pb *ProgramBuilder) addParsedFile(filename string) {
-	pb.parsedFiles = append(pb.parsedFiles, filename)
+// addParsedFile records a file and its source bytes.
+func (pb *ProgramBuilder) addParsedFile(filename string, source []byte) {
+	pb.parsedFiles[filename] = source
 }
 
 // fileWasParsed checks if a file was already built.
 func (pb *ProgramBuilder) fileWasParsed(filename string) bool {
-	for _, buildFile := range pb.parsedFiles {
-		if buildFile == filename {
-			return true
-		}
-	}
+	_, ok := pb.parsedFiles[filename]
 
-	return false
+	return ok
 }
 
 // fullPath resolves the absolute path of a file.

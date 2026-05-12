@@ -92,7 +92,7 @@ func (p *Parser) parseAtom() (ast.SExpr, error) {
 	loc := location.NewLocation(
 		atom.File,
 		location.NewPosition(atom.Start.Line, atom.Start.Column, atom.Start.Offset),
-		location.NewPosition(atom.End.Line, atom.End.Column, atom.Start.Offset),
+		location.NewPosition(atom.End.Line, atom.End.Column, atom.End.Offset),
 	)
 
 	switch atom.Type {

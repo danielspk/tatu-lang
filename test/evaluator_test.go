@@ -107,22 +107,15 @@ func runSuccessTest(source []byte, filename string) error {
 
 func runErrorTest(source []byte, filename string) error {
 	progBuilder := builder.NewProgramBuilder(builder.NewDefaultScanner(), builder.NewDefaultParser())
-	_, ast, err := progBuilder.BuildFromFile(filename)
-	if err != nil {
-		return fmt.Errorf("building source: %w", err)
-	}
 
-	inter, err := interpreter.NewInterpreter()
-	if err != nil {
-		return fmt.Errorf("creating interpreter: %w", err)
-	}
-
-	var evalError error
-	for _, expr := range ast.Program {
-		_, evalError = inter.Eval(expr, nil)
-		if evalError != nil {
-			break
+	_, ast, evalError := progBuilder.BuildFromFile(filename)
+	if evalError == nil {
+		inter, err := interpreter.NewInterpreter()
+		if err != nil {
+			return fmt.Errorf("creating interpreter: %w", err)
 		}
+
+		_, evalError = inter.EvalProgram(ast, nil)
 	}
 
 	if evalError == nil {

@@ -1,0 +1,7 @@
+; Test slice vector - returns a new vector
+
+(var v (vector 1 2 3 4))
+(vec:slice v 0 2)
+(vec:len v)
+
+; Expect: 4

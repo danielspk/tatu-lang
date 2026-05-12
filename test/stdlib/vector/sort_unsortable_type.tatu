@@ -1,0 +1,5 @@
+; Test vec:sort error on sort unsortable types
+
+(vec:sort (vector (vector 1) (vector 2)))
+
+; Expect Error: cannot sort VECTOR values

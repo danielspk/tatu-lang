@@ -418,8 +418,13 @@ func (i *Interpreter) evalCallFunction(expr ast.SExpr, env *runtime.Environment)
 	// lambda function
 	fn := funcValue.(runtime.Function)
 	currentArgs := valArgs
+	expectedArgs := len(fn.Params.(*ast.ListExpr).List)
 
 	for {
+		if len(currentArgs) != expectedArgs {
+			return nil, i.error(fmt.Sprintf("expected %d arguments, got %d", expectedArgs, len(currentArgs)), exprList.Location())
+		}
+
 		activationRecord := make(map[string]runtime.Value)
 		for pidx, p := range fn.Params.(*ast.ListExpr).List {
 			activationRecord[p.(*ast.SymbolExpr).Symbol] = currentArgs[pidx]

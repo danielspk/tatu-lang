@@ -1,0 +1,5 @@
+; Test to-bool from non-empty map
+
+(to-bool (map "a" 1))
+
+; Expect: true

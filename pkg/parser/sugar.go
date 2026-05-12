@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"errors"
-
 	"github.com/danielspk/tatu-lang/pkg/ast"
+	"github.com/danielspk/tatu-lang/pkg/debug"
+	"github.com/danielspk/tatu-lang/pkg/location"
 )
 
 // SyntaxSugar is responsible for transforming syntactic sugar into tatu language constructs.
@@ -39,18 +39,12 @@ func (ss *SyntaxSugar) Transform(expr *ast.SExpr) error {
 func (ss *SyntaxSugar) defToVar(expr *ast.SExpr) error {
 	listExpr, ok := (*expr).(*ast.ListExpr)
 	if !ok || len(listExpr.List) != 4 {
-		return errors.New("invalid `def` expression")
+		return ss.error("invalid `def` expression", (*expr).Location())
 	}
 
 	symbolExpr, ok := listExpr.List[0].(*ast.SymbolExpr)
 	if !ok || symbolExpr.Symbol != "def" {
-		return errors.New("invalid `def` symbol")
-	}
-
-	for _, e := range listExpr.List[1:] {
-		if err := ss.Transform(&e); err != nil {
-			return err
-		}
+		return ss.error("invalid `def` symbol", listExpr.List[0].Location())
 	}
 
 	// locations for synthetic tokens (var and lambda) are derived from the original expression's location
@@ -71,23 +65,39 @@ func (ss *SyntaxSugar) defToVar(expr *ast.SExpr) error {
 }
 
 // forToWhile transforms `for` expression to `while` expression.
-// Example: (for init condition increment body) -> (block init (while condition (block body increment)))
+// Example: (for init condition increment body) -> (block init (while condition (block (block (var <v> <v>) body) increment)))
 func (ss *SyntaxSugar) forToWhile(expr *ast.SExpr) error {
 	listExpr, ok := (*expr).(*ast.ListExpr)
 	if !ok || len(listExpr.List) != 5 {
-		return errors.New("invalid `for` expression")
+		return ss.error("invalid `for` expression", (*expr).Location())
 	}
 
 	symbolExpr, ok := listExpr.List[0].(*ast.SymbolExpr)
 	if !ok || symbolExpr.Symbol != "for" {
-		return errors.New("invalid `for` symbol")
+		return ss.error("invalid `for` symbol", listExpr.List[0].Location())
 	}
 
-	for _, e := range listExpr.List[1:] {
-		if err := ss.Transform(&e); err != nil {
-			return err
-		}
+	// extract loop variable name from init for per-iteration shadowing
+	initList, ok := listExpr.List[1].(*ast.ListExpr)
+	if !ok || len(initList.List) < 2 {
+		return ss.error("invalid `for` init clause", listExpr.List[1].Location())
 	}
+
+	nameSym, ok := initList.List[1].(*ast.SymbolExpr)
+	if !ok {
+		return ss.error("invalid `for` loop variable", initList.List[1].Location())
+	}
+
+	// wrap body with shadow block: (block (var name name) body)
+	shadowedBody := ast.NewListExpr([]ast.SExpr{
+		ast.NewSymbolExpr("block", listExpr.List[4].Location()),
+		ast.NewListExpr([]ast.SExpr{
+			ast.NewSymbolExpr("var", listExpr.List[4].Location()),
+			ast.NewSymbolExpr(nameSym.Symbol, listExpr.List[4].Location()),
+			ast.NewSymbolExpr(nameSym.Symbol, listExpr.List[4].Location()),
+		}, listExpr.List[4].Location()),
+		listExpr.List[4],
+	}, listExpr.List[4].Location())
 
 	// locations for synthetic tokens (block and while) are derived from the original expression's location
 	*expr = ast.NewListExpr(
@@ -99,7 +109,7 @@ func (ss *SyntaxSugar) forToWhile(expr *ast.SExpr) error {
 				listExpr.List[2], // condition
 				ast.NewListExpr([]ast.SExpr{
 					ast.NewSymbolExpr("block", listExpr.List[2].Location()),
-					listExpr.List[4], // body
+					shadowedBody,     // body
 					listExpr.List[3], // increment
 				}, listExpr.List[2].Location()),
 			}, listExpr.List[1].Location()),
@@ -115,31 +125,25 @@ func (ss *SyntaxSugar) forToWhile(expr *ast.SExpr) error {
 func (ss *SyntaxSugar) switchToIf(expr *ast.SExpr) error {
 	listExpr, ok := (*expr).(*ast.ListExpr)
 	if !ok || len(listExpr.List) < 3 {
-		return errors.New("invalid `switch` expression")
+		return ss.error("invalid `switch` expression", (*expr).Location())
 	}
 
 	symbolExpr, ok := listExpr.List[0].(*ast.SymbolExpr)
 	if !ok || symbolExpr.Symbol != "switch" {
-		return errors.New("invalid `switch` symbol")
+		return ss.error("invalid `switch` symbol", listExpr.List[0].Location())
 	}
 
 	cases := listExpr.List[1:]
 
-	for _, e := range cases {
-		if err := ss.Transform(&e); err != nil {
-			return err
-		}
-	}
-
 	// verify default case
 	defaultCase, ok := cases[len(cases)-1].(*ast.ListExpr)
 	if !ok || len(defaultCase.List) != 2 {
-		return errors.New("invalid default case")
+		return ss.error("invalid default case", cases[len(cases)-1].Location())
 	}
 
 	defaultCond, ok := defaultCase.List[0].(*ast.SymbolExpr)
 	if !ok || defaultCond.Symbol != "default" {
-		return errors.New("invalid default case symbol")
+		return ss.error("invalid default case symbol", defaultCase.List[0].Location())
 	}
 
 	// start with the default value
@@ -148,7 +152,7 @@ func (ss *SyntaxSugar) switchToIf(expr *ast.SExpr) error {
 	for i := len(cases) - 2; i >= 0; i-- {
 		caseExpr, ok := cases[i].(*ast.ListExpr)
 		if !ok || len(caseExpr.List) != 2 {
-			return errors.New("invalid case expression")
+			return ss.error("invalid case expression", cases[i].Location())
 		}
 
 		result = ast.NewListExpr(
@@ -165,4 +169,14 @@ func (ss *SyntaxSugar) switchToIf(expr *ast.SExpr) error {
 	*expr = result
 
 	return nil
+}
+
+// error makes an error.
+func (ss *SyntaxSugar) error(msg string, loc location.Location) *debug.Error {
+	return &debug.Error{
+		Msg:    msg,
+		Line:   loc.End.Line,
+		Column: loc.End.Column,
+		File:   loc.File,
+	}
 }

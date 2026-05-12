@@ -1,0 +1,5 @@
+; Test to-string converts a map
+
+(to-string (map "b" 2 "a" 1 "c" 3))
+
+; Expect: [a 1 b 2 c 3]

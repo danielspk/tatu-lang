@@ -1,10 +1,12 @@
 package stdlib
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/danielspk/tatu-lang/pkg/core"
 	"github.com/danielspk/tatu-lang/pkg/runtime"
@@ -68,11 +70,17 @@ func fsReadLines(args ...runtime.Value) (runtime.Value, error) {
 		return nil, fmt.Errorf("`%s` failed to read file: %w", name, err)
 	}
 
-	lines := strings.Split(string(content), "\n")
-	elements := make([]runtime.Value, len(lines))
+	scanner := bufio.NewScanner(bytes.NewReader(content))
+	scanner.Buffer(nil, math.MaxInt32)
 
-	for i, line := range lines {
-		elements[i] = runtime.NewString(line)
+	var elements []runtime.Value
+
+	for scanner.Scan() {
+		elements = append(elements, runtime.NewString(scanner.Text()))
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("`%s` failed to scan file: %w", name, err)
 	}
 
 	return runtime.NewVector(elements), nil

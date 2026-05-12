@@ -1,0 +1,5 @@
+; Test to-number rejects NaN string
+
+(to-number "NaN")
+
+; Expect Error: cannot parse STRING 'NaN' to NUMBER

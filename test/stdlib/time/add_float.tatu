@@ -1,0 +1,5 @@
+; Test time:add with float seconds (fractional part has no effect)
+
+(time:add 1609459200 1.9)
+
+; Expect: 1609459201

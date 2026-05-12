@@ -1,0 +1,5 @@
+; Test malformed define function
+
+(def)
+
+; Expect Error: Line 3

@@ -1,0 +1,7 @@
+; Test pop vector - mutates the receiver
+
+(var v (vector 1 2 3))
+(vec:pop v)
+(vec:len v)
+
+; Expect: 2

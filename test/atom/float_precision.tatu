@@ -1,0 +1,5 @@
+; Test float shows IEEE precision
+
+(+ 0.1 0.2)
+
+; Expect: 0.30000000000000004

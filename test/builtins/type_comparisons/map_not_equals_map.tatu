@@ -1,0 +1,5 @@
+; Test map not equals map
+
+(= (map "a" 1) (map "a" 2))
+
+; Expect: false

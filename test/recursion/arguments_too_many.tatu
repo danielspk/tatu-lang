@@ -1,0 +1,10 @@
+; Test recur with too many arguments
+
+(def f (a)
+  (if (= a 0)
+    a
+    (recur (- a 1) 99)))
+
+(f 3)
+
+; Expect Error: expected 1 arguments, got 2

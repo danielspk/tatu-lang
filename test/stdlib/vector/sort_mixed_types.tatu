@@ -1,0 +1,5 @@
+; Test vec:sort error on mixed types
+
+(vec:sort (vector 1 "a" 2))
+
+; Expect Error: cannot sort mixed types

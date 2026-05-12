@@ -1,0 +1,5 @@
+; Test read file lines - CRLF file
+
+(vec:get (fs:read-lines "stdlib/file_system/fixtures/lines_crlf.txt") 0)
+
+; Expect: line1

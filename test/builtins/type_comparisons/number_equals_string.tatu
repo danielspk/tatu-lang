@@ -1,0 +1,5 @@
+; Test equality between different types returns false
+
+(= 1 "1")
+
+; Expect: false

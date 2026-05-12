@@ -44,6 +44,7 @@ func regexMatches(args ...runtime.Value) (runtime.Value, error) {
 
 // regexFind finds the first substring that matches a regular expression pattern.
 // Usage: (regex:find "hello 123 world" "[0-9]+") => "123"
+// Usage: (regex:find "hello" "[0-9]+") => nil
 func regexFind(args ...runtime.Value) (runtime.Value, error) {
 	const name = "regex:find"
 
@@ -66,9 +67,12 @@ func regexFind(args ...runtime.Value) (runtime.Value, error) {
 		return nil, fmt.Errorf("`%s` invalid regex pattern: %w", name, err)
 	}
 
-	match := re.FindString(str.Value)
+	loc := re.FindStringIndex(str.Value)
+	if loc == nil {
+		return runtime.NewNil(), nil
+	}
 
-	return runtime.NewString(match), nil
+	return runtime.NewString(str.Value[loc[0]:loc[1]]), nil
 }
 
 // regexReplace replaces all substrings that match a regular expression pattern with a replacement string.

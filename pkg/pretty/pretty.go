@@ -23,11 +23,11 @@ func FormatRunningOutput() string {
 }
 
 // FormatError formats error.
-func FormatError(err error) string {
+func FormatError(err error, sources map[string][]byte) string {
 	var tatuErr *debug.Error
 
 	if errors.As(err, &tatuErr) {
-		return fmt.Sprintf("%s>>> %s%s\n", ColorRed, tatuErr.Dump(), ColorReset)
+		return fmt.Sprintf("%s>>> %s%s\n", ColorRed, prettyError(tatuErr, sources[tatuErr.File]), ColorReset)
 	}
 
 	return fmt.Sprintf("%s>>> Error: %s%s\n", ColorRed, err, ColorReset)
@@ -82,6 +82,27 @@ func FormatAST(ast *ast.AST) string {
 	}
 
 	return sb.String()
+}
+
+// prettyError dumps the error message next to reference source code.
+func prettyError(e *debug.Error, source []byte) string {
+	lines := strings.Split(string(source), "\n")
+
+	rawLine := ""
+
+	if e.Line > 0 && int(e.Line) <= len(lines) {
+		rawLine = lines[e.Line-1]
+	}
+
+	errColumn := int(e.Column) - 2
+	if errColumn < 0 {
+		errColumn = 0
+	}
+
+	arrowMsg := strings.Repeat(" ", errColumn) + "↑\n"
+	arrowMsg += strings.Repeat(" ", errColumn) + "└─ " + e.Msg
+
+	return fmt.Sprintf("Error on line %d, column %d, file `%s`:\n\n%s\n%s", e.Line, e.Column, e.File, rawLine, arrowMsg)
 }
 
 func prettyExpression(sb *strings.Builder, expr ast.SExpr, depth int) {

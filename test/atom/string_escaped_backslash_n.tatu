@@ -1,0 +1,5 @@
+; Test literal backslash followed by n
+
+"\\n"
+
+; Expect: \\n

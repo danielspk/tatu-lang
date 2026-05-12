@@ -1,0 +1,5 @@
+; Test equality between bool and number returns false
+
+(= true 1)
+
+; Expect: false

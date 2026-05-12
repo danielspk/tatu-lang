@@ -1,0 +1,5 @@
+; Test regex find with pattern matching empty string
+
+(regex:find "abc" "x*")
+
+; Expect: 

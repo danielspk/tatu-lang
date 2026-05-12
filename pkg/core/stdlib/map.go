@@ -2,6 +2,7 @@ package stdlib
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/danielspk/tatu-lang/pkg/core"
 	"github.com/danielspk/tatu-lang/pkg/runtime"
@@ -96,7 +97,7 @@ func mapGetIn(args ...runtime.Value) (runtime.Value, error) {
 			current = value
 
 		case runtime.NumberType:
-			vecValue, ok := current.(runtime.Vector)
+			vecValue, ok := current.(*runtime.Vector)
 			if !ok {
 				return runtime.NewNil(), nil
 			}
@@ -182,13 +183,21 @@ func mapKeys(args ...runtime.Value) (runtime.Value, error) {
 		return nil, err
 	}
 
-	keys := make([]runtime.Value, 0, len(mapValue.Elements))
+	keys := make([]string, 0, len(mapValue.Elements))
 
 	for key := range mapValue.Elements {
-		keys = append(keys, runtime.NewString(key))
+		keys = append(keys, key)
 	}
 
-	return runtime.NewVector(keys), nil
+	sort.Strings(keys)
+
+	result := make([]runtime.Value, len(keys))
+
+	for i, k := range keys {
+		result[i] = runtime.NewString(k)
+	}
+
+	return runtime.NewVector(result), nil
 }
 
 // mapValues implements the map values extraction function.
@@ -205,10 +214,18 @@ func mapValues(args ...runtime.Value) (runtime.Value, error) {
 		return nil, err
 	}
 
-	values := make([]runtime.Value, 0, len(mapValue.Elements))
+	keys := make([]string, 0, len(mapValue.Elements))
 
-	for _, value := range mapValue.Elements {
-		values = append(values, value)
+	for k := range mapValue.Elements {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+
+	values := make([]runtime.Value, len(keys))
+
+	for i, k := range keys {
+		values[i] = mapValue.Elements[k]
 	}
 
 	return runtime.NewVector(values), nil

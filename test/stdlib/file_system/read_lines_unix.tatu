@@ -1,0 +1,5 @@
+; Test read file lines - UNIX file
+
+(vec:len (fs:read-lines "stdlib/file_system/fixtures/lines_unix.txt"))
+
+; Expect: 3

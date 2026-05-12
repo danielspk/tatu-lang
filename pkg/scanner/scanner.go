@@ -12,6 +12,15 @@ import (
 	"github.com/danielspk/tatu-lang/pkg/token"
 )
 
+// escapeReplacer string escape replacer.
+var escapeReplacer = strings.NewReplacer(
+	`\\`, `\`,
+	`\n`, "\n",
+	`\t`, "\t",
+	`\r`, "\r",
+	`\"`, `"`,
+)
+
 type cursor struct {
 	offset uint
 	line   uint
@@ -161,6 +170,14 @@ func (s *Scanner) isAtEnd() bool {
 	return s.current.offset >= uint(len(s.source))
 }
 
+// markNewline updates position on a newline character.
+func (s *Scanner) markNewline(chr rune) {
+	if chr == '\n' {
+		s.current.line++
+		s.current.column = 1
+	}
+}
+
 // currentLexeme gets the current lexeme.
 func (s *Scanner) currentLexeme() string {
 	return s.source[s.start.offset:s.current.offset]
@@ -259,12 +276,12 @@ func (s *Scanner) readNumber() {
 
 // readString advances positions until you finish reading a string.
 func (s *Scanner) readString() error {
-	for !s.isAtEnd() && (s.peek() != '"' || (s.peek() == '"' && s.lookBack() == '\\')) {
-		_ = s.advanceUTF8()
+	for !s.isAtEnd() && s.peek() != '"' {
+		chr := s.advanceUTF8()
+		s.markNewline(chr)
 
-		if s.peek() == '\n' {
-			s.current.line++
-			s.current.column = 1
+		if chr == '\\' && !s.isAtEnd() {
+			s.markNewline(s.advanceUTF8())
 		}
 	}
 
@@ -300,12 +317,7 @@ func (s *Scanner) symbolToken() token.Type {
 
 // processEscapes processes escape sequences.
 func (s *Scanner) processEscapes(str string) string {
-	str = strings.ReplaceAll(str, "\\\\", "\\")
-	str = strings.ReplaceAll(str, "\\n", "\n")
-	str = strings.ReplaceAll(str, "\\t", "\t")
-	str = strings.ReplaceAll(str, "\\r", "\r")
-	str = strings.ReplaceAll(str, "\\\"", "\"")
-	return str
+	return escapeReplacer.Replace(str)
 }
 
 // isDigit checks if it is a digit.

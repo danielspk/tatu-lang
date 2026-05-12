@@ -62,6 +62,7 @@ func isInt(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	num := args[0].(runtime.Number)
+
 	return runtime.NewBool(num.Value == math.Trunc(num.Value)), nil
 }
 
@@ -148,7 +149,7 @@ func toString(args ...runtime.Value) (runtime.Value, error) {
 		n := args[0].(runtime.Nil)
 		return runtime.NewString(n.String()), nil
 	default:
-		return nil, fmt.Errorf("`%s` cannot convert %s to STRING", name, args[0].Type())
+		return runtime.NewString(args[0].String()), nil
 	}
 }
 
@@ -170,12 +171,17 @@ func toNumber(args ...runtime.Value) (runtime.Value, error) {
 		if err != nil {
 			return nil, fmt.Errorf("`%s` cannot parse STRING '%s' to NUMBER: %w", name, str.Value, err)
 		}
+		if math.IsInf(num, 0) || math.IsNaN(num) {
+			return nil, fmt.Errorf("`%s` cannot parse STRING '%s' to NUMBER", name, str.Value)
+		}
+
 		return runtime.NewNumber(num), nil
 	case runtime.BoolType:
 		b := args[0].(runtime.Bool)
 		if b.Value {
 			return runtime.NewNumber(1), nil
 		}
+
 		return runtime.NewNumber(0), nil
 	case runtime.NilType:
 		return runtime.NewNumber(0), nil
@@ -204,6 +210,12 @@ func toBool(args ...runtime.Value) (runtime.Value, error) {
 		return runtime.NewBool(str.Value != ""), nil
 	case runtime.NilType:
 		return runtime.NewBool(false), nil
+	case runtime.VectorType:
+		return runtime.NewBool(len(args[0].(*runtime.Vector).Elements) > 0), nil
+	case runtime.MapType:
+		return runtime.NewBool(len(args[0].(runtime.Map).Elements) > 0), nil
+	case runtime.FuncType, runtime.NativeFuncType:
+		return runtime.NewBool(true), nil
 	default:
 		return nil, fmt.Errorf("`%s` cannot convert %s to BOOL", name, args[0].Type())
 	}

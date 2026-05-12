@@ -2,4 +2,4 @@
 
 (regex:find "hello world" "[0-9]+")
 
-; Expect: 
+; Expect: <nil>

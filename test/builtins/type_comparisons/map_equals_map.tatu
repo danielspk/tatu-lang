@@ -1,0 +1,5 @@
+; Test map equals map
+
+(= (map "a" 1 "b" 2) (map "a" 1 "b" 2))
+
+; Expect: true

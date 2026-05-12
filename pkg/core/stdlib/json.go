@@ -75,7 +75,7 @@ func tatuToJSON(value runtime.Value) (any, error) {
 	case runtime.StringType:
 		return value.(runtime.String).Value, nil
 	case runtime.VectorType:
-		vec := value.(runtime.Vector)
+		vec := value.(*runtime.Vector)
 		result := make([]any, len(vec.Elements))
 
 		for i, elem := range vec.Elements {

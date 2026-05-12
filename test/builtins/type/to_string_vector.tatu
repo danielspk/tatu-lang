@@ -1,0 +1,5 @@
+; Test to-string converts a vector
+
+(to-string (vector 1 2 3))
+
+; Expect: (1 2 3)

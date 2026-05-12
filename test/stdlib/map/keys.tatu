@@ -1,5 +1,5 @@
 ; Test keys map
 
-(vec:len (map:keys (map "a" 1 "b" 2 "c" 3)))
+(map:keys (map "c" 3 "a" 1 "b" 2))
 
-; Expect: 3
+; Expect: (a b c)

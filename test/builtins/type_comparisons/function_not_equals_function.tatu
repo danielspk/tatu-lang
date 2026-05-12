@@ -1,0 +1,5 @@
+; Test functions are never equal
+
+(= (lambda () 1) (lambda () 1))
+
+; Expect: false

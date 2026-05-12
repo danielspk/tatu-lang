@@ -1,0 +1,5 @@
+; Test to-string converts a function
+
+(to-string (lambda (x) x))
+
+; Expect: Function()

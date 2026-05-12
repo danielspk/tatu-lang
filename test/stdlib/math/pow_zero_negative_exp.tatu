@@ -1,0 +1,5 @@
+; Test math:pow with zero base and negative exponent
+
+(math:pow 0 -1)
+
+; Expect Error: cannot produce infinity or NaN

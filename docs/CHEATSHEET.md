@@ -308,7 +308,7 @@ symbol      ; symbol/identifier
 | Function | Description |
 |----------|-------------|
 | `(regex:matches s pattern)` | Check if matches |
-| `(regex:find s pattern)` | Find first match |
+| `(regex:find s pattern)` | Find first match (nil if no match) |
 | `(regex:replace s pattern repl)` | Replace all |
 
 ## Examples

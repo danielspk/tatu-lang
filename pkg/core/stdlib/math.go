@@ -258,7 +258,12 @@ func mathPow(args ...runtime.Value) (runtime.Value, error) {
 		return nil, err
 	}
 
-	return runtime.NewNumber(math.Pow(base.Value, exponent.Value)), nil
+	result := math.Pow(base.Value, exponent.Value)
+	if math.IsInf(result, 0) || math.IsNaN(result) {
+		return nil, fmt.Errorf("`%s` cannot produce infinity or NaN", name)
+	}
+
+	return runtime.NewNumber(result), nil
 }
 
 // mathLog implements the natural logarithm function.
@@ -296,7 +301,12 @@ func mathExp(args ...runtime.Value) (runtime.Value, error) {
 		return nil, err
 	}
 
-	return runtime.NewNumber(math.Exp(num.Value)), nil
+	result := math.Exp(num.Value)
+	if math.IsInf(result, 0) || math.IsNaN(result) {
+		return nil, fmt.Errorf("`%s` cannot produce infinity or NaN", name)
+	}
+
+	return runtime.NewNumber(result), nil
 }
 
 // mathBetween checks if a value is between min and max (inclusive).

@@ -1,0 +1,7 @@
+; Test concat vector - mutates the receiver
+
+(var v (vector 1 2))
+(vec:concat v (vector 3 4))
+(vec:len v)
+
+; Expect: 4

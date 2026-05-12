@@ -224,7 +224,7 @@ func vectorContains(args ...runtime.Value) (runtime.Value, error) {
 	searchValue := args[1]
 
 	for _, elem := range vector.Elements {
-		if valuesEqual(elem, searchValue) {
+		if elem.Equal(searchValue) {
 			return runtime.NewBool(true), nil
 		}
 	}
@@ -249,7 +249,7 @@ func vectorFind(args ...runtime.Value) (runtime.Value, error) {
 	searchValue := args[1]
 
 	for i, elem := range vector.Elements {
-		if valuesEqual(elem, searchValue) {
+		if elem.Equal(searchValue) {
 			return runtime.NewNumber(float64(i)), nil
 		}
 	}
@@ -298,13 +298,19 @@ func vectorSort(args ...runtime.Value) (runtime.Value, error) {
 
 	firstType := vector.Elements[0].Type()
 
+	if firstType != runtime.NumberType && firstType != runtime.StringType && firstType != runtime.BoolType {
+		return nil, fmt.Errorf("`%s` cannot sort %s values", name, firstType)
+	}
+
+	for _, e := range vector.Elements {
+		if e.Type() != firstType {
+			return nil, fmt.Errorf("`%s` cannot sort mixed types", name)
+		}
+	}
+
 	sort.Slice(vector.Elements, func(i, j int) bool {
 		a := vector.Elements[i]
 		b := vector.Elements[j]
-
-		if a.Type() != firstType || b.Type() != firstType {
-			return false
-		}
 
 		switch firstType {
 		case runtime.NumberType:
@@ -321,41 +327,22 @@ func vectorSort(args ...runtime.Value) (runtime.Value, error) {
 	return vector, nil
 }
 
-func validateVectorIndex(name string, args []runtime.Value) (runtime.Vector, int, error) {
+func validateVectorIndex(name string, args []runtime.Value) (*runtime.Vector, int, error) {
 	vector, err := core.ExpectVector(name, 0, args[0])
 	if err != nil {
-		return runtime.Vector{}, 0, err
+		return nil, 0, err
 	}
 
 	number, err := core.ExpectIntegerNumber(name, 1, args[1])
 	if err != nil {
-		return runtime.Vector{}, 0, err
+		return nil, 0, err
 	}
 
 	index := int(number.Value)
 
 	if index < 0 || index >= len(vector.Elements) {
-		return runtime.Vector{}, 0, fmt.Errorf("`%s` index out of bounds: %d (vector length: %d)", name, index, len(vector.Elements))
+		return nil, 0, fmt.Errorf("`%s` index out of bounds: %d (vector length: %d)", name, index, len(vector.Elements))
 	}
 
 	return vector, index, nil
-}
-
-func valuesEqual(a, b runtime.Value) bool {
-	if a.Type() != b.Type() {
-		return false
-	}
-
-	switch a.Type() {
-	case runtime.NumberType:
-		return a.(runtime.Number).Value == b.(runtime.Number).Value
-	case runtime.StringType:
-		return a.(runtime.String).Value == b.(runtime.String).Value
-	case runtime.BoolType:
-		return a.(runtime.Bool).Value == b.(runtime.Bool).Value
-	case runtime.NilType:
-		return true
-	default:
-		return false
-	}
 }

@@ -1,0 +1,15 @@
+; Test closures in for capture the loop variable
+
+(var f0 nil)
+(var f1 nil)
+(var f2 nil)
+
+(for (var i 0) (< i 3) (set i (+ i 1))
+  (block
+    (if (= i 0) (set f0 (lambda () i)) nil)
+    (if (= i 1) (set f1 (lambda () i)) nil)
+    (if (= i 2) (set f2 (lambda () i)) nil)))
+
+(vector (f0) (f1) (f2))
+
+; Expect: (0 1 2)

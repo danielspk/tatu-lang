@@ -1,0 +1,6 @@
+; Test lambda call with too many arguments
+
+(var f (lambda (a) a))
+(f 1 2)
+
+; Expect Error: expected 1 arguments, got 2

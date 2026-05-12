@@ -1,0 +1,5 @@
+; Test to-bool from empty vector
+
+(to-bool (vector))
+
+; Expect: false

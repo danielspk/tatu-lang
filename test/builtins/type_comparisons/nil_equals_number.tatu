@@ -1,0 +1,5 @@
+; Test equality between nil and number returns false
+
+(= nil 0)
+
+; Expect: false

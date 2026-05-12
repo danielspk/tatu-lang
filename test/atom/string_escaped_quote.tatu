@@ -1,0 +1,5 @@
+; Test string with escaped quote
+
+"a\"b"
+
+; Expect: a\"b

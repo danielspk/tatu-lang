@@ -1,0 +1,5 @@
+; Test string ending with escaped backslash
+
+"a\\"
+
+; Expect: a\\
