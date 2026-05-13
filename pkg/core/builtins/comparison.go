@@ -7,13 +7,13 @@ import (
 )
 
 // RegisterComparison registers comparison and not operator natives.
-func RegisterComparison(natives map[string]runtime.NativeFunction) {
-	natives["="] = runtime.NewNativeFunction(equal)
-	natives[">"] = runtime.NewNativeFunction(greaterThan)
-	natives[">="] = runtime.NewNativeFunction(greaterThanOrEqual)
-	natives["<"] = runtime.NewNativeFunction(lessThan)
-	natives["<="] = runtime.NewNativeFunction(lessThanOrEqual)
-	natives["not"] = runtime.NewNativeFunction(not)
+func RegisterComparison(env *runtime.Environment) {
+	env.DefineNative("=", runtime.NewNativeFunction(equal))
+	env.DefineNative(">", runtime.NewNativeFunction(greaterThan))
+	env.DefineNative(">=", runtime.NewNativeFunction(greaterThanOrEqual))
+	env.DefineNative("<", runtime.NewNativeFunction(lessThan))
+	env.DefineNative("<=", runtime.NewNativeFunction(lessThanOrEqual))
+	env.DefineNative("not", runtime.NewNativeFunction(not))
 }
 
 // equal implements the = operator.

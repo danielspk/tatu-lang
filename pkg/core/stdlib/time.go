@@ -10,21 +10,21 @@ import (
 )
 
 // RegisterTime registers time functions.
-func RegisterTime(natives map[string]runtime.NativeFunction) {
-	natives["time:now"] = runtime.NewNativeFunction(timeNow)
-	natives["time:unix"] = runtime.NewNativeFunction(timeUnix)
-	natives["time:year"] = runtime.NewNativeFunction(timeYear)
-	natives["time:month"] = runtime.NewNativeFunction(timeMonth)
-	natives["time:day"] = runtime.NewNativeFunction(timeDay)
-	natives["time:hour"] = runtime.NewNativeFunction(timeHour)
-	natives["time:minute"] = runtime.NewNativeFunction(timeMinute)
-	natives["time:second"] = runtime.NewNativeFunction(timeSecond)
-	natives["time:format"] = runtime.NewNativeFunction(timeFormat)
-	natives["time:parse"] = runtime.NewNativeFunction(timeParse)
-	natives["time:add"] = runtime.NewNativeFunction(timeAdd)
-	natives["time:sub"] = runtime.NewNativeFunction(timeSub)
-	natives["time:diff"] = runtime.NewNativeFunction(timeDiff)
-	natives["time:is-leap"] = runtime.NewNativeFunction(timeIsLeap)
+func RegisterTime(env *runtime.Environment) {
+	env.DefineNative("time:now", runtime.NewNativeFunction(timeNow))
+	env.DefineNative("time:unix", runtime.NewNativeFunction(timeUnix))
+	env.DefineNative("time:year", runtime.NewNativeFunction(timeYear))
+	env.DefineNative("time:month", runtime.NewNativeFunction(timeMonth))
+	env.DefineNative("time:day", runtime.NewNativeFunction(timeDay))
+	env.DefineNative("time:hour", runtime.NewNativeFunction(timeHour))
+	env.DefineNative("time:minute", runtime.NewNativeFunction(timeMinute))
+	env.DefineNative("time:second", runtime.NewNativeFunction(timeSecond))
+	env.DefineNative("time:format", runtime.NewNativeFunction(timeFormat))
+	env.DefineNative("time:parse", runtime.NewNativeFunction(timeParse))
+	env.DefineNative("time:add", runtime.NewNativeFunction(timeAdd))
+	env.DefineNative("time:sub", runtime.NewNativeFunction(timeSub))
+	env.DefineNative("time:diff", runtime.NewNativeFunction(timeDiff))
+	env.DefineNative("time:is-leap", runtime.NewNativeFunction(timeIsLeap))
 }
 
 // timeNow implements the current time function.

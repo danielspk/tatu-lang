@@ -11,24 +11,24 @@ import (
 )
 
 // RegisterMath registers mathematical functions.
-func RegisterMath(natives map[string]runtime.NativeFunction) {
-	natives["math:pi"] = runtime.NewNativeFunction(mathPi)
-	natives["math:e"] = runtime.NewNativeFunction(mathE)
-	natives["math:abs"] = runtime.NewNativeFunction(mathAbs)
-	natives["math:floor"] = runtime.NewNativeFunction(mathFloor)
-	natives["math:ceil"] = runtime.NewNativeFunction(mathCeil)
-	natives["math:round"] = runtime.NewNativeFunction(mathRound)
-	natives["math:sin"] = runtime.NewNativeFunction(mathSin)
-	natives["math:cos"] = runtime.NewNativeFunction(mathCos)
-	natives["math:tan"] = runtime.NewNativeFunction(mathTan)
-	natives["math:min"] = runtime.NewNativeFunction(mathMin)
-	natives["math:max"] = runtime.NewNativeFunction(mathMax)
-	natives["math:sqrt"] = runtime.NewNativeFunction(mathSqrt)
-	natives["math:pow"] = runtime.NewNativeFunction(mathPow)
-	natives["math:log"] = runtime.NewNativeFunction(mathLog)
-	natives["math:exp"] = runtime.NewNativeFunction(mathExp)
-	natives["math:between"] = runtime.NewNativeFunction(mathBetween)
-	natives["math:rand"] = runtime.NewNativeFunction(mathRand)
+func RegisterMath(env *runtime.Environment) {
+	env.DefineNative("math:pi", runtime.NewNativeFunction(mathPi))
+	env.DefineNative("math:e", runtime.NewNativeFunction(mathE))
+	env.DefineNative("math:abs", runtime.NewNativeFunction(mathAbs))
+	env.DefineNative("math:floor", runtime.NewNativeFunction(mathFloor))
+	env.DefineNative("math:ceil", runtime.NewNativeFunction(mathCeil))
+	env.DefineNative("math:round", runtime.NewNativeFunction(mathRound))
+	env.DefineNative("math:sin", runtime.NewNativeFunction(mathSin))
+	env.DefineNative("math:cos", runtime.NewNativeFunction(mathCos))
+	env.DefineNative("math:tan", runtime.NewNativeFunction(mathTan))
+	env.DefineNative("math:min", runtime.NewNativeFunction(mathMin))
+	env.DefineNative("math:max", runtime.NewNativeFunction(mathMax))
+	env.DefineNative("math:sqrt", runtime.NewNativeFunction(mathSqrt))
+	env.DefineNative("math:pow", runtime.NewNativeFunction(mathPow))
+	env.DefineNative("math:log", runtime.NewNativeFunction(mathLog))
+	env.DefineNative("math:exp", runtime.NewNativeFunction(mathExp))
+	env.DefineNative("math:between", runtime.NewNativeFunction(mathBetween))
+	env.DefineNative("math:rand", runtime.NewNativeFunction(mathRand))
 }
 
 // mathPi implements the pi constant.

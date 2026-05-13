@@ -13,20 +13,20 @@ import (
 )
 
 // RegisterFileSystem registers file system functions.
-func RegisterFileSystem(natives map[string]runtime.NativeFunction) {
-	natives["fs:read"] = runtime.NewNativeFunction(fsRead)
-	natives["fs:read-lines"] = runtime.NewNativeFunction(fsReadLines)
-	natives["fs:write"] = runtime.NewNativeFunction(fsWrite)
-	natives["fs:append"] = runtime.NewNativeFunction(fsAppend)
-	natives["fs:exists"] = runtime.NewNativeFunction(fsExists)
-	natives["fs:list"] = runtime.NewNativeFunction(fsList)
-	natives["fs:mkdir"] = runtime.NewNativeFunction(fsMkdir)
-	natives["fs:move"] = runtime.NewNativeFunction(fsMove)
-	natives["fs:delete"] = runtime.NewNativeFunction(fsDelete)
-	natives["fs:is-dir"] = runtime.NewNativeFunction(fsIsDir)
-	natives["fs:size"] = runtime.NewNativeFunction(fsSize)
-	natives["fs:basename"] = runtime.NewNativeFunction(fsBasename)
-	natives["fs:temp-dir"] = runtime.NewNativeFunction(fsTempDir)
+func RegisterFileSystem(env *runtime.Environment) {
+	env.DefineNative("fs:read", runtime.NewNativeFunction(fsRead))
+	env.DefineNative("fs:read-lines", runtime.NewNativeFunction(fsReadLines))
+	env.DefineNative("fs:write", runtime.NewNativeFunction(fsWrite))
+	env.DefineNative("fs:append", runtime.NewNativeFunction(fsAppend))
+	env.DefineNative("fs:exists", runtime.NewNativeFunction(fsExists))
+	env.DefineNative("fs:list", runtime.NewNativeFunction(fsList))
+	env.DefineNative("fs:mkdir", runtime.NewNativeFunction(fsMkdir))
+	env.DefineNative("fs:move", runtime.NewNativeFunction(fsMove))
+	env.DefineNative("fs:delete", runtime.NewNativeFunction(fsDelete))
+	env.DefineNative("fs:is-dir", runtime.NewNativeFunction(fsIsDir))
+	env.DefineNative("fs:size", runtime.NewNativeFunction(fsSize))
+	env.DefineNative("fs:basename", runtime.NewNativeFunction(fsBasename))
+	env.DefineNative("fs:temp-dir", runtime.NewNativeFunction(fsTempDir))
 }
 
 // fsRead implements the file reading function.

@@ -11,20 +11,46 @@ import (
 )
 
 // ValueType represents the type of value.
-type ValueType string
+type ValueType uint8
 
 // Value types.
 const (
-	NumberType     ValueType = "NUMBER"
-	StringType     ValueType = "STRING"
-	BoolType       ValueType = "BOOL"
-	NilType        ValueType = "NIL"
-	VectorType     ValueType = "VECTOR"
-	MapType        ValueType = "MAP"
-	FuncType       ValueType = "FUNC"
-	NativeFuncType ValueType = "NATIVE_FUNC"
-	RecurType      ValueType = "RECUR"
+	NumberType ValueType = iota + 1
+	StringType
+	BoolType
+	NilType
+	VectorType
+	MapType
+	FuncType
+	NativeFuncType
+	RecurType
 )
+
+// String returns the string representation of the value type.
+func (t ValueType) String() string {
+	switch t {
+	case NumberType:
+		return "NUMBER"
+	case StringType:
+		return "STRING"
+	case BoolType:
+		return "BOOL"
+	case NilType:
+		return "NIL"
+	case VectorType:
+		return "VECTOR"
+	case MapType:
+		return "MAP"
+	case FuncType:
+		return "FUNC"
+	case NativeFuncType:
+		return "NATIVE_FUNC"
+	case RecurType:
+		return "RECUR"
+	}
+
+	return "UNKNOWN"
+}
 
 // Value represents a value interface.
 type Value interface {

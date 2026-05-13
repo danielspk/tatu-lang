@@ -31,6 +31,28 @@ func BenchmarkSumWithTCO(b *testing.B) {
 	runTestCode(b, source)
 }
 
+func BenchmarkStringConcat(b *testing.B) {
+	source := `
+(var i 0)
+(while (< i 100)
+  (block
+    (+ "value=" i " (index)")
+    (set i (+ i 1))))
+`
+	runTestCode(b, source)
+}
+
+func BenchmarkRegexInLoop(b *testing.B) {
+	source := `
+(var i 0)
+(while (< i 100)
+  (block
+    (regex:matches "hello123" "^[a-z]+[0-9]+$")
+    (set i (+ i 1))))
+`
+	runTestCode(b, source)
+}
+
 func runTestCode(b *testing.B, source string) {
 	b.ReportAllocs()
 

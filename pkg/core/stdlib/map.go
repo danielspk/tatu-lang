@@ -9,16 +9,16 @@ import (
 )
 
 // RegisterMap registers map functions.
-func RegisterMap(natives map[string]runtime.NativeFunction) {
-	natives["map:len"] = runtime.NewNativeFunction(mapLen)
-	natives["map:get"] = runtime.NewNativeFunction(mapGet)
-	natives["map:get-in"] = runtime.NewNativeFunction(mapGetIn)
-	natives["map:set"] = runtime.NewNativeFunction(mapSet)
-	natives["map:delete"] = runtime.NewNativeFunction(mapDelete)
-	natives["map:keys"] = runtime.NewNativeFunction(mapKeys)
-	natives["map:values"] = runtime.NewNativeFunction(mapValues)
-	natives["map:merge"] = runtime.NewNativeFunction(mapMerge)
-	natives["map:has"] = runtime.NewNativeFunction(mapHas)
+func RegisterMap(env *runtime.Environment) {
+	env.DefineNative("map:len", runtime.NewNativeFunction(mapLen))
+	env.DefineNative("map:get", runtime.NewNativeFunction(mapGet))
+	env.DefineNative("map:get-in", runtime.NewNativeFunction(mapGetIn))
+	env.DefineNative("map:set", runtime.NewNativeFunction(mapSet))
+	env.DefineNative("map:delete", runtime.NewNativeFunction(mapDelete))
+	env.DefineNative("map:keys", runtime.NewNativeFunction(mapKeys))
+	env.DefineNative("map:values", runtime.NewNativeFunction(mapValues))
+	env.DefineNative("map:merge", runtime.NewNativeFunction(mapMerge))
+	env.DefineNative("map:has", runtime.NewNativeFunction(mapHas))
 }
 
 // mapLen implements the map length function.

@@ -14,37 +14,33 @@ import (
 
 // Interpreter represents a tree-walking interpreter.
 type Interpreter struct {
-	natives map[string]runtime.NativeFunction
-	global  *runtime.Environment
+	global *runtime.Environment
 }
 
 // NewInterpreter builds a new Interpreter.
 func NewInterpreter() (*Interpreter, error) {
-	natives := make(map[string]runtime.NativeFunction)
+	global := runtime.NewEnvironment(nil, nil)
 
-	builtins.RegisterArithmetic(natives)
-	builtins.RegisterComparison(natives)
-	builtins.RegisterIO(natives)
-	builtins.RegisterTypes(natives)
+	builtins.RegisterArithmetic(global)
+	builtins.RegisterComparison(global)
+	builtins.RegisterIO(global)
+	builtins.RegisterTypes(global)
 
-	stdlib.RegisterFileSystem(natives)
-	stdlib.RegisterJSON(natives)
-	stdlib.RegisterMap(natives)
-	stdlib.RegisterMath(natives)
-	stdlib.RegisterRegex(natives)
-	stdlib.RegisterString(natives)
-	stdlib.RegisterTime(natives)
-	stdlib.RegisterVector(natives)
+	stdlib.RegisterFileSystem(global)
+	stdlib.RegisterJSON(global)
+	stdlib.RegisterMap(global)
+	stdlib.RegisterMath(global)
+	stdlib.RegisterRegex(global)
+	stdlib.RegisterString(global)
+	stdlib.RegisterTime(global)
+	stdlib.RegisterVector(global)
 
-	return &Interpreter{
-		natives: natives,
-		global:  runtime.NewEnvironment(nil, nil),
-	}, nil
+	return &Interpreter{global: global}, nil
 }
 
-// Environment returns the global environment.
-func (i *Interpreter) Environment() *runtime.Environment {
-	return i.global
+// Globals returns the user-defined global variables.
+func (i *Interpreter) Globals() map[string]runtime.Value {
+	return i.global.Variables()
 }
 
 // Eval evaluates an S-expression and returns the resulting value.
@@ -125,15 +121,11 @@ func (i *Interpreter) evalSymbol(expr ast.SExpr, env *runtime.Environment) (runt
 	exprSymbol := expr.(*ast.SymbolExpr)
 
 	value, found := env.Lookup(exprSymbol.Symbol)
-	if found {
-		return value, nil
+	if !found {
+		return nil, i.error(fmt.Sprintf("unknown symbol `%s`", exprSymbol.Symbol), exprSymbol.Location())
 	}
 
-	if fn, ok := i.natives[exprSymbol.Symbol]; ok {
-		return fn, nil
-	}
-
-	return nil, i.error(fmt.Sprintf("unknown symbol `%s`", exprSymbol.Symbol), exprSymbol.Location())
+	return value, nil
 }
 
 // evalList evaluates a list expression.
@@ -190,17 +182,16 @@ func (i *Interpreter) evalLogical(expr ast.SExpr, env *runtime.Environment) (run
 			return nil, err
 		}
 
-		if result.Type() != runtime.BoolType {
+		b, ok := result.(runtime.Bool)
+		if !ok {
 			return nil, i.error(fmt.Sprintf("invalid type %s for `%s`", result.Type(), operator), e.Location())
 		}
 
-		value := result.(runtime.Bool).Value
-
-		if operator == "and" && !value {
+		if operator == "and" && !b.Value {
 			return runtime.NewBool(false), nil
 		}
 
-		if operator == "or" && value {
+		if operator == "or" && b.Value {
 			return runtime.NewBool(true), nil
 		}
 	}
@@ -245,8 +236,8 @@ func (i *Interpreter) evalSet(expr ast.SExpr, env *runtime.Environment) (runtime
 		return nil, err
 	}
 
-	if found := env.Assign(exprList.List[1].(*ast.SymbolExpr).Symbol, value); !found {
-		return nil, i.error(fmt.Sprintf("undefined variable `%s`", exprList.List[1].(*ast.SymbolExpr).Symbol), exprList.List[1].Location())
+	if err := env.Assign(exprList.List[1].(*ast.SymbolExpr).Symbol, value); err != nil {
+		return nil, i.error(err.Error(), exprList.List[1].Location())
 	}
 
 	return value, nil
@@ -264,11 +255,12 @@ func (i *Interpreter) evalIf(expr ast.SExpr, env *runtime.Environment) (runtime.
 		return nil, err
 	}
 
-	if value.Type() != runtime.BoolType {
+	b, ok := value.(runtime.Bool)
+	if !ok {
 		return nil, i.error(fmt.Sprintf("expected BOOL, found %s", value.Type()), condition.Location())
 	}
 
-	if value.(runtime.Bool).Value {
+	if b.Value {
 		return i.evalInTailPosition(consequent, env)
 	}
 
@@ -294,11 +286,12 @@ func (i *Interpreter) evalWhile(expr ast.SExpr, env *runtime.Environment) (runti
 			return nil, err
 		}
 
-		if value.Type() != runtime.BoolType {
+		b, ok := value.(runtime.Bool)
+		if !ok {
 			return nil, i.error(fmt.Sprintf("expected BOOL, found %s", value.Type()), condition.Location())
 		}
 
-		if !value.(runtime.Bool).Value {
+		if !b.Value {
 			break
 		}
 
@@ -417,19 +410,24 @@ func (i *Interpreter) evalCallFunction(expr ast.SExpr, env *runtime.Environment)
 
 	// lambda function
 	fn := funcValue.(runtime.Function)
+	params := fn.Params.(*ast.ListExpr).List
+
+	activationRecord := make(map[string]runtime.Binding, len(params))
+	activationEnv := runtime.NewEnvironment(activationRecord, fn.Env)
+
+	expectedArgs := len(params)
 	currentArgs := valArgs
-	expectedArgs := len(fn.Params.(*ast.ListExpr).List)
 
 	for {
 		if len(currentArgs) != expectedArgs {
 			return nil, i.error(fmt.Sprintf("expected %d arguments, got %d", expectedArgs, len(currentArgs)), exprList.Location())
 		}
 
-		activationRecord := make(map[string]runtime.Value)
-		for pidx, p := range fn.Params.(*ast.ListExpr).List {
-			activationRecord[p.(*ast.SymbolExpr).Symbol] = currentArgs[pidx]
+		clear(activationRecord)
+
+		for pidx, p := range params {
+			activationRecord[p.(*ast.SymbolExpr).Symbol] = runtime.Binding{Value: currentArgs[pidx]}
 		}
-		activationEnv := runtime.NewEnvironment(activationRecord, fn.Env)
 
 		result, err := i.evalInTailPosition(fn.Body, activationEnv)
 		if err != nil {

@@ -9,22 +9,22 @@ import (
 )
 
 // RegisterString registers string functions.
-func RegisterString(natives map[string]runtime.NativeFunction) {
-	natives["str:len"] = runtime.NewNativeFunction(stringLen)
-	natives["str:contains"] = runtime.NewNativeFunction(stringContains)
-	natives["str:index"] = runtime.NewNativeFunction(stringIndex)
-	natives["str:upper"] = runtime.NewNativeFunction(stringUpper)
-	natives["str:lower"] = runtime.NewNativeFunction(stringLower)
-	natives["str:trim"] = runtime.NewNativeFunction(stringTrim)
-	natives["str:slice"] = runtime.NewNativeFunction(stringSlice)
-	natives["str:split"] = runtime.NewNativeFunction(stringSplit)
-	natives["str:join"] = runtime.NewNativeFunction(stringJoin)
-	natives["str:replace"] = runtime.NewNativeFunction(stringReplace)
-	natives["str:starts"] = runtime.NewNativeFunction(stringStarts)
-	natives["str:ends"] = runtime.NewNativeFunction(stringEnds)
-	natives["str:reverse"] = runtime.NewNativeFunction(stringReverse)
-	natives["str:repeat"] = runtime.NewNativeFunction(stringRepeat)
-	natives["str:concat"] = runtime.NewNativeFunction(stringConcat)
+func RegisterString(env *runtime.Environment) {
+	env.DefineNative("str:len", runtime.NewNativeFunction(stringLen))
+	env.DefineNative("str:contains", runtime.NewNativeFunction(stringContains))
+	env.DefineNative("str:index", runtime.NewNativeFunction(stringIndex))
+	env.DefineNative("str:upper", runtime.NewNativeFunction(stringUpper))
+	env.DefineNative("str:lower", runtime.NewNativeFunction(stringLower))
+	env.DefineNative("str:trim", runtime.NewNativeFunction(stringTrim))
+	env.DefineNative("str:slice", runtime.NewNativeFunction(stringSlice))
+	env.DefineNative("str:split", runtime.NewNativeFunction(stringSplit))
+	env.DefineNative("str:join", runtime.NewNativeFunction(stringJoin))
+	env.DefineNative("str:replace", runtime.NewNativeFunction(stringReplace))
+	env.DefineNative("str:starts", runtime.NewNativeFunction(stringStarts))
+	env.DefineNative("str:ends", runtime.NewNativeFunction(stringEnds))
+	env.DefineNative("str:reverse", runtime.NewNativeFunction(stringReverse))
+	env.DefineNative("str:repeat", runtime.NewNativeFunction(stringRepeat))
+	env.DefineNative("str:concat", runtime.NewNativeFunction(stringConcat))
 }
 
 // stringLen implements the string length function.
@@ -85,27 +85,22 @@ func stringIndex(args ...runtime.Value) (runtime.Value, error) {
 		return nil, err
 	}
 
-	runes := []rune(str.Value)
-	subRunes := []rune(substr.Value)
-	index := -1
+	byteIdx := strings.Index(str.Value, substr.Value)
 
-	for i := 0; i <= len(runes)-len(subRunes); i++ {
-		match := true
-
-		for j := 0; j < len(subRunes); j++ {
-			if runes[i+j] != subRunes[j] {
-				match = false
-				break
-			}
-		}
-
-		if match {
-			index = i
-			break
-		}
+	if byteIdx == -1 {
+		return runtime.NewNumber(-1), nil
 	}
 
-	return runtime.NewNumber(float64(index)), nil
+	runeIdx := 0
+
+	for i := range str.Value {
+		if i == byteIdx {
+			return runtime.NewNumber(float64(runeIdx)), nil
+		}
+		runeIdx++
+	}
+
+	return runtime.NewNumber(float64(runeIdx)), nil
 }
 
 // stringUpper implements the string uppercase conversion function.

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.6.0](https://github.com/danielspk/tatu-lang/releases/tag/v0.6.0) - _2026-05-13_
+
+### Changed
+
+- `regex:matches`, `regex:find`, `regex:replace` cache compiled patterns.
+- `Interpreter.Environment()` renamed to `Globals()`.
+- `+` concatenates strings faster.
+- `str:index` searches faster.
+- `recur` allocates less memory and runs faster.
+
+### Fixed
+
+- `var` could shadow native functions.
+
 ## [v0.5.0](https://github.com/danielspk/tatu-lang/releases/tag/v0.5.0) - _2026-05-12_
 
 ### Changed

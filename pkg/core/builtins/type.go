@@ -10,18 +10,18 @@ import (
 )
 
 // RegisterTypes registers type checking and conversion functions.
-func RegisterTypes(natives map[string]runtime.NativeFunction) {
-	natives["is-bool"] = runtime.NewNativeFunction(isBool)
-	natives["is-number"] = runtime.NewNativeFunction(isNumber)
-	natives["is-int"] = runtime.NewNativeFunction(isInt)
-	natives["is-string"] = runtime.NewNativeFunction(isString)
-	natives["is-vector"] = runtime.NewNativeFunction(isVector)
-	natives["is-map"] = runtime.NewNativeFunction(isMap)
-	natives["is-nil"] = runtime.NewNativeFunction(isNil)
-	natives["is-function"] = runtime.NewNativeFunction(isFunction)
-	natives["to-string"] = runtime.NewNativeFunction(toString)
-	natives["to-number"] = runtime.NewNativeFunction(toNumber)
-	natives["to-bool"] = runtime.NewNativeFunction(toBool)
+func RegisterTypes(env *runtime.Environment) {
+	env.DefineNative("is-bool", runtime.NewNativeFunction(isBool))
+	env.DefineNative("is-number", runtime.NewNativeFunction(isNumber))
+	env.DefineNative("is-int", runtime.NewNativeFunction(isInt))
+	env.DefineNative("is-string", runtime.NewNativeFunction(isString))
+	env.DefineNative("is-vector", runtime.NewNativeFunction(isVector))
+	env.DefineNative("is-map", runtime.NewNativeFunction(isMap))
+	env.DefineNative("is-nil", runtime.NewNativeFunction(isNil))
+	env.DefineNative("is-function", runtime.NewNativeFunction(isFunction))
+	env.DefineNative("to-string", runtime.NewNativeFunction(toString))
+	env.DefineNative("to-number", runtime.NewNativeFunction(toNumber))
+	env.DefineNative("to-bool", runtime.NewNativeFunction(toBool))
 }
 
 // isBool implements the boolean type checking function.

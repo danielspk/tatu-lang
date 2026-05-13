@@ -9,12 +9,12 @@ import (
 )
 
 // RegisterArithmetic registers arithmetic operator natives.
-func RegisterArithmetic(natives map[string]runtime.NativeFunction) {
-	natives["+"] = runtime.NewNativeFunction(add)
-	natives["-"] = runtime.NewNativeFunction(subtract)
-	natives["*"] = runtime.NewNativeFunction(multiply)
-	natives["/"] = runtime.NewNativeFunction(divide)
-	natives["%"] = runtime.NewNativeFunction(modulo)
+func RegisterArithmetic(env *runtime.Environment) {
+	env.DefineNative("+", runtime.NewNativeFunction(add))
+	env.DefineNative("-", runtime.NewNativeFunction(subtract))
+	env.DefineNative("*", runtime.NewNativeFunction(multiply))
+	env.DefineNative("/", runtime.NewNativeFunction(divide))
+	env.DefineNative("%", runtime.NewNativeFunction(modulo))
 }
 
 // add implements the + operator (addition and string concatenation).
@@ -43,7 +43,12 @@ func add(args ...runtime.Value) (runtime.Value, error) {
 		var out strings.Builder
 
 		for _, arg := range args {
-			out.WriteString(fmt.Sprintf("%v", arg))
+			switch arg.Type() {
+			case runtime.StringType:
+				out.WriteString(arg.(runtime.String).Value)
+			case runtime.NumberType:
+				out.WriteString(arg.(runtime.Number).String())
+			}
 		}
 
 		return runtime.NewString(out.String()), nil

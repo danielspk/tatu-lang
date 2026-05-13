@@ -7,8 +7,8 @@ import (
 )
 
 // RegisterIO registers I/O functions.
-func RegisterIO(natives map[string]runtime.NativeFunction) {
-	natives["print"] = runtime.NewNativeFunction(printFn)
+func RegisterIO(env *runtime.Environment) {
+	env.DefineNative("print", runtime.NewNativeFunction(printFn))
 }
 
 // printFn implements the print function.

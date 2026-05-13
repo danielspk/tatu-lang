@@ -1,0 +1,5 @@
+; Test var on a native function
+
+(var + 5)
+
+; Expect Error: cannot redefine native `+`

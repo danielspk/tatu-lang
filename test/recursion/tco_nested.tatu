@@ -1,0 +1,23 @@
+; Test tail-call optimization with nested recursive calls and conditional vars
+
+(def sum-mixed (n acc)
+  (if (= n 0)
+    acc
+    (if (= (% n 2) 0)
+      (block
+        (var doubled (* n 2))
+        (recur (- n 1) (+ acc doubled)))
+      (block
+        (var tripled (* n 3))
+        (recur (- n 1) (+ acc tripled))))))
+
+(def total (n acc)
+  (if (= n 0)
+    acc
+    (block
+      (var partial (sum-mixed n 0))
+      (recur (- n 1) (+ acc partial)))))
+
+(total 5 0)
+
+; Expect: 89

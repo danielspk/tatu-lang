@@ -1,0 +1,5 @@
+; Test set on a native function
+
+(set + 5)
+
+; Expect Error: cannot assign to native `+`

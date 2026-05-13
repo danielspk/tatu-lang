@@ -9,9 +9,9 @@ import (
 )
 
 // RegisterJSON registers JSON functions.
-func RegisterJSON(natives map[string]runtime.NativeFunction) {
-	natives["json:encode"] = runtime.NewNativeFunction(jsonEncode)
-	natives["json:decode"] = runtime.NewNativeFunction(jsonDecode)
+func RegisterJSON(env *runtime.Environment) {
+	env.DefineNative("json:encode", runtime.NewNativeFunction(jsonEncode))
+	env.DefineNative("json:decode", runtime.NewNativeFunction(jsonDecode))
 }
 
 // jsonEncode implements the JSON encoding function.

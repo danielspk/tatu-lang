@@ -9,19 +9,19 @@ import (
 )
 
 // RegisterVector registers vector functions.
-func RegisterVector(natives map[string]runtime.NativeFunction) {
-	natives["vec:len"] = runtime.NewNativeFunction(vectorLen)
-	natives["vec:get"] = runtime.NewNativeFunction(vectorGet)
-	natives["vec:set"] = runtime.NewNativeFunction(vectorSet)
-	natives["vec:delete"] = runtime.NewNativeFunction(vectorDelete)
-	natives["vec:push"] = runtime.NewNativeFunction(vectorPush)
-	natives["vec:pop"] = runtime.NewNativeFunction(vectorPop)
-	natives["vec:slice"] = runtime.NewNativeFunction(vectorSlice)
-	natives["vec:concat"] = runtime.NewNativeFunction(vectorConcat)
-	natives["vec:contains"] = runtime.NewNativeFunction(vectorContains)
-	natives["vec:find"] = runtime.NewNativeFunction(vectorFind)
-	natives["vec:reverse"] = runtime.NewNativeFunction(vectorReverse)
-	natives["vec:sort"] = runtime.NewNativeFunction(vectorSort)
+func RegisterVector(env *runtime.Environment) {
+	env.DefineNative("vec:len", runtime.NewNativeFunction(vectorLen))
+	env.DefineNative("vec:get", runtime.NewNativeFunction(vectorGet))
+	env.DefineNative("vec:set", runtime.NewNativeFunction(vectorSet))
+	env.DefineNative("vec:delete", runtime.NewNativeFunction(vectorDelete))
+	env.DefineNative("vec:push", runtime.NewNativeFunction(vectorPush))
+	env.DefineNative("vec:pop", runtime.NewNativeFunction(vectorPop))
+	env.DefineNative("vec:slice", runtime.NewNativeFunction(vectorSlice))
+	env.DefineNative("vec:concat", runtime.NewNativeFunction(vectorConcat))
+	env.DefineNative("vec:contains", runtime.NewNativeFunction(vectorContains))
+	env.DefineNative("vec:find", runtime.NewNativeFunction(vectorFind))
+	env.DefineNative("vec:reverse", runtime.NewNativeFunction(vectorReverse))
+	env.DefineNative("vec:sort", runtime.NewNativeFunction(vectorSort))
 }
 
 // vectorLen implements the vector length function.

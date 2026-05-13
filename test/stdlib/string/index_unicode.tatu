@@ -1,0 +1,5 @@
+; Test index string - unicode rune index
+
+(str:index "hi 👋 hello" "hello")
+
+; Expect: 5

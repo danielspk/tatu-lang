@@ -3,16 +3,20 @@ package stdlib
 import (
 	"fmt"
 	"regexp"
+	"sync"
 
 	"github.com/danielspk/tatu-lang/pkg/core"
 	"github.com/danielspk/tatu-lang/pkg/runtime"
 )
 
+// regexCache memorizes compiled patterns.
+var regexCache sync.Map
+
 // RegisterRegex registers regular expression functions.
-func RegisterRegex(natives map[string]runtime.NativeFunction) {
-	natives["regex:matches"] = runtime.NewNativeFunction(regexMatches)
-	natives["regex:find"] = runtime.NewNativeFunction(regexFind)
-	natives["regex:replace"] = runtime.NewNativeFunction(regexReplace)
+func RegisterRegex(env *runtime.Environment) {
+	env.DefineNative("regex:matches", runtime.NewNativeFunction(regexMatches))
+	env.DefineNative("regex:find", runtime.NewNativeFunction(regexFind))
+	env.DefineNative("regex:replace", runtime.NewNativeFunction(regexReplace))
 }
 
 // regexMatches checks if a string matches a regular expression pattern.
@@ -34,12 +38,12 @@ func regexMatches(args ...runtime.Value) (runtime.Value, error) {
 		return nil, err
 	}
 
-	matched, err := regexp.MatchString(pattern.Value, str.Value)
+	re, err := compileCached(name, pattern.Value)
 	if err != nil {
-		return nil, fmt.Errorf("`%s` invalid regex pattern: %w", name, err)
+		return nil, err
 	}
 
-	return runtime.NewBool(matched), nil
+	return runtime.NewBool(re.MatchString(str.Value)), nil
 }
 
 // regexFind finds the first substring that matches a regular expression pattern.
@@ -62,9 +66,9 @@ func regexFind(args ...runtime.Value) (runtime.Value, error) {
 		return nil, err
 	}
 
-	re, err := regexp.Compile(pattern.Value)
+	re, err := compileCached(name, pattern.Value)
 	if err != nil {
-		return nil, fmt.Errorf("`%s` invalid regex pattern: %w", name, err)
+		return nil, err
 	}
 
 	loc := re.FindStringIndex(str.Value)
@@ -99,12 +103,27 @@ func regexReplace(args ...runtime.Value) (runtime.Value, error) {
 		return nil, err
 	}
 
-	re, err := regexp.Compile(pattern.Value)
+	re, err := compileCached(name, pattern.Value)
 	if err != nil {
-		return nil, fmt.Errorf("`%s` invalid regex pattern: %w", name, err)
+		return nil, err
 	}
 
 	result := re.ReplaceAllString(str.Value, replacement.Value)
 
 	return runtime.NewString(result), nil
+}
+
+func compileCached(name, pattern string) (*regexp.Regexp, error) {
+	if v, ok := regexCache.Load(pattern); ok {
+		return v.(*regexp.Regexp), nil
+	}
+
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return nil, fmt.Errorf("`%s` invalid regex pattern: %w", name, err)
+	}
+
+	actual, _ := regexCache.LoadOrStore(pattern, re)
+
+	return actual.(*regexp.Regexp), nil
 }
