@@ -1,0 +1,11 @@
+; Test set across blocks
+
+(var x 10)
+
+(block
+  (var y 20)
+  (block
+    (set x (+ x y)))
+  x)
+
+; Expect: 30

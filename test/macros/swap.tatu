@@ -1,0 +1,12 @@
+; Test swap
+
+(macro swap (a b) (block (var tmp a) (set a b) (set b tmp)))
+
+(var x 1)
+(var y 2)
+
+(swap x y)
+
+(+ (* x 10) y)
+
+; Expect: 21

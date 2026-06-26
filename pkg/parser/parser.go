@@ -12,27 +12,26 @@ import (
 
 // Parser is responsible for analyzing tokens and generating the abstract syntax tree (AST).
 type Parser struct {
-	tokens  []token.Token
 	current int
-
-	sugar    SyntaxSugar
-	analyzer SyntaxAnalyzer
+	tokens  []token.Token
+	sugar   SyntaxSugar
 }
 
 // NewParser builds a new Parser.
-func NewParser(tokens []token.Token) *Parser {
+func NewParser() *Parser {
 	return &Parser{
-		tokens:   tokens,
-		sugar:    SyntaxSugar{},
-		analyzer: SyntaxAnalyzer{},
+		sugar: SyntaxSugar{},
 	}
 }
 
 // Parse parses the tokens and generates a resulting AST.
-func (p *Parser) Parse() (*ast.AST, error) {
-	if len(p.tokens) == 0 {
+func (p *Parser) Parse(tokens []token.Token) (*ast.AST, error) {
+	if len(tokens) == 0 {
 		return nil, fmt.Errorf("no tokens found")
 	}
+
+	p.current = 0
+	p.tokens = tokens
 
 	prog, err := p.parseProgram()
 	if err != nil {
@@ -153,10 +152,6 @@ func (p *Parser) parseList() (ast.SExpr, error) {
 	))
 
 	if err := p.sugar.Transform(&listExpr); err != nil {
-		return nil, err
-	}
-
-	if err := p.analyzer.Validate(listExpr); err != nil {
 		return nil, err
 	}
 

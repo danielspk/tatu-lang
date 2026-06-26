@@ -1,0 +1,5 @@
+; Test invalid name
+
+(macro "x" () 1)
+
+; Expect Error: expected an identifier

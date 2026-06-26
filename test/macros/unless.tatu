@@ -1,0 +1,13 @@
+; Test unless
+
+(macro unless (cond body) (if cond nil body))
+
+(var x 5)
+(var result "unset")
+
+(unless (= x 0)
+  (set result "x is not zero"))
+
+result
+
+; Expect: x is not zero

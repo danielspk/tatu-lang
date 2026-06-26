@@ -1,0 +1,11 @@
+; Test nested for
+
+(var result 1)
+
+(for (var i 1) (<= i 3) (set i (+ i 1))
+  (for (var j 1) (<= j 3) (set j (+ j 1))
+    (set result (* result j))))
+
+result
+
+; Expect: 216

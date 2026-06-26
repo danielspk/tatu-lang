@@ -7,6 +7,9 @@ import (
 	"path/filepath"
 
 	"github.com/danielspk/tatu-lang/pkg/ast"
+	"github.com/danielspk/tatu-lang/pkg/macro"
+	"github.com/danielspk/tatu-lang/pkg/parser"
+	"github.com/danielspk/tatu-lang/pkg/scanner"
 	"github.com/danielspk/tatu-lang/pkg/token"
 )
 
@@ -20,20 +23,42 @@ type Parser interface {
 	Parse(tokens []token.Token) (*ast.AST, error)
 }
 
+// Expander represents a macro expander interface.
+type Expander interface {
+	Expand(program *ast.AST) (*ast.AST, error)
+}
+
+// Analyzer represents a syntactic analyzer interface.
+type Analyzer interface {
+	Analyze(program *ast.AST) error
+}
+
 // ProgramBuilder is responsible for generating an AST of the program and resolving the inclusion of files and modules.
 type ProgramBuilder struct {
 	scanner     Scanner
 	parser      Parser
+	expander    Expander
+	analyzer    Analyzer
 	parsedFiles map[string][]byte
 }
 
 // NewProgramBuilder builds a new ProgramBuilder.
-func NewProgramBuilder(scanner Scanner, parser Parser) *ProgramBuilder {
+func NewProgramBuilder(scanner Scanner, parser Parser, expander Expander, analyzer Analyzer) *ProgramBuilder {
 	return &ProgramBuilder{
 		scanner:     scanner,
 		parser:      parser,
+		expander:    expander,
+		analyzer:    analyzer,
 		parsedFiles: make(map[string][]byte),
 	}
+}
+
+// NewProgramBuilderWithDefaults builds a new ProgramBuilder with defaults.
+func NewProgramBuilderWithDefaults() *ProgramBuilder {
+	return NewProgramBuilder(
+		scanner.NewScanner(), parser.NewParser(),
+		macro.NewExpander(), parser.NewSyntaxAnalyzer(),
+	)
 }
 
 // Sources return the source of every file parsed.
@@ -43,6 +68,16 @@ func (pb *ProgramBuilder) Sources() map[string][]byte {
 
 // BuildFromFile builds an AST from a file path.
 func (pb *ProgramBuilder) BuildFromFile(filename string) ([]token.Token, *ast.AST, error) {
+	return pb.buildFromFile(filename)
+}
+
+// BuildFromSource builds an AST from a source code.
+func (pb *ProgramBuilder) BuildFromSource(source []byte, filename string) ([]token.Token, *ast.AST, error) {
+	return pb.buildFromSource(source, filename)
+}
+
+// buildFromFile builds an AST from a file path.
+func (pb *ProgramBuilder) buildFromFile(filename string) ([]token.Token, *ast.AST, error) {
 	filename = pb.fullPath(filename)
 
 	source, err := os.ReadFile(filename)
@@ -50,11 +85,11 @@ func (pb *ProgramBuilder) BuildFromFile(filename string) ([]token.Token, *ast.AS
 		return nil, nil, fmt.Errorf("missing file `%s`: %w", filename, err)
 	}
 
-	return pb.BuildFromSource(source, filename)
+	return pb.buildFromSource(source, filename)
 }
 
-// BuildFromSource builds an AST from a source code.
-func (pb *ProgramBuilder) BuildFromSource(source []byte, filename string) ([]token.Token, *ast.AST, error) {
+// buildFromSource builds an AST from a source code.
+func (pb *ProgramBuilder) buildFromSource(source []byte, filename string) ([]token.Token, *ast.AST, error) {
 	filename = pb.fullPath(filename)
 
 	pb.addParsedFile(filename, source)
@@ -84,7 +119,7 @@ func (pb *ProgramBuilder) BuildFromSource(source []byte, filename string) ([]tok
 				continue
 			}
 
-			incTokens, incASTNodes, err := pb.BuildFromFile(includeFilename)
+			incTokens, incASTNodes, err := pb.buildFromFile(includeFilename)
 			if err != nil {
 				return nil, nil, fmt.Errorf("including file `%s` in `%s`: %w", includeFilename, filename, err)
 			}
@@ -98,7 +133,16 @@ func (pb *ProgramBuilder) BuildFromSource(source []byte, filename string) ([]tok
 		}
 	}
 
-	return tokens, astNodes, nil
+	astExpanded, err := pb.expander.Expand(astNodes)
+	if err != nil {
+		return nil, nil, fmt.Errorf("expanding macros on file `%s`: %w", filename, err)
+	}
+
+	if err := pb.analyzer.Analyze(astExpanded); err != nil {
+		return nil, nil, fmt.Errorf("analyzing source on file `%s`: %w", filename, err)
+	}
+
+	return tokens, astExpanded, nil
 }
 
 // isIncludeExpr checks if the expression is an "include" and returns the file name.

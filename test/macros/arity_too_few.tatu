@@ -1,0 +1,7 @@
+; Test arity too few
+
+(macro pair (a b) (+ a b))
+
+(pair 1)
+
+; Expect Error: no rule matches macro `pair` (1 arguments)

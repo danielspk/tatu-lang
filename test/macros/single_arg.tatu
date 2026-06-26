@@ -1,0 +1,7 @@
+; Test single arg
+
+(macro double (x) (* x 2))
+
+(double 5)
+
+; Expect: 10

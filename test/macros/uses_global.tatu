@@ -1,0 +1,9 @@
+; Test uses global variable
+
+(var multiplier 10)
+
+(macro scale (x) (* x multiplier))
+
+(scale 5)
+
+; Expect: 50

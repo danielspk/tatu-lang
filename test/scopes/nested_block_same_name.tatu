@@ -1,0 +1,11 @@
+; Test nested block same name
+
+(block
+  (var x 1)
+  (block
+    (var x 2)
+    (block
+      (var x 3)
+      x)))
+
+; Expect: 3

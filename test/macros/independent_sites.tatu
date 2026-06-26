@@ -1,0 +1,7 @@
+; Test independent sites
+
+(macro double (x) (* x 2))
+
+(+ (double 3) (double 5))
+
+; Expect: 16

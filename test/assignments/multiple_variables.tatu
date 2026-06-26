@@ -1,0 +1,13 @@
+; Test multiple variables
+
+(var a 1)
+(var b 2)
+(var c 3)
+
+(set a (+ a 10))
+(set b (+ b 20))
+(set c (+ c 30))
+
+(+ a (+ b c))
+
+; Expect: 66

@@ -152,6 +152,16 @@ symbol      ; symbol/identifier
 
 ```
 
+## Macros
+
+```lisp
+; macro definition
+(macro my-list (x ...) (vector x ...))
+
+; macro usage
+(vec:len (my-list 1 2 3 4))
+```
+
 ## Module System
 
 ```lisp

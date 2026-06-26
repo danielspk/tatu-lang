@@ -1,0 +1,8 @@
+; Test nested macro
+
+(macro inner (x) (* x 2))
+(macro outer (x) (inner (+ x 1)))
+
+(outer 3)
+
+; Expect: 8

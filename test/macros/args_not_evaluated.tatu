@@ -1,0 +1,16 @@
+; Test args not evaluated
+
+(macro discard (x) 42)
+
+(var counter 0)
+
+(def increment ()
+  (block
+    (set counter (+ counter 1))
+    counter))
+
+(discard (increment))
+
+counter
+
+; Expect: 0

@@ -1,0 +1,10 @@
+; Test uses local variable
+
+(macro with-tmp (x) (block (var __t x) (* __t __t)))
+
+(var __t 100)
+(var result (with-tmp 5))
+
+(+ (* result 100) __t)
+
+; Expect: 2600

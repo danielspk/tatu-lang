@@ -1,0 +1,12 @@
+; Test recur in template
+
+(macro tail-add (n acc) (recur (- n 1) (+ acc n)))
+
+(def sum (n acc)
+  (if (= n 0)
+    acc
+    (tail-add n acc)))
+
+(sum 5 0)
+
+; Expect: 15

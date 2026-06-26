@@ -1,0 +1,5 @@
+; Test lambda called with wrong number of arguments
+
+((lambda (x) x) 1 2)
+
+; Expect Error: expected 1 arguments, got 2

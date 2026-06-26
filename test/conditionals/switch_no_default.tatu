@@ -1,0 +1,6 @@
+; Test switch without default
+
+(switch ((= x 10) "ten")
+        ((= x 20) "twenty"))
+
+; Expect Error: invalid default case

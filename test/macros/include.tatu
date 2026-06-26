@@ -1,0 +1,7 @@
+; Test include with macro
+
+(macro unless (cond body) (if cond nil body))
+
+(include "included_file.tatu")
+
+; Expect: one is not zero

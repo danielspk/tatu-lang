@@ -1,0 +1,12 @@
+; Test included file macro
+
+(include "include.tatu")
+
+(var result "unset")
+
+(unless (= 1 0)
+  (set result "one is not zero"))
+
+result
+
+; Expect: one is not zero

@@ -1,0 +1,8 @@
+; Test if as value
+
+(var x 10)
+(var y (if (> x 5) 100 200))
+
+y
+
+; Expect: 100

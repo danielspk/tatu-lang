@@ -18,7 +18,7 @@ type Interpreter struct {
 }
 
 // NewInterpreter builds a new Interpreter.
-func NewInterpreter() (*Interpreter, error) {
+func NewInterpreter() *Interpreter {
 	global := runtime.NewEnvironment(nil, nil)
 
 	builtins.RegisterArithmetic(global)
@@ -35,7 +35,7 @@ func NewInterpreter() (*Interpreter, error) {
 	stdlib.RegisterTime(global)
 	stdlib.RegisterVector(global)
 
-	return &Interpreter{global: global}, nil
+	return &Interpreter{global: global}
 }
 
 // Globals returns the user-defined global variables.

@@ -31,9 +31,10 @@ _Tatu_ is a programming language with the following features:
 - ✅ Syntactic sugar support.
 - ✅ Explicit tail call optimization _(TCO)_.
 - ✅ UTF-8 native support.
+- ✅ User-defined macros.
 - ✅ Pure Go implementation.
 
-> Despite its S-expression syntax, _Tatu_ is not a _Lisp_ dialect and does not support metaprogramming.
+> Despite its S-expression syntax, _Tatu_ **is not** a _Lisp_ dialect.
 
 ### TODOs
 
@@ -79,10 +80,13 @@ _Tatu_ uses a multi-phase pipeline to execute programs:
     Parser         │
        │           │
        ▼           │
-   Analyzer        │
+     Sugar         │
        │           │
        ▼           │
-     Sugar         │
+   Expander        │
+       │           │
+       ▼           │
+   Analyzer        │
        │           │
        ▼           │
       AST          │

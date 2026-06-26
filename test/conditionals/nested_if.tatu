@@ -1,0 +1,11 @@
+; Test nested if
+
+(var x 15)
+(var result
+  (if (> x 10)
+    (if (> x 20)
+      "greater than 20"
+      "between 11 and 20")
+    "10 or less"))
+
+; Expect: between 11 and 20

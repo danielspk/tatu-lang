@@ -1,0 +1,10 @@
+; Test chained set
+
+(var x 10)
+(set x (+ x 5))
+(set x (* x 2))
+(set x (- x 3))
+
+x
+
+; Expect: 27

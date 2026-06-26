@@ -1,0 +1,11 @@
+; Test lambda in block
+
+(block
+  (var x 10)
+  (var f (lambda ()
+    (block
+      (var y 5)
+      (+ x y))))
+  (f))
+
+; Expect: 15

@@ -1,0 +1,6 @@
+; Test not top level
+
+(block
+  (macro ((inner x) x)))
+
+; Expect Error: unresolved `macro`: macro must be at the top level

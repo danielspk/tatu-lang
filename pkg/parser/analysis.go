@@ -12,8 +12,44 @@ import (
 type SyntaxAnalyzer struct {
 }
 
-// Validate validates an S-expression structure.
-func (sa *SyntaxAnalyzer) Validate(expr ast.SExpr) error {
+// NewSyntaxAnalyzer builds a new SyntaxAnalyzer.
+func NewSyntaxAnalyzer() *SyntaxAnalyzer {
+	return &SyntaxAnalyzer{}
+}
+
+// Analyze validates every expression in the program.
+func (sa *SyntaxAnalyzer) Analyze(program *ast.AST) error {
+	for _, expr := range program.Program {
+		if err := sa.analyzeRecursive(expr); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// analyzeRecursive validates an S-expression and recurses into list children.
+func (sa *SyntaxAnalyzer) analyzeRecursive(expr ast.SExpr) error {
+	if err := sa.validate(expr); err != nil {
+		return err
+	}
+
+	listExpr, ok := expr.(*ast.ListExpr)
+	if !ok {
+		return nil
+	}
+
+	for _, child := range listExpr.List {
+		if err := sa.analyzeRecursive(child); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// validate validates an S-expression structure.
+func (sa *SyntaxAnalyzer) validate(expr ast.SExpr) error {
 	listExpr, ok := expr.(*ast.ListExpr)
 	if !ok || len(listExpr.List) == 0 {
 		return nil
@@ -40,8 +76,6 @@ func (sa *SyntaxAnalyzer) Validate(expr ast.SExpr) error {
 		return sa.validateLogical(listExpr)
 	case "not":
 		return sa.validateNot(listExpr)
-	case "include":
-		return sa.validateInclude(listExpr)
 	case "block":
 		return sa.validateBlock(listExpr)
 	case "var":
@@ -60,6 +94,8 @@ func (sa *SyntaxAnalyzer) Validate(expr ast.SExpr) error {
 		return sa.validateMap(listExpr)
 	case "print":
 		return sa.validatePrint(listExpr)
+	case "include", "macro":
+		return sa.validateUnresolved(listExpr)
 	}
 
 	return nil
@@ -130,20 +166,6 @@ func (sa *SyntaxAnalyzer) validateLogical(expr *ast.ListExpr) error {
 func (sa *SyntaxAnalyzer) validateNot(expr *ast.ListExpr) error {
 	if len(expr.List) != 2 {
 		return sa.error("invalid `not` format: expected exactly one operand", expr.Location())
-	}
-
-	return nil
-}
-
-// validateInclude validates the `include` special form.
-// Format: (include <string>)
-func (sa *SyntaxAnalyzer) validateInclude(expr *ast.ListExpr) error {
-	if len(expr.List) != 2 {
-		return sa.error("invalid `include` format: expected (include <string>)", expr.Location())
-	}
-
-	if expr.List[1].Kind() != ast.StringKind {
-		return sa.error("invalid `include` argument: expected string", expr.List[1].Location())
 	}
 
 	return nil
@@ -252,6 +274,13 @@ func (sa *SyntaxAnalyzer) validatePrint(expr *ast.ListExpr) error {
 	}
 
 	return nil
+}
+
+// validateUnresolved rejects forms that must be resolved before analysis.
+func (sa *SyntaxAnalyzer) validateUnresolved(expr *ast.ListExpr) error {
+	name := expr.List[0].(*ast.SymbolExpr).Symbol
+
+	return sa.error(fmt.Sprintf("unresolved `%s`: %s must be at the top level", name, name), expr.Location())
 }
 
 // error makes an error.

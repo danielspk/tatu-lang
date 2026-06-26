@@ -1,0 +1,5 @@
+; Test if with non-boolean condition
+
+(if 1 "yes")
+
+; Expect Error: expected BOOL, found NUMBER

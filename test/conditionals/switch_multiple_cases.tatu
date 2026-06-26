@@ -1,0 +1,9 @@
+; Test switch with multiple cases
+
+(var x 25)
+(switch ((< x 10) "less than 10")
+        ((< x 20) "less than 20")
+        ((< x 30) "less than 30")
+        (default "30 or more"))
+
+; Expect: less than 30

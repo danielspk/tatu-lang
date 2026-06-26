@@ -1,0 +1,5 @@
+; Test define with non-identifier name
+
+(def 123 (x) x)
+
+; Expect Error: invalid `var` name: expected identifier

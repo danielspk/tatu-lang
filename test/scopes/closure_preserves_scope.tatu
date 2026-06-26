@@ -1,0 +1,9 @@
+; Test closure preserves scope
+
+(block
+  (var x 10)
+  (var f (lambda () (+ x 1)))
+  (set x 20)
+  (f))
+
+; Expect: 21

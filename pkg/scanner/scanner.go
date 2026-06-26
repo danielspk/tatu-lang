@@ -37,18 +37,18 @@ type Scanner struct {
 }
 
 // NewScanner builds a new Scanner.
-func NewScanner(source []byte, filename string) *Scanner {
-	return &Scanner{
-		source:   string(source),
-		filename: filename,
-		start:    cursor{offset: 0, line: 1, column: 1},
-		current:  cursor{offset: 0, line: 1, column: 1},
-		tokens:   make([]token.Token, 0),
-	}
+func NewScanner() *Scanner {
+	return &Scanner{}
 }
 
 // Scan tokenizes the source code to generate a slice of tokens.
-func (s *Scanner) Scan() ([]token.Token, error) {
+func (s *Scanner) Scan(source []byte, filename string) ([]token.Token, error) {
+	s.source = string(source)
+	s.filename = filename
+	s.start = cursor{offset: 0, line: 1, column: 1}
+	s.current = cursor{offset: 0, line: 1, column: 1}
+	s.tokens = make([]token.Token, 0)
+
 	for !s.isAtEnd() {
 		if err := s.scanToken(); err != nil {
 			return nil, err
@@ -90,6 +90,14 @@ func (s *Scanner) scanToken() error {
 			return err
 		}
 		return s.addToken(token.String)
+
+	case '.':
+		if s.peek() == '.' && s.lookAhead() == '.' {
+			_ = s.advance()
+			_ = s.advance()
+			return s.addToken(token.Symbol)
+		}
+		return s.error("incomplete ellipsis")
 
 	default:
 		if s.isDigit(chr) || (chr == '-' && s.isDigit(s.peek())) {

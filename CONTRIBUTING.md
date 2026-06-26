@@ -30,7 +30,7 @@ Feature suggestions are welcome! Please:
 2. **Make your changes** following the code style guidelines
 3. **Add tests** for any new functionality
 4. **Run tests** to ensure everything passes: `go test ./test`
-5. **Update documentation** if needed (README.md, CLAUDE.md, comments)
+5. **Update documentation** if needed (README.md, AGENTS.md, comments)
 6. **Commit** using [Conventional Commits](#commit-message-format)
 7. **Submit** the pull request with a clear description
 

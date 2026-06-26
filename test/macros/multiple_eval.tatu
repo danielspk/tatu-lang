@@ -1,0 +1,16 @@
+; Test multiple eval
+
+(macro square (x) (* x x))
+
+(var counter 0)
+
+(def next ()
+  (block
+    (set counter (+ counter 1))
+    counter))
+
+(var result (square (next)))
+
+(+ (* result 10) counter)
+
+; Expect: 22

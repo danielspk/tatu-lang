@@ -1,0 +1,5 @@
+; Test define special form
+
+(macro if (a b c) a)
+
+; Expect Error: cannot define `if` as macro

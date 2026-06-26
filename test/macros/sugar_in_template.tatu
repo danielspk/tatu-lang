@@ -1,0 +1,11 @@
+; Test sugar in template
+
+(macro classify (n)
+  (switch
+    ((< n 0) "negative")
+    ((= n 0) "zero")
+    (default "positive")))
+
+(classify -5)
+
+; Expect: negative

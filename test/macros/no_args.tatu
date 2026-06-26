@@ -1,0 +1,7 @@
+; Test no args
+
+(macro pi () 3.14)
+
+(pi)
+
+; Expect: 3.14

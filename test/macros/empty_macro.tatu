@@ -1,0 +1,5 @@
+; Test empty macro
+
+(macro)
+
+; Expect Error: expected (macro <name> (<params>) <body>)

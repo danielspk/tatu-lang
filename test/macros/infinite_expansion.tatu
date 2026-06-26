@@ -1,0 +1,7 @@
+; Test infinite expansion
+
+(macro loop (x) (loop x))
+
+(loop 1)
+
+; Expect Error: macro `loop` expansion depth limit exceeded

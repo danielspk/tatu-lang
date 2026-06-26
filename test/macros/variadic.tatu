@@ -1,0 +1,7 @@
+; Test variadic macro
+
+(macro my-list (x ...) (vector x ...))
+
+(vec:len (my-list 1 2 3 4))
+
+; Expect: 4

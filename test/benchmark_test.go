@@ -53,20 +53,50 @@ func BenchmarkRegexInLoop(b *testing.B) {
 	runTestCode(b, source)
 }
 
+func BenchmarkMacroExpansion(b *testing.B) {
+	source := `
+(macro ((twice x)
+  (block
+    (var __t x)
+    (+ __t __t))))
+
+(var sum 0)
+(var i 0)
+(while (< i 1000)
+  (block
+    (set sum (twice i))
+    (set i (+ i 1))))
+
+sum
+`
+	runTestCode(b, source)
+}
+
+func BenchmarkMacroEquivalent(b *testing.B) {
+	source := `
+(var sum 0)
+(var i 0)
+(while (< i 1000)
+  (block
+    (set sum (block (var __t i) (+ __t __t)))
+    (set i (+ i 1))))
+
+sum
+`
+	runTestCode(b, source)
+}
+
 func runTestCode(b *testing.B, source string) {
 	b.ReportAllocs()
 
 	for i := 0; i < b.N; i++ {
-		progBuilder := builder.NewProgramBuilder(builder.NewDefaultScanner(), builder.NewDefaultParser())
+		progBuilder := builder.NewProgramBuilderWithDefaults()
 		_, ast, err := progBuilder.BuildFromSource([]byte(source), "")
 		if err != nil {
 			b.Fatalf("building source: %v", err)
 		}
 
-		inter, err := interpreter.NewInterpreter()
-		if err != nil {
-			b.Fatalf("creating interpreter: %v", err)
-		}
+		inter := interpreter.NewInterpreter()
 
 		for _, expr := range ast.Program {
 			_, err = inter.Eval(expr, nil)

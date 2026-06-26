@@ -26,7 +26,7 @@ func main() {
 	filename := flag.Arg(0)
 
 	// building from a source file
-	progBuilder := builder.NewProgramBuilder(builder.NewDefaultScanner(), builder.NewDefaultParser())
+	progBuilder := builder.NewProgramBuilderWithDefaults()
 	tokens, ast, err := progBuilder.BuildFromFile(filename)
 	if err != nil {
 		exitWithError(err, progBuilder.Sources())
@@ -60,10 +60,7 @@ func main() {
 	}
 
 	// evaluating by interpreter
-	inter, err := interpreter.NewInterpreter()
-	if err != nil {
-		exitWithError(err, progBuilder.Sources())
-	}
+	inter := interpreter.NewInterpreter()
 
 	for _, expr := range ast.Program {
 		result, err := inter.Eval(expr, nil)

@@ -1,0 +1,6 @@
+; Test calling a non-function value
+
+(var x 10)
+(x 1 2)
+
+; Expect Error: expression is not a function

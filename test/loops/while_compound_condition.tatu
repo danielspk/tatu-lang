@@ -1,0 +1,13 @@
+; Test while compound condition
+
+(var i 1)
+(var total 0)
+
+(while (and (> i 0) (< i 5))
+  (block
+    (set total (+ total i))
+    (set i (+ i 1))))
+
+total
+
+; Expect: 10

@@ -1,0 +1,5 @@
+; Test malformed rule
+
+(macro (just-one-element))
+
+; Expect Error: expected an identifier

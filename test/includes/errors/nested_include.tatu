@@ -1,0 +1,6 @@
+; Test include nested below the top level is rejected at analysis time
+
+(block
+  (include "nonexistent.tatu"))
+
+; Expect Error: unresolved `include`: include must be at the top level

@@ -1,0 +1,5 @@
+; Test while with non-boolean condition
+
+(while 1 (print "loop"))
+
+; Expect Error: expected BOOL, found NUMBER

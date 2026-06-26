@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.7.0](https://github.com/danielspk/tatu-lang/releases/tag/v0.7.0) - _2026-06-25_
+
+### Added
+
+- User-defined macros with positional arg binding and variadic support.
+- New ellipsis symbol `...` in the parser.
+- New `builder.NewProgramBuilderWithDefaults()` method.
+- Expand test suite.
+
+### Changed
+
+- `NewInterpreter()` no longer returns an error.
+- `ProgramBuilder` runs macro expansion and syntax analysis.
+- `ProgramBuilder` now takes an `Expander` and an `Analyzer`.
+- `Scanner` is reusable: `Scan` takes the source and filename.
+- `Parser` is reusable: `Parse` takes the tokens.
+- Syntax validation moved out of parsing.
+
+### Removed
+
+- `builder.NewDefaultScanner` and `builder.NewDefaultParser`.
+
 ## [v0.6.0](https://github.com/danielspk/tatu-lang/releases/tag/v0.6.0) - _2026-05-13_
 
 ### Changed

@@ -1,0 +1,7 @@
+; Test use before define
+
+(unless x 1)
+
+(macro unless (cond body) cond)
+
+; Expect Error: unknown symbol `unless`
