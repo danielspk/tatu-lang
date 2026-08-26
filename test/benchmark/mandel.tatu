@@ -1,0 +1,36 @@
+; Mandelbrot set renderer
+
+(var leftEdge -520)
+(var rightEdge 300)
+(var topEdge 300)
+(var bottomEdge -300)
+(var xStep 7)
+(var yStep 15)
+(var maxIter 200)
+
+(for (var y0 topEdge) (> y0 bottomEdge) (set y0 (- y0 yStep))
+  (block
+    (var row "")
+    (for (var x0 leftEdge) (< x0 rightEdge) (set x0 (+ x0 xStep))
+      (block
+        (var x 0)
+        (var y 0)
+        (var theChar " ")
+        (var i 0)
+        (while (< i maxIter)
+          (block
+            (var xx (/ (* x x) 200))
+            (var yy (/ (* y y) 200))
+            (if (> (+ xx yy) 800)
+              (block
+                (set theChar (to-string i))
+                (if (> i 9) (set theChar "@") nil)
+                (set i maxIter))
+              nil)
+            (set y (+ (/ (* x y) 100) y0))
+            (set x (+ (- xx yy) x0))
+            (set i (+ i 1))))
+        (set row (str:concat row theChar))))
+    (println row)))
+
+; Expect: -300

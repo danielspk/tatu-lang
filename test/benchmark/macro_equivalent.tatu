@@ -1,0 +1,10 @@
+(var sum 0)
+(var i 0)
+(while (< i 1000)
+  (block
+    (set sum (block (var __t i) (+ __t __t)))
+    (set i (+ i 1))))
+
+sum
+
+; Expect: 1998

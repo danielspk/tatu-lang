@@ -3,6 +3,8 @@ package interpreter
 
 import (
 	"fmt"
+	"io"
+	"os"
 
 	"github.com/danielspk/tatu-lang/pkg/ast"
 	"github.com/danielspk/tatu-lang/pkg/core/builtins"
@@ -12,18 +14,39 @@ import (
 	"github.com/danielspk/tatu-lang/pkg/runtime"
 )
 
+// config represents the interpreter configuration.
+type config struct {
+	out io.Writer
+}
+
+// Option represents a functional option for the Interpreter.
+type Option func(*config)
+
+// WithWriter returns an Option that sets the output writer.
+func WithWriter(w io.Writer) Option {
+	return func(c *config) {
+		c.out = w
+	}
+}
+
 // Interpreter represents a tree-walking interpreter.
 type Interpreter struct {
 	global *runtime.Environment
+	depth  int
 }
 
 // NewInterpreter builds a new Interpreter.
-func NewInterpreter() *Interpreter {
+func NewInterpreter(opts ...Option) *Interpreter {
+	cfg := config{out: os.Stdout}
+	for _, opt := range opts {
+		opt(&cfg)
+	}
+
 	global := runtime.NewEnvironment(nil, nil)
 
+	builtins.RegisterIO(global, cfg.out)
 	builtins.RegisterArithmetic(global)
 	builtins.RegisterComparison(global)
-	builtins.RegisterIO(global)
 	builtins.RegisterTypes(global)
 
 	stdlib.RegisterFileSystem(global)
@@ -36,6 +59,11 @@ func NewInterpreter() *Interpreter {
 	stdlib.RegisterVector(global)
 
 	return &Interpreter{global: global}
+}
+
+// SetGlobal seeds a user-defined global binding before execution.
+func (i *Interpreter) SetGlobal(name string, value runtime.Value) {
+	i.global.Set(name, value)
 }
 
 // Globals returns the user-defined global variables.
@@ -62,6 +90,16 @@ func (i *Interpreter) EvalProgram(ast *ast.AST, env *runtime.Environment) (runti
 	}
 
 	return lastValue, nil
+}
+
+// Call calls a global function.
+func (i *Interpreter) Call(name string, args ...runtime.Value) (runtime.Value, error) {
+	fn, found := i.global.Lookup(name)
+	if !found {
+		return nil, fmt.Errorf("undefined function `%s`", name)
+	}
+
+	return i.callFunction(fn, args, location.Location{})
 }
 
 // eval evaluates an S-expression in non-tail position.
@@ -380,7 +418,7 @@ func (i *Interpreter) evalMap(expr ast.SExpr, env *runtime.Environment) (runtime
 	return runtime.NewMap(elements), nil
 }
 
-// evalCallFunction evaluates a call function expression with tail-call optimization support.
+// evalCallFunction evaluates a call function expression.
 func (i *Interpreter) evalCallFunction(expr ast.SExpr, env *runtime.Environment) (runtime.Value, error) {
 	exprList := expr.(*ast.ListExpr)
 
@@ -389,23 +427,37 @@ func (i *Interpreter) evalCallFunction(expr ast.SExpr, env *runtime.Environment)
 		return nil, err
 	}
 
-	if funcValue.Type() != runtime.NativeFuncType && funcValue.Type() != runtime.FuncType {
-		return nil, i.error("expression is not a function", exprList.List[0].Location())
-	}
-
 	valArgs, err := i.evalFunctionArguments(exprList.List[1:], env)
 	if err != nil {
 		return nil, err
 	}
 
+	return i.callFunction(funcValue, valArgs, exprList.Location())
+}
+
+// callFunction calls a function value to evaluated arguments with tail-call optimization support.
+func (i *Interpreter) callFunction(funcValue runtime.Value, args []runtime.Value, loc location.Location) (runtime.Value, error) {
 	// native function
 	if funcValue.Type() == runtime.NativeFuncType {
-		result, err := funcValue.(runtime.NativeFunction).Value(valArgs...)
+		result, err := funcValue.(runtime.NativeFunction).Value(args...)
 		if err != nil {
-			return nil, i.error(err.Error(), exprList.Location())
+			return nil, i.error(err.Error(), loc)
 		}
 
 		return result, nil
+	}
+
+	if funcValue.Type() != runtime.FuncType {
+		return nil, i.error("expression is not a function", loc)
+	}
+
+	i.depth++
+	defer func() {
+		i.depth--
+	}()
+
+	if i.depth > runtime.MaxCallDepth {
+		return nil, i.error("maximum recursion depth exceeded", loc)
 	}
 
 	// lambda function
@@ -416,11 +468,11 @@ func (i *Interpreter) evalCallFunction(expr ast.SExpr, env *runtime.Environment)
 	activationEnv := runtime.NewEnvironment(activationRecord, fn.Env)
 
 	expectedArgs := len(params)
-	currentArgs := valArgs
+	currentArgs := args
 
 	for {
 		if len(currentArgs) != expectedArgs {
-			return nil, i.error(fmt.Sprintf("expected %d arguments, got %d", expectedArgs, len(currentArgs)), exprList.Location())
+			return nil, i.error(fmt.Sprintf("expected %d arguments, got %d", expectedArgs, len(currentArgs)), loc)
 		}
 
 		clear(activationRecord)
@@ -462,10 +514,5 @@ func (i *Interpreter) evalFunctionArguments(exprArgs []ast.SExpr, env *runtime.E
 
 // error makes an error.
 func (i *Interpreter) error(msg string, loc location.Location) *debug.Error {
-	return &debug.Error{
-		Msg:    msg,
-		Line:   loc.End.Line,
-		Column: loc.End.Column,
-		File:   loc.File,
-	}
+	return debug.NewError(msg, loc)
 }

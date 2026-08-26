@@ -1,0 +1,5 @@
+; Test println
+
+(println 1 2 3)
+
+; Expect: <nil>

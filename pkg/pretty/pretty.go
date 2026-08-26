@@ -4,37 +4,56 @@ package pretty
 import (
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/danielspk/tatu-lang/pkg/ast"
 	"github.com/danielspk/tatu-lang/pkg/debug"
 	"github.com/danielspk/tatu-lang/pkg/token"
 )
 
-// FormatRunningExecution formats running execution.
-func FormatRunningExecution(version, filename string) string {
-	return fmt.Sprintf("%s>>> Running tatu lang %s(%s)%s - %s%s",
-		ColorPurple, ColorDarkGray, version, ColorGreen, filename, ColorReset)
+var headerRule = strings.Repeat("-", 80)
+
+// DumpExecution dumps the running execution.
+func DumpExecution(version, filename string) string {
+	return fmt.Sprintf("%s>>> Tatu lang %s(%s)\n%s>>> File - %s\n%s>>> Result:%s\n",
+		ColorPurple, ColorDarkGray, version, ColorGreen, filename, ColorPink, ColorReset)
 }
 
-// FormatRunningOutput formats running output.
-func FormatRunningOutput() string {
-	return fmt.Sprintf("%s>>> Result:%s", ColorPink, ColorReset)
-}
-
-// FormatError formats error.
-func FormatError(err error, sources map[string][]byte) string {
-	var tatuErr *debug.Error
-
-	if errors.As(err, &tatuErr) {
-		return fmt.Sprintf("%s>>> %s%s\n", ColorRed, prettyError(tatuErr, sources[tatuErr.File]), ColorReset)
+// DumpError dumps an error.
+func DumpError(err error, sources map[string][]byte) string {
+	if tatuErr, ok := errors.AsType[*debug.Error](err); ok {
+		return dumpError(tatuErr, sources[tatuErr.Loc.File])
 	}
 
 	return fmt.Sprintf("%s>>> Error: %s%s\n", ColorRed, err, ColorReset)
 }
 
-// FormatToken formats token information.
-func FormatToken(tok token.Token) string {
+// DumpTokensHeader dumps the token header.
+func DumpTokensHeader() string {
+	return fmt.Sprintf("%s%s\n-- TOKENS\n%s\n%s", ColorPurple, headerRule, headerRule, ColorReset)
+}
+
+// DumpTokens dumps the token information.
+func DumpTokens(tokens []token.Token) string {
+	var sb strings.Builder
+
+	for _, tok := range tokens {
+		dumpToken(&sb, tok)
+	}
+
+	return sb.String()
+}
+
+// DumpASTHeader dumps the ast header.
+func DumpASTHeader() string {
+	return fmt.Sprintf("%s%s\n-- AST\n%s\n%s", ColorGreen, headerRule, headerRule, ColorReset)
+}
+
+// dumpToken writes the token representation.
+func dumpToken(sb *strings.Builder, tok token.Token) {
 	tokenType := ""
 	tokenColor := ""
 
@@ -67,45 +86,61 @@ func FormatToken(tok token.Token) string {
 
 	lexeme := strings.Replace(tok.Lexeme, "\n", "\\n", -1)
 
-	return fmt.Sprintf("%s(%s: `%s`)%s => start(%d:%d) end(%d:%d) file(%s)%s",
+	_, _ = fmt.Fprintf(sb, "%s(%s: `%s`)%s => start(%d:%d) end(%d:%d) file(%s)%s\n",
 		tokenColor, tokenType, lexeme, ColorDarkGray, tok.Location.Start.Line,
 		tok.Location.Start.Column, tok.Location.End.Line, tok.Location.End.Column,
-		tok.Location.File, ColorReset)
+		relPath(tok.Location.File), ColorReset)
 }
 
-// FormatAST prints formated ast node.
-func FormatAST(ast *ast.AST) string {
+// DumpAST dumps the ast information.
+func DumpAST(ast *ast.AST) string {
 	var sb strings.Builder
 
 	for _, exp := range ast.Program {
-		prettyExpression(&sb, exp, 0)
+		dumpExpression(&sb, exp, 0)
 	}
 
 	return sb.String()
 }
 
-// prettyError dumps the error message next to reference source code.
-func prettyError(e *debug.Error, source []byte) string {
+// dumpError dumps the error message next to reference source code.
+func dumpError(e *debug.Error, source []byte) string {
+	var sb strings.Builder
+
+	startCol := int(e.Loc.Start.Column)
+	line := int(e.Loc.Start.Line)
+
+	_, _ = fmt.Fprintf(&sb, "%s>>> Error on line %d, column %d, file `%s`:\n\n",
+		ColorRed, line, startCol, relPath(e.Loc.File))
+
 	lines := strings.Split(string(source), "\n")
+	if line == 0 || line > len(lines) {
+		_, _ = fmt.Fprintf(&sb, "%s%s\n", e.Msg, ColorReset)
 
-	rawLine := ""
-
-	if e.Line > 0 && int(e.Line) <= len(lines) {
-		rawLine = lines[e.Line-1]
+		return sb.String()
 	}
 
-	errColumn := int(e.Column) - 2
-	if errColumn < 0 {
-		errColumn = 0
+	endCol := int(e.Loc.End.Column)
+	if e.Loc.Start.Line != e.Loc.End.Line {
+		endCol = utf8.RuneCountInString(lines[line-1]) + 1
 	}
 
-	arrowMsg := strings.Repeat(" ", errColumn) + "↑\n"
-	arrowMsg += strings.Repeat(" ", errColumn) + "└─ " + e.Msg
+	width := len(fmt.Sprintf("%d", line))
 
-	return fmt.Sprintf("Error on line %d, column %d, file `%s`:\n\n%s\n%s", e.Line, e.Column, e.File, rawLine, arrowMsg)
+	for i := max(line-2, 1); i <= line; i++ {
+		_, _ = fmt.Fprintf(&sb, "%s%*d │ %s%s\n", ColorDarkGray, width, i, ColorLightGray, lines[i-1])
+	}
+
+	span := max(endCol-startCol, 1)
+	offset := width + 3 + startCol - 1
+
+	_, _ = fmt.Fprintf(&sb, "%s%s%s\n", ColorYellow, strings.Repeat(" ", offset), strings.Repeat("^", span))
+	_, _ = fmt.Fprintf(&sb, "%s└─ %s%s\n", strings.Repeat(" ", offset+span-1), e.Msg, ColorReset)
+
+	return sb.String()
 }
 
-func prettyExpression(sb *strings.Builder, expr ast.SExpr, depth int) {
+func dumpExpression(sb *strings.Builder, expr ast.SExpr, depth int) {
 	switch expr.(type) {
 	case *ast.NumberExpr:
 		sb.WriteString(fmt.Sprintf("%s(Number %v)", ColorGreen, expr.(*ast.NumberExpr).Number))
@@ -135,7 +170,7 @@ func prettyExpression(sb *strings.Builder, expr ast.SExpr, depth int) {
 			}
 
 			sb.WriteString(indent + fmt.Sprintf(" %s%s", ColorPurple, connector))
-			prettyExpression(sb, e, depth+1)
+			dumpExpression(sb, e, depth+1)
 		}
 
 		sb.WriteString(indent + fmt.Sprintf("%s)", ColorPurple))
@@ -143,5 +178,20 @@ func prettyExpression(sb *strings.Builder, expr ast.SExpr, depth int) {
 
 	sb.WriteString(fmt.Sprintf("%s => start(%d:%d) end(%d:%d) file(%s)%s\n",
 		ColorDarkGray, expr.Location().Start.Line, expr.Location().Start.Column,
-		expr.Location().End.Line, expr.Location().End.Column, expr.Location().File, ColorReset))
+		expr.Location().End.Line, expr.Location().End.Column, relPath(expr.Location().File), ColorReset))
+}
+
+// relPath returns the path relative to the current working directory.
+func relPath(path string) string {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return path
+	}
+
+	rel, err := filepath.Rel(cwd, path)
+	if err != nil {
+		return path
+	}
+
+	return rel
 }

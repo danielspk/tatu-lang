@@ -1,0 +1,35 @@
+; Dragon curve SVG generator
+
+(var angle 0)
+(var x 25)
+(var y 60)
+
+(def dragon (size level d)
+  (if (= level 0)
+    (block
+      (set x (- x (* (math:cos (/ (* angle (math:pi)) 180)) size)))
+      (set y (+ y (* (math:sin (/ (* angle (math:pi)) 180)) size)))
+      (println (str:concat "    L " (to-string x) " " (to-string y))))
+    (block
+      (dragon (/ size 1.4142135624) (- level 1) 1)
+      (set angle (- angle (* d 90)))
+      (dragon (/ size 1.4142135624) (- level 1) -1))))
+
+(println "<svg")
+(println "    height='800'")
+(println "    width='800'")
+(println "    viewBox='-50 -50 200 200'")
+(println "    xmlns='http://www.w3.org/2000/svg'")
+(println "    style='background-color:black'>")
+(println "")
+(println "<path d='")
+(println "    M 25 60")
+
+(dragon 100 12 1)
+
+(println "    '")
+(println "stroke='green'")
+(println "stroke-width='0.3' />")
+(println "</svg>")
+
+; Expect: <nil>

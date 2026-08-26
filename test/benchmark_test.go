@@ -1,108 +1,74 @@
 package test
 
 import (
+	"io"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/danielspk/tatu-lang/pkg/builder"
 	"github.com/danielspk/tatu-lang/pkg/interpreter"
 )
 
-func BenchmarkSum(b *testing.B) {
-	source := `
-(def sum (n)
-  (if (= n 0)
-    0
-    (+ n (sum (- n 1)))))
+const benchmarkDir = "benchmark"
 
-(sum 1000)
-`
-	runTestCode(b, source)
+func BenchmarkSum(b *testing.B) {
+	runTestFile(b, "sum")
 }
 
 func BenchmarkSumWithTCO(b *testing.B) {
-	source := `
-(def sum (n acc)
-  (if (= n 0)
-    acc
-    (recur (- n 1) (+ acc n))))
-
-(sum 1000 0)
-`
-	runTestCode(b, source)
+	runTestFile(b, "sum_tco")
 }
 
 func BenchmarkStringConcat(b *testing.B) {
-	source := `
-(var i 0)
-(while (< i 100)
-  (block
-    (+ "value=" i " (index)")
-    (set i (+ i 1))))
-`
-	runTestCode(b, source)
+	runTestFile(b, "string_concat")
 }
 
 func BenchmarkRegexInLoop(b *testing.B) {
-	source := `
-(var i 0)
-(while (< i 100)
-  (block
-    (regex:matches "hello123" "^[a-z]+[0-9]+$")
-    (set i (+ i 1))))
-`
-	runTestCode(b, source)
+	runTestFile(b, "regex_loop")
 }
 
 func BenchmarkMacroExpansion(b *testing.B) {
-	source := `
-(macro ((twice x)
-  (block
-    (var __t x)
-    (+ __t __t))))
-
-(var sum 0)
-(var i 0)
-(while (< i 1000)
-  (block
-    (set sum (twice i))
-    (set i (+ i 1))))
-
-sum
-`
-	runTestCode(b, source)
+	runTestFile(b, "macro_expansion")
 }
 
 func BenchmarkMacroEquivalent(b *testing.B) {
-	source := `
-(var sum 0)
-(var i 0)
-(while (< i 1000)
-  (block
-    (set sum (block (var __t i) (+ __t __t)))
-    (set i (+ i 1))))
-
-sum
-`
-	runTestCode(b, source)
+	runTestFile(b, "macro_equivalent")
 }
 
-func runTestCode(b *testing.B, source string) {
+func BenchmarkBigProgram(b *testing.B) {
+	runTestFile(b, "big")
+}
+
+func BenchmarkMandel(b *testing.B) {
+	runTestFile(b, "mandel")
+}
+
+func BenchmarkDragon(b *testing.B) {
+	runTestFile(b, "dragon")
+}
+
+func runTestFile(b *testing.B, name string) {
+	source, err := os.ReadFile(filepath.Join(benchmarkDir, name+".tatu"))
+	if err != nil {
+		b.Fatalf("reading source: %v", err)
+	}
+
 	b.ReportAllocs()
 
 	for i := 0; i < b.N; i++ {
 		progBuilder := builder.NewProgramBuilderWithDefaults()
-		_, ast, err := progBuilder.BuildFromSource([]byte(source), "")
+
+		_, ast, err := progBuilder.BuildFromSource(source, "")
 		if err != nil {
 			b.Fatalf("building source: %v", err)
 		}
 
-		inter := interpreter.NewInterpreter()
+		inter := interpreter.NewInterpreter(interpreter.WithWriter(io.Discard))
 
-		for _, expr := range ast.Program {
-			_, err = inter.Eval(expr, nil)
-			if err != nil {
-				b.Fatalf("evaluating program: %v", err)
-			}
+		_, err = inter.EvalProgram(ast, nil)
+		if err != nil {
+			b.Fatalf("evaluating program: %v", err)
 		}
 	}
 }

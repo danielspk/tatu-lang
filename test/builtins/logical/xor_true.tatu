@@ -1,0 +1,5 @@
+; Test xor with different operands
+
+(xor true false)
+
+; Expect: true

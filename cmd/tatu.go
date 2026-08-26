@@ -13,9 +13,14 @@ import (
 var version = "dev-mode"
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			exitWithError(fmt.Errorf("unexpected failure: %v", r), nil)
+		}
+	}()
+
 	printTokens := flag.Bool("printTokens", false, "print the generated tokens")
 	printAST := flag.Bool("printAST", false, "print the generated AST")
-	printBytecode := flag.Bool("printBytecode", false, "print the byte codes")
 	printInfo := flag.Bool("printInfo", true, "print the tatu header info")
 	flag.Parse()
 
@@ -32,56 +37,32 @@ func main() {
 		exitWithError(err, progBuilder.Sources())
 	}
 
-	// compiling to bytecode
-	/*compiler := vm.NewCompiler()
-	code := compiler.Compile(ast)*/
-
 	if *printTokens {
-		for _, token := range tokens {
-			fmt.Println(pretty.FormatToken(token))
-		}
-		fmt.Println()
+		fmt.Print(pretty.DumpTokensHeader())
+		fmt.Println(pretty.DumpTokens(tokens))
 	}
 
 	if *printAST {
-		fmt.Println(pretty.FormatAST(ast))
-	}
-
-	if *printBytecode {
-		/*for _, b := range code.Code {
-			fmt.Printf("0x%02X ", b)
-		}
-		fmt.Println()*/
+		fmt.Print(pretty.DumpASTHeader())
+		fmt.Println(pretty.DumpAST(ast))
 	}
 
 	if *printInfo {
-		fmt.Println(pretty.FormatRunningExecution(version, filename))
-		fmt.Println(pretty.FormatRunningOutput())
+		fmt.Println(pretty.DumpExecution(version, filename))
 	}
 
 	// evaluating by interpreter
 	inter := interpreter.NewInterpreter()
 
-	for _, expr := range ast.Program {
-		result, err := inter.Eval(expr, nil)
-		if err != nil {
-			exitWithError(err, progBuilder.Sources())
-		}
-
-		fmt.Println(result)
-	}
-
-	// evaluating by virtual machine
-	/*machine := vm.NewVirtualMachine()
-	result, err := machine.Execute(code)
+	result, err := inter.EvalProgram(ast, nil)
 	if err != nil {
-		exitWithError(err)
+		exitWithError(err, progBuilder.Sources())
 	}
 
-	fmt.Println(result)*/
+	fmt.Println(result)
 }
 
 func exitWithError(err error, sources map[string][]byte) {
-	fmt.Print(pretty.FormatError(err, sources))
+	fmt.Print(pretty.DumpError(err, sources))
 	os.Exit(1)
 }

@@ -193,10 +193,5 @@ func (p *Parser) parseProgram() ([]ast.SExpr, error) {
 
 // error makes an error.
 func (p *Parser) error(msg string, loc location.Location) *debug.Error {
-	return &debug.Error{
-		Msg:    msg,
-		Line:   loc.End.Line,
-		Column: loc.End.Column,
-		File:   loc.File,
-	}
+	return debug.NewError(msg, loc)
 }

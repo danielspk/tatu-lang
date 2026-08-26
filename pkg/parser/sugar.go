@@ -173,10 +173,5 @@ func (ss *SyntaxSugar) switchToIf(expr *ast.SExpr) error {
 
 // error makes an error.
 func (ss *SyntaxSugar) error(msg string, loc location.Location) *debug.Error {
-	return &debug.Error{
-		Msg:    msg,
-		Line:   loc.End.Line,
-		Column: loc.End.Column,
-		File:   loc.File,
-	}
+	return debug.NewError(msg, loc)
 }

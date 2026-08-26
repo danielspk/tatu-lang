@@ -9,7 +9,9 @@ import (
 	"github.com/danielspk/tatu-lang/pkg/location"
 )
 
-const maxDepth = 64
+const (
+	maxDepth = 64
+)
 
 var reservedNames = map[string]bool{
 	"and": true, "or": true, "block": true, "var": true, "set": true,
@@ -347,7 +349,7 @@ func spliceCapture(name string, caps bindings, out []ast.SExpr) ([]ast.SExpr, bo
 	return append(out, captured...), true
 }
 
-// error builds a macro expansion error with location.
+// error makes an error.
 func (e *Expander) error(msg string, loc location.Location) *debug.Error {
-	return &debug.Error{Msg: msg, Line: loc.End.Line, Column: loc.End.Column, File: loc.File}
+	return debug.NewError(msg, loc)
 }

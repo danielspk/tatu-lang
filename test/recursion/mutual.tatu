@@ -1,0 +1,9 @@
+; Test mutual recursion via forward declaration (var prototype)
+
+(var is-odd nil)
+(var is-even (lambda (x) (if (= x 0) true (is-odd (- x 1)))))
+(set is-odd (lambda (x) (if (= x 0) false (is-even (- x 1)))))
+
+(is-even 4)
+
+; Expect: true

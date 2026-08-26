@@ -1,8 +1,10 @@
 package test
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,8 +15,26 @@ import (
 	"github.com/danielspk/tatu-lang/pkg/runtime"
 )
 
-const expectPrefix = "; Expect: "
-const expectErrorPrefix = "; Expect Error: "
+const (
+	expectPrefix      = "; Expect: "
+	expectErrorPrefix = "; Expect Error: "
+)
+
+func checkOutput(filename, got string) error {
+	expected, err := os.ReadFile(filename + ".expected")
+	if errors.Is(err, os.ErrNotExist) {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("reading expected output: %w", err)
+	}
+
+	if got != string(expected) {
+		return fmt.Errorf("print output mismatch:\nexpected: %q\ngot:      %q", string(expected), got)
+	}
+
+	return nil
+}
 
 func TestPrograms(t *testing.T) {
 	var files []string
@@ -35,38 +55,42 @@ func TestPrograms(t *testing.T) {
 	}
 
 	for _, file := range files {
-		t.Run(file, func(t *testing.T) {
-			content, err := os.ReadFile(file)
-			if err != nil {
-				t.Errorf("reading test file: %s", err)
-			}
+		content, err := os.ReadFile(file)
+		if err != nil {
+			t.Errorf("reading test file: %s", err)
+			continue
+		}
 
-			err = runTestSource(content, file)
-			if err != nil {
+		t.Run(file, func(t *testing.T) {
+			var out bytes.Buffer
+			if err := runTestSource(content, file, &out); err != nil {
 				t.Errorf("running test file: %s", err)
+			}
+			if err := checkOutput(file, out.String()); err != nil {
+				t.Errorf("%s", err)
 			}
 		})
 	}
 }
 
-func runTestSource(source []byte, filename string) error {
+func runTestSource(source []byte, filename string, out io.Writer) error {
 	if strings.Contains(string(source), expectErrorPrefix) {
-		return runErrorTest(source, filename)
+		return runErrorTest(source, filename, out)
 	}
 
-	return runSuccessTest(source, filename)
+	return runSuccessTest(source, filename, out)
 }
 
-func runSuccessTest(source []byte, filename string) error {
+func runSuccessTest(source []byte, filename string, out io.Writer) error {
 	progBuilder := builder.NewProgramBuilderWithDefaults()
-	_, ast, err := progBuilder.BuildFromFile(filename)
+	_, program, err := progBuilder.BuildFromFile(filename)
 	if err != nil {
 		return fmt.Errorf("building source: %w", err)
 	}
 
-	inter := interpreter.NewInterpreter()
+	inter := interpreter.NewInterpreter(interpreter.WithWriter(out))
 
-	lastValue, err := inter.EvalProgram(ast, nil)
+	lastValue, err := inter.EvalProgram(program, nil)
 	if err != nil {
 		return fmt.Errorf("evaluating program: %w", err)
 	}
@@ -102,13 +126,13 @@ func runSuccessTest(source []byte, filename string) error {
 	return nil
 }
 
-func runErrorTest(source []byte, filename string) error {
+func runErrorTest(source []byte, filename string, out io.Writer) error {
 	progBuilder := builder.NewProgramBuilderWithDefaults()
-	_, ast, evalError := progBuilder.BuildFromFile(filename)
+	_, program, evalError := progBuilder.BuildFromFile(filename)
 	if evalError == nil {
-		inter := interpreter.NewInterpreter()
+		inter := interpreter.NewInterpreter(interpreter.WithWriter(out))
 
-		_, evalError = inter.EvalProgram(ast, nil)
+		_, evalError = inter.EvalProgram(program, nil)
 	}
 
 	if evalError == nil {

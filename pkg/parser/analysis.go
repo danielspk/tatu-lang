@@ -92,8 +92,6 @@ func (sa *SyntaxAnalyzer) validate(expr ast.SExpr) error {
 		return sa.validateVector(listExpr)
 	case "map":
 		return sa.validateMap(listExpr)
-	case "print":
-		return sa.validatePrint(listExpr)
 	case "include", "macro":
 		return sa.validateUnresolved(listExpr)
 	}
@@ -266,16 +264,6 @@ func (sa *SyntaxAnalyzer) validateMap(expr *ast.ListExpr) error {
 	return nil
 }
 
-// validatePrint validates the `print` native function.
-// Format: (print <expr>*)
-func (sa *SyntaxAnalyzer) validatePrint(expr *ast.ListExpr) error {
-	if len(expr.List) < 2 {
-		return sa.error("invalid `print` format: expected at least one expression", expr.Location())
-	}
-
-	return nil
-}
-
 // validateUnresolved rejects forms that must be resolved before analysis.
 func (sa *SyntaxAnalyzer) validateUnresolved(expr *ast.ListExpr) error {
 	name := expr.List[0].(*ast.SymbolExpr).Symbol
@@ -285,10 +273,5 @@ func (sa *SyntaxAnalyzer) validateUnresolved(expr *ast.ListExpr) error {
 
 // error makes an error.
 func (sa *SyntaxAnalyzer) error(msg string, loc location.Location) *debug.Error {
-	return &debug.Error{
-		Msg:    msg,
-		Line:   loc.End.Line,
-		Column: loc.End.Column,
-		File:   loc.File,
-	}
+	return debug.NewError(msg, loc)
 }

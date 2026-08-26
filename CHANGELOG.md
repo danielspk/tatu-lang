@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.8.0](https://github.com/danielspk/tatu-lang/releases/tag/v0.8.0) - _2026-08-26_
+
+### Added
+
+- `println` function.
+- `interpreter.WithWriter()` option to redirect output.
+- `xor` operator.
+- Better error visualization.
+- Recursion depth limit.
+
+### Changed
+
+- `print` no longer appends a trailing newline.
+- `debug.Error` carries a `location.Location`.
+- `pretty.Format*` functions renamed to `Dump*`.
+- The CLI prints only the program's final result.
+
+### Fixed
+
+- Recursion depth counter leaked a frame on every failed call.
+
+### Removed
+
+- `pkg/vm` compiler and virtual machine stub.
+- `printBytecode` CLI flag.
+
 ## [v0.7.0](https://github.com/danielspk/tatu-lang/releases/tag/v0.7.0) - _2026-06-25_
 
 ### Added

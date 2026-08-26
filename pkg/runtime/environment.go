@@ -26,6 +26,11 @@ func NewEnvironment(record map[string]Binding, parent *Environment) *Environment
 	}
 }
 
+// Set upserts a user binding in the current scope.
+func (env *Environment) Set(name string, value Value) {
+	env.record[name] = Binding{Value: value}
+}
+
 // Define defines a new user binding in the current scope.
 func (env *Environment) Define(name string, value Value) (Value, error) {
 	if env.hasNative(name) {

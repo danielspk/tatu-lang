@@ -3,6 +3,6 @@
 (for (var x 3)
    (> x 0)
    (set x (- x 1))
-   (print "for " x))
+   (println x))
 
 ; Expect: 0

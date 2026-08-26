@@ -1,0 +1,7 @@
+(var i 0)
+(while (< i 100)
+  (block
+    (+ "value=" i " (index)")
+    (set i (+ i 1))))
+
+; Expect: 100

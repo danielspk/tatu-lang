@@ -6,7 +6,7 @@ import (
 	"github.com/danielspk/tatu-lang/pkg/runtime"
 )
 
-// RegisterComparison registers comparison and not operator natives.
+// RegisterComparison registers comparison, not and xor operator natives.
 func RegisterComparison(env *runtime.Environment) {
 	env.DefineNative("=", runtime.NewNativeFunction(equal))
 	env.DefineNative(">", runtime.NewNativeFunction(greaterThan))
@@ -14,6 +14,7 @@ func RegisterComparison(env *runtime.Environment) {
 	env.DefineNative("<", runtime.NewNativeFunction(lessThan))
 	env.DefineNative("<=", runtime.NewNativeFunction(lessThanOrEqual))
 	env.DefineNative("not", runtime.NewNativeFunction(not))
+	env.DefineNative("xor", runtime.NewNativeFunction(xor))
 }
 
 // equal implements the = operator.
@@ -124,4 +125,24 @@ func not(args ...runtime.Value) (runtime.Value, error) {
 	}
 
 	return runtime.NewBool(!args[0].(runtime.Bool).Value), nil
+}
+
+// xor implements the xor operator (boolean exclusive or).
+// Usage: (xor true false) => true
+func xor(args ...runtime.Value) (runtime.Value, error) {
+	const name = "xor"
+
+	if len(args) != 2 {
+		return nil, fmt.Errorf("`%s` expected 2 arguments, got %d", name, len(args))
+	}
+
+	if args[0].Type() != runtime.BoolType {
+		return nil, fmt.Errorf("`%s` invalid type %s", name, args[0].Type())
+	}
+
+	if args[1].Type() != runtime.BoolType {
+		return nil, fmt.Errorf("`%s` invalid type %s", name, args[1].Type())
+	}
+
+	return runtime.NewBool(args[0].(runtime.Bool).Value != args[1].(runtime.Bool).Value), nil
 }

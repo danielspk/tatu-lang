@@ -1,0 +1,20 @@
+; Test for with simulated continue
+
+(var sum 0)
+(var __continue false)
+
+(for (var i 1)
+     (<= i 10)
+     (set i (+ i 1))
+  (block
+    (set __continue false)
+    (if (= (% i 2) 0)
+      (set __continue true)
+      nil)
+    (if (not __continue)
+      (set sum (+ sum i))
+      nil)))
+
+sum
+
+; Expect: 25

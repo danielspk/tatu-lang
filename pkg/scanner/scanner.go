@@ -114,22 +114,12 @@ func (s *Scanner) scanToken() error {
 	}
 }
 
-// advance gets the current character and advances to the next position.
+// advance gets the current UTF8 character and advances to the next position.
 func (s *Scanner) advance() rune {
 	char, size := utf8.DecodeRuneInString(s.source[s.current.offset:])
 
 	s.current.offset += uint(size)
 	s.current.column++
-
-	return char
-}
-
-// advanceUTF8 gets the current UTF8 character and advances to the next position.
-func (s *Scanner) advanceUTF8() rune {
-	char, size := utf8.DecodeRuneInString(s.source[s.current.offset:])
-
-	s.current.offset += uint(size)
-	s.current.column += 1
 
 	return char
 }
@@ -152,23 +142,6 @@ func (s *Scanner) lookAhead() rune {
 	}
 
 	char, _ := utf8.DecodeRuneInString(s.source[s.current.offset+1:])
-
-	return char
-}
-
-// lookBack gets the previous character.
-func (s *Scanner) lookBack() rune {
-	if s.current.offset == 0 {
-		return 0
-	}
-
-	// Scan backwards to find the start of the previous rune
-	offset := s.current.offset - 1
-	for offset > 0 && !utf8.RuneStart(s.source[offset]) {
-		offset--
-	}
-
-	char, _ := utf8.DecodeRuneInString(s.source[offset:])
 
 	return char
 }
@@ -285,11 +258,11 @@ func (s *Scanner) readNumber() {
 // readString advances positions until you finish reading a string.
 func (s *Scanner) readString() error {
 	for !s.isAtEnd() && s.peek() != '"' {
-		chr := s.advanceUTF8()
+		chr := s.advance()
 		s.markNewline(chr)
 
 		if chr == '\\' && !s.isAtEnd() {
-			s.markNewline(s.advanceUTF8())
+			s.markNewline(s.advance())
 		}
 	}
 
@@ -360,10 +333,9 @@ func (s *Scanner) isSymbol(r rune) bool {
 
 // error makes an error.
 func (s *Scanner) error(msg string) *debug.Error {
-	return &debug.Error{
-		Msg:    msg,
-		Line:   s.current.line,
-		Column: s.current.column,
-		File:   s.filename,
-	}
+	return debug.NewError(msg, location.NewLocation(
+		s.filename,
+		location.NewPosition(s.start.line, s.start.column, s.start.offset),
+		location.NewPosition(s.current.line, s.current.column, s.current.offset),
+	))
 }

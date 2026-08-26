@@ -1,0 +1,18 @@
+; Test for with simulated break
+
+(var result 0)
+(var __break false)
+
+(for (var i 1)
+     (and (<= i 100) (not __break))
+     (set i (+ i 1))
+  (if (not __break)
+    (if (> (* i i) 20)
+      (block
+        (set result i)
+        (set __break true))
+      nil)))
+
+result
+
+; Expect: 5

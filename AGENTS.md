@@ -6,8 +6,11 @@ Tatu is an educational scripting language with S-expression syntax, first-class 
 
 - `go build cmd/*.go` — build
 - `go test ./test` — run all tests
+- `go test -bench=. ./test` — run benchmarks
 - `go run cmd/*.go <file.tatu>` — execute a file
+- `go run cmd/*.go -printTokens <file.tatu>` — dump tokens
 - `go run cmd/*.go -printAST <file.tatu>` — dump AST
+- `go run cmd/*.go -printInfo=false <file.tatu>` — omit the header
 
 ## Architecture
 
@@ -15,16 +18,23 @@ Pipeline: Source → Scanner → Parser → Expander → Analyzer → Interprete
 
 | Package | Purpose |
 |---|---|
-| `pkg/scanner/` | Lexical analysis |
-| `pkg/parser/` | Syntactic analysis + sugar expansion |
 | `pkg/ast/` | AST node definitions |
 | `pkg/builder/` | File inclusion, program construction |
-| `pkg/macro/` | Macro expander (single file, `macro.go`) |
-| `pkg/interpreter/` | Tree-walking interpreter |
-| `pkg/runtime/` | Values, Environment |
 | `pkg/core/builtins/` | Arithmetic, comparison, I/O, type ops |
 | `pkg/core/stdlib/` | math, string, vec, map, time, json, fs, regex |
 | `pkg/debug/` | Error reporting with location |
+| `pkg/interpreter/` | Tree-walking interpreter |
+| `pkg/location/` | Source positions |
+| `pkg/macro/` | Macro expander (single file, `macro.go`) |
+| `pkg/parser/` | Syntactic analysis + sugar expansion |
+| `pkg/pretty/` | Colored dumps of tokens, AST and errors |
+| `pkg/runtime/` | Values, Environment |
+| `pkg/scanner/` | Lexical analysis |
+| `pkg/token/` | Token definitions |
+
+## Embedding
+
+`interpreter.NewInterpreter(interpreter.WithWriter(w))` redirects `print` and `println`. The host seeds globals with `SetGlobal`, reads them back with `Globals`, and calls script functions with `Call`. See the README for a full example.
 
 ## Code Style
 
@@ -48,4 +58,8 @@ Place in `test/<category>/`. One `.tatu` per test. Format:
 
 Error tests use `; Expect Error: <substring>`.
 
-No subdirectories inside test categories (except `stdlib/` and `builtins/`).
+No subdirectories inside test categories, except `builtins/`, `stdlib/` and `includes/`.
+
+A sibling `<file>.tatu.expected` is compared byte for byte against what the program printed. Optional: no file, no check.
+
+`test/benchmark/` holds the benchmark corpus. Those programs are also regular fixtures.

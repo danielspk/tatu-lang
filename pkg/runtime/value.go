@@ -10,6 +10,11 @@ import (
 	"github.com/danielspk/tatu-lang/pkg/ast"
 )
 
+const (
+	// MaxCallDepth is the maximum number of nested function calls allowed.
+	MaxCallDepth = 1024
+)
+
 // ValueType represents the type of value.
 type ValueType uint8
 

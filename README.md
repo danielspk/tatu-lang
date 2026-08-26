@@ -1,7 +1,7 @@
 # Tatu-Lang
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Go Version](https://img.shields.io/badge/Go-1.25-00ADD8?logo=go)](https://go.dev/)
+[![Go Version](https://img.shields.io/badge/Go-1.26-00ADD8?logo=go)](https://go.dev/)
 [![CI](https://github.com/danielspk/tatu-lang/workflows/CI/badge.svg)](https://github.com/danielspk/tatu-lang/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/danielspk/tatu-lang)](https://github.com/danielspk/tatu-lang/releases)
 
@@ -36,10 +36,6 @@ _Tatu_ is a programming language with the following features:
 
 > Despite its S-expression syntax, _Tatu_ **is not** a _Lisp_ dialect.
 
-### TODOs
-
-- ⚠️ Finish the Compiler and Virtual Machine.
-
 ---
 
 ## Syntax
@@ -54,16 +50,16 @@ _Tatu_ syntax is similar to classic _Lisp_ dialects:
       1
       (+ (fib (- n 1)) (fib (- n 2)))))))
 
-(print (fib 10))
+(println (fib 10))
 ```
 
 ---
 
 ## Architecture
 
-_Tatu_ uses a multi-phase pipeline to execute programs:
+_Tatu_ uses a multiphase pipeline to execute programs:
 
-### Pipeline Interpreted
+### Pipeline
 
 ```
 ┌─────────────┐
@@ -107,9 +103,52 @@ _Tatu_ uses a multi-phase pipeline to execute programs:
 └─────────────┘
 ```
 
-### Pipeline Compiled
+---
 
-> TODO
+## Embedding
+
+_Tatu_ is meant to be embedded in **Go** programs. The host seeds globals before a script
+runs, reads them back once it finishes, and calls functions the script defined:
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/danielspk/tatu-lang/pkg/builder"
+	"github.com/danielspk/tatu-lang/pkg/interpreter"
+	"github.com/danielspk/tatu-lang/pkg/runtime"
+)
+
+func main() {
+	const source = `
+		(def greet (name) (+ "Hello, " name))
+		(var message (greet subject))
+	`
+
+	_, program, err := builder.NewProgramBuilderWithDefaults().BuildFromSource([]byte(source), "")
+	if err != nil {
+		panic(err)
+	}
+
+	inter := interpreter.NewInterpreter()
+	inter.SetGlobal("subject", runtime.NewString("Tatu"))
+
+	if _, err := inter.EvalProgram(program, nil); err != nil {
+		panic(err)
+	}
+
+	fmt.Println(inter.Globals()["message"]) // Hello, Tatu
+
+	result, err := inter.Call("greet", runtime.NewString("World"))
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(result) // Hello, World
+}
+```
 
 ---
 

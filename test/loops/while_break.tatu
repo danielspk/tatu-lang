@@ -1,0 +1,18 @@
+; Test while with simulated break
+
+(var i 1)
+(var sum 0)
+(var __break false)
+
+(while (and (< i 100) (not __break))
+  (if (not __break)
+    (block
+      (set sum (+ sum i))
+      (set i (+ i 1))
+      (if (>= sum 10)
+        (set __break true)
+        nil))))
+
+sum
+
+; Expect: 10

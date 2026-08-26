@@ -90,6 +90,7 @@ symbol      ; symbol/identifier
 (and a b ...)          ; logical and
 (or a b ...)           ; logical or
 (not a)                ; logical negation
+(xor a b)              ; logical exclusive or
 ```
 
 ## Data Structures
@@ -173,6 +174,7 @@ symbol      ; symbol/identifier
 ### I/O
 ```lisp
 (print x ...)
+(println x ...)
 ```
 
 ### Type Checking
