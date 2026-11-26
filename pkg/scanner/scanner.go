@@ -101,7 +101,9 @@ func (s *Scanner) scanToken() error {
 
 	default:
 		if s.isDigit(chr) || (chr == '-' && s.isDigit(s.peek())) {
-			s.readNumber()
+			if err := s.readNumber(); err != nil {
+				return err
+			}
 			return s.addToken(token.Number)
 		}
 
@@ -178,7 +180,7 @@ func (s *Scanner) currentLiteral(tokenType token.Type) (any, error) {
 		return literal, nil
 
 	case token.String:
-		str := strings.Trim(lexeme, "\"")
+		str := lexeme[1 : len(lexeme)-1]
 		return s.processEscapes(str), nil
 
 	case token.Symbol:
@@ -241,7 +243,7 @@ func (s *Scanner) readComment() {
 }
 
 // readNumber advances positions until you finish reading a number.
-func (s *Scanner) readNumber() {
+func (s *Scanner) readNumber() error {
 	for s.isDigit(s.peek()) {
 		_ = s.advance()
 	}
@@ -253,6 +255,13 @@ func (s *Scanner) readNumber() {
 			_ = s.advance()
 		}
 	}
+
+	if s.isSymbol(s.peek()) {
+		s.readSymbol()
+		return s.error(fmt.Sprintf("invalid number `%s`", s.currentLexeme()))
+	}
+
+	return nil
 }
 
 // readString advances positions until you finish reading a string.

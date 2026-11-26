@@ -79,7 +79,7 @@ func (i *Interpreter) Eval(expr ast.SExpr, env *runtime.Environment) (runtime.Va
 
 // EvalProgram evaluates an AST and returns the resulting value.
 func (i *Interpreter) EvalProgram(ast *ast.AST, env *runtime.Environment) (runtime.Value, error) {
-	var lastValue runtime.Value
+	var lastValue runtime.Value = runtime.NewNil()
 	var err error
 
 	for _, expr := range ast.Program {
@@ -262,7 +262,11 @@ func (i *Interpreter) evalVar(expr ast.SExpr, env *runtime.Environment) (runtime
 		return nil, err
 	}
 
-	return env.Define(exprList.List[1].(*ast.SymbolExpr).Symbol, value)
+	if _, err := env.Define(exprList.List[1].(*ast.SymbolExpr).Symbol, value); err != nil {
+		return nil, i.error(err.Error(), exprList.List[1].Location())
+	}
+
+	return value, nil
 }
 
 // evalSet evaluates a `set` expression.
@@ -316,7 +320,7 @@ func (i *Interpreter) evalWhile(expr ast.SExpr, env *runtime.Environment) (runti
 	condition := exprList.List[1]
 	body := exprList.List[2]
 
-	var lastValue runtime.Value
+	var lastValue runtime.Value = runtime.NewNil()
 
 	for {
 		value, err := i.eval(condition, env)

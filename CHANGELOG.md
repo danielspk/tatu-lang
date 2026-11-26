@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.9.0](https://github.com/danielspk/tatu-lang/releases/tag/v0.9.0) - _2026-11-26_
+
+### Changed
+
+- Numbers are never printed in exponential notation.
+- `to-number` only accepts strings with the format of a number literal.
+
+### Fixed
+
+- `while` that never iterates returned a Go `nil` instead of `nil`.
+- `EvalProgram` returned a Go `nil` for an empty program.
+- String ending with an escaped quote lost the quote.
+- `var` errors had no location.
+- Number followed by a symbol (`12abc`) was read as two tokens.
+
 ## [v0.8.0](https://github.com/danielspk/tatu-lang/releases/tag/v0.8.0) - _2026-08-26_
 
 ### Added

@@ -1,0 +1,6 @@
+; Test var on an already defined variable
+
+(var x 1)
+(var x 2)
+
+; Expect Error: [Line 4][Column 7] Error: symbol `x` already defined

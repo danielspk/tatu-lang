@@ -3,11 +3,15 @@ package builtins
 import (
 	"fmt"
 	"math"
+	"regexp"
 	"strconv"
 
 	"github.com/danielspk/tatu-lang/pkg/core"
 	"github.com/danielspk/tatu-lang/pkg/runtime"
 )
+
+// numberPattern matches the format of a number literal.
+var numberPattern = regexp.MustCompile(`^-?[0-9]+(\.[0-9]+)?$`)
 
 // RegisterTypes registers type checking and conversion functions.
 func RegisterTypes(env *runtime.Environment) {
@@ -167,12 +171,13 @@ func toNumber(args ...runtime.Value) (runtime.Value, error) {
 		return args[0], nil
 	case runtime.StringType:
 		str := args[0].(runtime.String)
+		if !numberPattern.MatchString(str.Value) {
+			return nil, fmt.Errorf("`%s` cannot parse STRING '%s' to NUMBER", name, str.Value)
+		}
+
 		num, err := strconv.ParseFloat(str.Value, 64)
 		if err != nil {
 			return nil, fmt.Errorf("`%s` cannot parse STRING '%s' to NUMBER: %w", name, str.Value, err)
-		}
-		if math.IsInf(num, 0) || math.IsNaN(num) {
-			return nil, fmt.Errorf("`%s` cannot parse STRING '%s' to NUMBER", name, str.Value)
 		}
 
 		return runtime.NewNumber(num), nil

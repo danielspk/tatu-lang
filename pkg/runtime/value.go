@@ -90,7 +90,7 @@ func (n Number) String() string {
 		return fmt.Sprintf("%.0f", n.Value)
 	}
 
-	return strconv.FormatFloat(n.Value, 'g', -1, 64)
+	return strconv.FormatFloat(n.Value, 'f', -1, 64)
 }
 
 // Equal compares the number value to another.

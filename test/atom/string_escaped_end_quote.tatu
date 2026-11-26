@@ -1,0 +1,5 @@
+; Test string ending with escaped quote
+
+"a\""
+
+; Expect: a\"

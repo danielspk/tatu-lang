@@ -1,0 +1,5 @@
+; Test number small float atom
+
+0.0000001
+
+; Expect: 0.0000001

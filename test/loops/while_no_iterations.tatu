@@ -1,0 +1,7 @@
+; Test while that never iterates
+
+(var x (while false 1))
+
+x
+
+; Expect: <nil>

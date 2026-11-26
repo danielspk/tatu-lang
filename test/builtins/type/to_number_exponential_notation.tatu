@@ -1,0 +1,5 @@
+; Test to-number rejects exponential notation string
+
+(to-number "1e3")
+
+; Expect Error: cannot parse STRING '1e3' to NUMBER

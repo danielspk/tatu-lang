@@ -1,0 +1,7 @@
+; Test number followed by a symbol
+
+(var abc 5)
+
+(+ 12abc)
+
+; Expect Error: invalid number `12abc`
